@@ -2,14 +2,15 @@
 //
 
 #include <iostream>
+#include<cstdio>
 #include<Windows.h>
+#include"tinyprop.h"
 using namespace std;
 
 #pragma region Constants
 #define print(a) std::cout<< a << endl;
 
 #pragma endregion
-
 
 #pragma region Types
 typedef int (*pOnload)(int, int, void*);
@@ -18,9 +19,8 @@ typedef int (*pOnload)(int, int, void*);
 
 #pragma endregion
 
-
 #pragma region Var
-
+TinyProp prop("C:\\Users\\竹子\\source\\repos\\CrystalMinecraftServerManager\\CrystalMinecraftServerManager\\x64\\Debug\\server.properties");
 #pragma endregion
 
 #pragma region Server
@@ -31,14 +31,18 @@ typedef int (*pOnload)(int, int, void*);
 
 #pragma endregion
 
+#pragma region Parser
+
+
+
+#pragma endregion
 
 #pragma region Main
-
 int main()
 {
-
     cout << "Hello World!\n";
-
+    prop.read();
+    system("pause");
 }
 #pragma endregion
 

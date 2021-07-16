@@ -18,18 +18,21 @@
     <ClCompile Include="CrystalMinecraftServerManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="tinyconf.cpp">
+    <ClCompile Include="utils.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="utils.cpp">
+    <ClCompile Include="tinyprop.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="tinyconf.h">
+    <ClInclude Include="utils.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="utils.h">
+    <ClInclude Include="parse.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tinyprop.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

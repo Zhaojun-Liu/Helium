@@ -11,11 +11,8 @@
 #include<iostream>
 #include<Windows.h>
 #include<list>
-#include<guiddef.h>
 #include<strstream>
 #include<windows.h>
-#include<TlHelp32.h>
-#include<Psapi.h>
 
 using namespace std;
 
@@ -35,10 +32,6 @@ string makestring(vector<string> list_, string spiliter);
 //返回true即为文件夹存在 返回false为文件夹不存在或者为文件
 bool CheckFolderExist(const string& strPath);
 
-//从vector中删除指定的某一个元素 
-template<class T1, class T2>
-vector<T1> del(vector<T1> a, T2 to_be_removed_obj);
-
 //列出指定路径下的所有文件
 vector<string> stdfuncallconv ListFiles(string path);
 
@@ -47,19 +40,5 @@ vector<string> stdfuncallconv ListFiles(string path, string ext);
 
 //字符串a中含有字符串b
 bool stdfuncallconv have(string a, string b);
-
-//生成GUID
-string stdfuncallconv CreateGuid(GUID* pguid);
-
-//比较MCDRCPP版本
-int stdfuncallconv CompareVersion(string Ver1, string Ver2);
-
-//获取用户输入字符串，以\n为结尾
-string stdfuncallconv GetInputString();
-
-//获取用户输入字符
-CHAR stdfuncallconv GetInputChar();
-
-HANDLE stdfuncallconv GetProcessHandle(LPCSTR lpName);
 
 string stdfuncallconv ReplaceString(string rawstr, string deststr, string repstr);
