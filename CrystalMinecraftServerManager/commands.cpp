@@ -19,36 +19,40 @@ CommandInstance::CommandInstance(string command, int type)
 
 string CommandInstance::GetCmd()
 {
-	return string();
+	return command;
 }
 
-int CommandInstance::SetCmd(string command)
+string CommandInstance::SetCmd(string command)
 {
-	return 0;
+	this->command = command;
+	return command;
 }
 
 int CommandInstance::GetCmdType()
 {
-	return 0;
+	return this->cmdtype;
 }
 
 int CommandInstance::SetCmdType(int type)
 {
-	return 0;
+	this->cmdtype = type;
+	return type;
 }
 
 int CommandInstance::IncExecuteCounter()
 {
-	return 0;
+	this->executecounter++;
+	return this->executecounter;
 }
 
 int CommandInstance::GetExecuteCounter()
 {
-	return 0;
+	return this->executecounter;
 }
 
 int CommandInstance::ClearExecuteCounter()
 {
+	this->executecounter = 0;
 	return 0;
 }
 
@@ -60,11 +64,15 @@ CommandQueue::CommandQueue()
 {
 	CommandInstance cmdins;
 	this->InsertCommand(cmdins);
-	this->queuename = "EMPTY_QUEUE";
+	this->queuename = "EMPTY_QUEUE_" + empty_queue_counter;
+	empty_queue_counter++;
+	CommandQueues.push_back(*this);
 }
 
 int CommandQueue::Queue_Suspend()
 {
+	this->queuestatus = QUEUE_STATUS_SUSPENDED;
+	DeleteRunnableQueue(*this);
 	return 0;
 }
 
@@ -108,6 +116,14 @@ int CommandQueue::DeleteCommand(int index)
 	return 0;
 }
 
+bool CommandQueue::operator==(CommandQueue queue)
+{
+	if (this->queuename == queue.queuename)
+		return true;
+	else
+		return false;
+}
+
 #pragma endregion
 
 #pragma region Executor
@@ -133,3 +149,25 @@ int StartQueueExecuting()
 }
 
 #pragma endregion
+
+int DeleteQueue(CommandQueue queue)
+{
+	vector<CommandQueue>::iterator it;
+	for (it = CommandQueues.begin(); it <= CommandQueues.end(); it++) {
+		if (*it == queue) {
+			CommandQueues.erase(it);
+		}
+	}
+	return 0;
+}
+
+int DeleteRunnableQueue(CommandQueue queue)
+{
+	vector<CommandQueue>::iterator it;
+	for (it = RunnableCommandQueues.begin(); it <= RunnableCommandQueues.end(); it++) {
+		if (*it == queue) {
+			RunnableCommandQueues.erase(it);
+		}
+	}
+	return 0;
+}

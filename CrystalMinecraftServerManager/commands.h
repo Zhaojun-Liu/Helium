@@ -27,7 +27,7 @@ public:
 	CommandInstance(string command, int type);
 
 	string GetCmd();
-	int SetCmd(string command);
+	string SetCmd(string command);
 
 	int GetCmdType();
 	int SetCmdType(int type);
@@ -41,6 +41,8 @@ private:
 	int cmdtype;
 	int executecounter;
 };
+
+int empty_queue_counter = 0;
 
 class CommandQueue {
 public:
@@ -58,6 +60,8 @@ public:
 
 	int DeleteCommand(string command);
 	int DeleteCommand(int index);
+
+	bool operator== (CommandQueue queue);
 private:
 	vector<CommandInstance> _cmdqueue;
 
@@ -75,7 +79,8 @@ private:
 	bool controlbyexecutor;
 };
 
-vector CommandQueues<CommandQueue>;
+vector<CommandQueue> CommandQueues;
+vector<CommandQueue> RunnableCommandQueues;
 /*
 调度算法概述:
 	回归轮转算法(Regressive Round-Robin)的变种:
@@ -97,3 +102,5 @@ private:
 vector<QueueExecutor> Executors;
 
 int StartQueueExecuting();
+int DeleteQueue(CommandQueue queue);
+int DeleteRunnableQueue(CommandQueue queue);
