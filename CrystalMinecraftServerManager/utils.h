@@ -5,7 +5,7 @@
 #pragma once
 
 #define stdfuncallconv WINAPI
-
+#include<map>
 #include<vector>
 #include<string>
 #include<iostream>
@@ -27,7 +27,7 @@ string makestring(list<string> list_, string spiliter);
 
 //从字符串vector生成字符串,以指定字符串分隔
 string makestring(vector<string> list_, string spiliter);
-
+bool Split(const std::string& str, std::map<size_t, std::string>& ret, std::string sep);
 //寻找文件夹是否存在 strpath:目录
 //返回true即为文件夹存在 返回false为文件夹不存在或者为文件
 bool CheckFolderExist(const string& strPath);

@@ -1,6 +1,33 @@
 
 #include"utils.h"
+bool Split(const std::string& str, std::map<size_t, std::string>& ret, std::string sep) { // https://blog.csdn.net/qq_22186119/article/details/110472493
+    if (str.empty()) {
+        return false;
+    }
 
+    std::string temp;
+    std::string::size_type begin = str.find_first_not_of(sep);
+    std::string::size_type pos = 0;
+    size_t line = 0;
+    while (begin != std::string::npos) {
+        line += 1;
+        pos = str.find(sep, begin);
+        if (pos != std::string::npos) {
+            temp = str.substr(begin, pos - begin);
+            begin = pos + sep.length();
+        }
+        else {
+            temp = str.substr(begin);
+            begin = pos;
+        }
+
+        if (!temp.empty()) {
+            ret[line] = temp;
+            temp.clear();
+        }
+    }
+    return true;
+}
 
 string stdfuncallconv ReplaceString(string rawstr, string deststr, string repstr)
 {
