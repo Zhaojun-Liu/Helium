@@ -53,10 +53,6 @@ CommandQueue::CommandQueue()
 {
 }
 
-CommandQueue::CommandQueue(CommandQueue queue)
-{
-}
-
 int CommandQueue::Queue_Suspend()
 {
 	return 0;

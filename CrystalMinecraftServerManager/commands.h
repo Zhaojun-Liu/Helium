@@ -42,7 +42,6 @@ private:
 class CommandQueue {
 public:
 	CommandQueue();
-	CommandQueue(CommandQueue queue);
 
 	int Queue_Suspend();
 	int Queue_Resume();
@@ -57,7 +56,7 @@ public:
 	int DeleteCommand(string command);
 	int DeleteCommand(int index);
 private:
-	vector Commands<CommandInstance>;
+	vector<CommandInstance> Commands;
 
 	string queuename;
 
@@ -73,7 +72,7 @@ private:
 	bool controlbyexecutor;
 };
 
-vector CommandQueues<CommandQueue>;
+vector<CommandQueue> CommandQueues;
 /*
 调度算法概述:
 	回归轮转算法(Regressive Round-Robin)的变种:
@@ -91,6 +90,6 @@ private:
 	int ExecutorThread();
 };
 
-vector Executors<QueueExecutor>;
+vector<QueueExecutor> Executors;
 
 int StartQueueExecuting();
