@@ -21,7 +21,7 @@ DWORD readf(const char* fname,string* strOut) {
 	while (true)
 	{
 		DWORD irr;
-		ReadFile(hFile, &buf, 1, &irr, NULL);
+		iRet += ReadFile(hFile, &buf, 1, &irr, NULL);
 		iRet += irr;
 		if (irr == 0)
 			break;
@@ -34,8 +34,20 @@ DWORD readf(const char* fname,string* strOut) {
     
 }
 
-int writef(const char* fname,string content) {
-    return 0;
+DWORD writef(const char* fname,string content) {
+	DWORD dwRet = 0;
+	DeleteFile(fname);
+	HANDLE hFile = CreateFile(fname,
+		GENERIC_WRITE,
+		FILE_SHARE_READ,
+		NULL,
+		CREATE_ALWAYS,
+		FILE_ATTRIBUTE_NORMAL,
+		0
+	);
+	WriteFile(hFile, content.c_str(), content.length() + 1, &dwRet, NULL);
+	CloseHandle(hFile);
+    return dwRet;
 }
 
 #pragma endregion
@@ -79,24 +91,81 @@ TinyProp::~TinyProp()
 int TinyProp::read()
 {
 	string content;
+	this->table.clear();
 	if (!readf(this->filename.c_str(),&content))
 	{
 		return 0;
 	}
+	cout << content;
+
 	if (content.find("\r\n") == content.npos)
 	{
-		return 2;
+		auto mp = split(content, "\r\n");
+		for (auto it = mp.begin(); it != mp.end(); it++)
+		{
+			if (it->second[0] == '#')
+			{
+				//遇到注释，球都不做
+			}
+			else
+			{
+				if (it->second.find("=") != it->second.npos) {
+					auto mpp = split(it->second, "=");
+					pair<string, string> p;
+					p.first = mpp.at(0);
+					p.second = mpp.at(1);
+					this->table.insert(p);
+				}
+			}
+		}
+		return 1;
 	}
 	else
 	{
-		return 1;
+		auto mp = split(content, "\n");
+		for (auto it = mp.begin(); it != mp.end(); it++)
+		{
+			if (it->second[0] == '#')
+			{
+				//遇到注释，球都不做
+			}
+			else
+			{
+				if (it->second.find("=") != it->second.npos) {
+					auto mpp = split(it->second, "=");
+					pair<string, string> p;
+					p.first = mpp.at(0);
+					p.second = mpp.at(1);
+					this->table.insert(p);
+				}
+			}
+		}
+		return 2;
 	}
     return 0;
 }
 
-int TinyProp::write()
+DWORD TinyProp::write()
 {
-    return 0;
+	string content;
+	for (auto it = this->table.begin(); it != this->table.end(); it++)
+	{
+		if (it == this->table.end())
+		{
+			content += it->first;
+			content += '=';
+			content += it->second;
+		}
+		else
+		{
+			content += it->first;
+			content += '=';
+			content += it->second;
+			content += "\r\n";
+		}
+	}
+	DWORD ret = writef(this->filename.c_str(), content);
+    return ret;
 }
 
 const char* TinyProp::get(const char* name)
@@ -118,7 +187,7 @@ int TinyProp::set(const char* name, const char* value)
 		if (it->first == name)
 		{
 			this->table[it->first] = value;
-			return strlen(value);
+			return 1;
 		}
 	}
 	return NULL;

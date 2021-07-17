@@ -1,11 +1,14 @@
 ﻿// CrystalMinecraftServerManager.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
 //
+#pragma region Includes
 
-#include <iostream>
-#include<cstdio>
+#include<iostream>
+#include<thread>
 #include<Windows.h>
 #include"tinyprop.h"
 using namespace std;
+
+#pragma endregion
 
 #pragma region Constants
 #define print(a) std::cout<< a << endl;
@@ -42,6 +45,7 @@ int main()
 {
     cout << "Hello World!\n";
     prop.read();
+
     system("pause");
 }
 #pragma endregion
