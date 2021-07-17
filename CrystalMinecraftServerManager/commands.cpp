@@ -4,10 +4,17 @@
 
 CommandInstance::CommandInstance()
 {
+	this->command = EMPTY_CMD;
+	this->cmdtype = CMD_TYPE_DONOTHING;
 }
 
 CommandInstance::CommandInstance(string command, int type)
 {
+	this->command = command;
+	if (CMD_TYPE_BUILTINCMD <= type || type <= CMD_TYPE_DONOTHING)
+		this->cmdtype = type;
+	else
+		;
 }
 
 string CommandInstance::GetCmd()
@@ -51,6 +58,9 @@ int CommandInstance::ClearExecuteCounter()
 
 CommandQueue::CommandQueue()
 {
+	CommandInstance cmdins;
+	this->InsertCommand(cmdins);
+	this->queuename = "EMPTY_QUEUE";
 }
 
 CommandQueue::CommandQueue(CommandQueue queue)
@@ -105,6 +115,11 @@ int CommandQueue::DeleteCommand(int index)
 #pragma endregion
 
 #pragma region Executor
+
+QueueExecutor::QueueExecutor()
+{
+	Executors.push_back(*this);
+}
 
 int QueueExecutor::StartExecutorThread()
 {

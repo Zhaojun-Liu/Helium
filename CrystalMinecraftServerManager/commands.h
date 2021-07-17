@@ -7,9 +7,12 @@
 
 using namespace std;
 
+#define EMPTY_CMD "EMPTY_CMD"
+
 #define CMD_TYPE_BUILTINCMD 0
 #define CMD_TYPE_MCCMD 1
 #define CMD_TYPE_PROCESSCTRL 2
+#define CMD_TYPE_DONOTHING 3
 
 #define QUEUE_STATUS_RUNNING 0
 #define QUEUE_STATUS_SLEEPING 1
@@ -57,7 +60,7 @@ public:
 	int DeleteCommand(string command);
 	int DeleteCommand(int index);
 private:
-	vector Commands<CommandInstance>;
+	vector<CommandInstance> _cmdqueue;
 
 	string queuename;
 
@@ -73,7 +76,8 @@ private:
 	bool controlbyexecutor;
 };
 
-vector CommandQueues<CommandQueue>;
+vector<CommandQueue> CommandQueues;
+int exectime_exaverage;
 /*
 调度算法概述:
 	回归轮转算法(Regressive Round-Robin)的变种:
@@ -86,11 +90,12 @@ vector CommandQueues<CommandQueue>;
 */
 class QueueExecutor {
 public:
+	QueueExecutor();
 	int StartExecutorThread();
 private:
 	int ExecutorThread();
 };
 
-vector Executors<QueueExecutor>;
+vector<QueueExecutor> Executors;
 
 int StartQueueExecuting();
