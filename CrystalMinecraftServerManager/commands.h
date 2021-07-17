@@ -70,6 +70,7 @@ private:
 	bool unstoppable;
 	bool immutable;
 	bool restart;
+	bool controlbyexecutor;
 };
 
 vector CommandQueues<CommandQueue>;

@@ -1,4 +1,5 @@
 #include "tinyprop.h"	
+
 #pragma region File
 
 DWORD readf(const char* fname,string* strOut) {
