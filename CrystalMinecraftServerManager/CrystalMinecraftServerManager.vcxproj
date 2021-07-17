@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="commands.cpp" />
     <ClCompile Include="CrystalMinecraftServerManager.cpp" />
     <ClCompile Include="logger.cpp" />
     <ClCompile Include="logger.h" />
@@ -147,6 +148,7 @@
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="commands.h" />
     <ClInclude Include="parse.h" />
     <ClInclude Include="tinyprop.h" />
     <ClInclude Include="utils.h" />
