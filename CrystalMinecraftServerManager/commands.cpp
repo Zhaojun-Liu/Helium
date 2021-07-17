@@ -63,10 +63,6 @@ CommandQueue::CommandQueue()
 	this->queuename = "EMPTY_QUEUE";
 }
 
-CommandQueue::CommandQueue(CommandQueue queue)
-{
-}
-
 int CommandQueue::Queue_Suspend()
 {
 	return 0;

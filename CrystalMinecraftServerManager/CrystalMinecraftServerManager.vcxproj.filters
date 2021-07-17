@@ -21,9 +21,6 @@
     <ClCompile Include="utils.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="tinyprop.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="parse.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -42,9 +39,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="parse.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="tinyprop.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="commands.h">

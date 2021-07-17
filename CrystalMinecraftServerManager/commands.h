@@ -45,7 +45,6 @@ private:
 class CommandQueue {
 public:
 	CommandQueue();
-	CommandQueue(CommandQueue queue);
 
 	int Queue_Suspend();
 	int Queue_Resume();
@@ -76,8 +75,7 @@ private:
 	bool controlbyexecutor;
 };
 
-vector<CommandQueue> CommandQueues;
-int exectime_exaverage;
+vector CommandQueues<CommandQueue>;
 /*
 调度算法概述:
 	回归轮转算法(Regressive Round-Robin)的变种:
