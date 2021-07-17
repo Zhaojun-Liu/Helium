@@ -5,7 +5,7 @@
 #include<iostream>
 #include<thread>
 #include<Windows.h>
-#include"tinyprop.h"
+//#include"tinyprop.h"
 using namespace std;
 
 #pragma endregion
@@ -23,7 +23,7 @@ typedef int (*pOnload)(int, int, void*);
 #pragma endregion
 
 #pragma region Var
-TinyProp prop("C:\\Users\\竹子\\source\\repos\\CrystalMinecraftServerManager\\CrystalMinecraftServerManager\\x64\\Debug\\server.properties");
+//TinyProp prop("C:\\Users\\竹子\\source\\repos\\CrystalMinecraftServerManager\\CrystalMinecraftServerManager\\x64\\Debug\\server.properties");
 #pragma endregion
 
 #pragma region Server
@@ -44,7 +44,6 @@ TinyProp prop("C:\\Users\\竹子\\source\\repos\\CrystalMinecraftServerManager\\
 int main()
 {
     cout << "Hello World!\n";
-    prop.read();
 
     system("pause");
 }
