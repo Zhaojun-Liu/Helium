@@ -1,8 +1,7 @@
-
 #pragma once
 
-
-#pragma once
+#ifndef _H_UTILS
+#define _H_UTILS
 
 #define stdfuncallconv WINAPI
 #include<map>
@@ -42,3 +41,5 @@ vector<string> stdfuncallconv ListFiles(string path, string ext);
 bool stdfuncallconv have(string a, string b);
 
 string stdfuncallconv ReplaceString(string rawstr, string deststr, string repstr);
+
+#endif // !_H_UTILS

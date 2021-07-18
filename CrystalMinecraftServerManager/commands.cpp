@@ -1,5 +1,10 @@
 #include"commands.h"
 
+int empty_queue_counter = 0;
+vector<QueueExecutor> Executors;
+vector<CommandQueue> CommandQueues;
+vector<CommandQueue> RunnableCommandQueues;
+
 #pragma region CommandInstanceFunc
 
 CommandInstance::CommandInstance()
@@ -170,4 +175,14 @@ int DeleteRunnableQueue(CommandQueue queue)
 		}
 	}
 	return 0;
+}
+
+int NewCommandFromConsole(LPCSTR cmd)
+{
+	return 0;
+}
+
+bool isCommand(LPCSTR cmd)
+{
+	return false;
 }

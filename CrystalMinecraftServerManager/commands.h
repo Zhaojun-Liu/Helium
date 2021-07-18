@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef _H_COMMANDS
+#define _H_COMMANDS
+
 #include<vector>
 #include<string>
 #include<thread>	
@@ -42,8 +45,6 @@ private:
 	int executecounter;
 };
 
-int empty_queue_counter = 0;
-
 class CommandQueue {
 public:
 	CommandQueue();
@@ -79,8 +80,6 @@ private:
 	bool controlbyexecutor;
 };
 
-vector<CommandQueue> CommandQueues;
-vector<CommandQueue> RunnableCommandQueues;
 /*
 调度算法概述:
 	回归轮转算法(Regressive Round-Robin)的变种:
@@ -99,8 +98,11 @@ private:
 	int ExecutorThread();
 };
 
-vector<QueueExecutor> Executors;
-
 int StartQueueExecuting();
 int DeleteQueue(CommandQueue queue);
 int DeleteRunnableQueue(CommandQueue queue);
+int NewCommandFromConsole(LPCSTR cmd);
+
+bool isCommand(LPCSTR cmd);
+
+#endif // !_H_COMMANDS

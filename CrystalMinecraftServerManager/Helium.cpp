@@ -1,13 +1,13 @@
 ﻿#pragma region Includes
-
+//不要随意调换include顺序 awa
 #include<iostream>
-#include<thread>
 #include<Windows.h>
 
+#include"logger.h"
+#include"shell.h"
 #include"tinyxml2.h"
 #include"parse.h"
 #include"xmlutils.h"
-#include"logger.h"
 
 using namespace std;
 
@@ -111,10 +111,10 @@ int main()
 {
     SetConsoleTitle(PROJECT_NAME_STR);
     string pns = PROJECT_NAME_STR;
+    pns.append(" ").append(PROJECT_VER_STR).append(" ").append(PROJECT_DEVSTAT);
+    pns.append("\r\n").append("Copyright 2020-2021 Helium Devteam").append("\r\n").append("Licensed by MIT License").append("\r\n");
 
-    Info(pns.append(" ").append(PROJECT_VER_STR).append(" ").append(PROJECT_DEVSTAT));
-    Info("Copyright 2020-2021 Helium Devteam");
-    Info("Licensed by MIT License");
+    Info(pns);
 
     tinyxml2::XMLDocument config;
     tinyxml2::XMLElement* pRootEle;
@@ -125,7 +125,11 @@ int main()
     if (pRootEle == NULL) {
 
     }
-    Debug("Helium config file is loaded successfully");
+    Debug("Helium config file is loaded successfully\r\n");
+
+    StartShell();
+
+    while (true);
 
     ServerStartedEvent e = ParseServerStarted("[10:36:31] [Server thread/INFO]: Time elapsed: 15215 ms");
     cout << "服务器已启动，用时" << e.itime << "ms." << endl;

@@ -53,10 +53,6 @@ int LogFile::operator<<(string outstr)
 		);
 }
 
-HeliumOutput::HeliumOutput()
-{
-}
-
 int HeliumOutput::out(LPSTR sOut, WCHAR wTextAttribute)
 {
 	HANDLE hOutput;
@@ -68,7 +64,6 @@ int HeliumOutput::out(LPSTR sOut, WCHAR wTextAttribute)
 	wOldAttribute = csbiInfo.wAttributes;
 	SetConsoleTextAttribute(hOutput, wTextAttribute);
 	WriteFile(hOutput, sOut, lstrlen(sOut), &dbWritten, NULL);
-	WriteFile(hOutput, "\r\n", lstrlen("\r\n"), &temp, NULL);
 	SetConsoleTextAttribute(hOutput, wOldAttribute);
 
 	log << sOut;
@@ -87,7 +82,6 @@ int HeliumOutput::out(LPCSTR sOut, WCHAR wTextAttribute)
 	wOldAttribute = csbiInfo.wAttributes;
 	SetConsoleTextAttribute(hOutput, wTextAttribute);
 	WriteFile(hOutput, sOut, lstrlen(sOut), &dbWritten, NULL);
-	WriteFile(hOutput, "\r\n", lstrlen("\r\n"), &temp, NULL);
 	SetConsoleTextAttribute(hOutput, wOldAttribute);
 
 	log << sOut;

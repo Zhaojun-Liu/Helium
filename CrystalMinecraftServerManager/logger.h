@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef _H_LOGGER
+#define _H_LOGGER
+
 #include<string>
 #include<ctime>
 #include<Windows.h>
@@ -34,7 +37,6 @@ public:
 
 class HeliumOutput {
 public:
-	HeliumOutput();
 	int out(LPSTR sOut, WCHAR wTextAttribute);
 	int out(LPCSTR sOut, WCHAR wTextAttribute);
 private:
@@ -55,3 +57,5 @@ int Error(LPCSTR out);
 
 int Fatal(string out);
 int Fatal(LPCSTR out);
+
+#endif // !_H_LOGGER

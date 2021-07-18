@@ -1,11 +1,18 @@
 #pragma once
+
+#ifndef _H_PARSE
+#define _H_PARSE
+
 #define NULL 0
+
 #include<string>
 #include<map>
 #include<algorithm>
 #include<thread>
 #include"utils.h"
+
 using namespace std;
+
 typedef struct ServerStartEvent {
 	string port = NULL;
 } ServerStartEvent;
@@ -33,4 +40,4 @@ typedef struct PlayerInfoEvent {
 //[10:36:31] [Server thread/INFO]: Time elapsed: 15215 ms
 ServerStartedEvent ParseServerStarted(const char* content);
 
-
+#endif // !_H_PARSE
