@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CrystalMinecraftServerManager.cpp">
+    <ClCompile Include="Helium.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="utils.cpp">
@@ -33,6 +33,9 @@
     <ClCompile Include="commands.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="xmlutils.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
@@ -42,6 +45,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="commands.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="xmlutils.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

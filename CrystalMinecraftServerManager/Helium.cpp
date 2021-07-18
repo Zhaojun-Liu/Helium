@@ -5,10 +5,23 @@
 #include<iostream>
 #include<thread>
 #include<Windows.h>
+
+#include"tinyxml2-9.0.0/tinyxml2.h"
 #include"parse.h"
+#include"xmlutils.h"
+#include"logger.h"
 
 using namespace std;
+using namespace tinyxml2;
 
+#pragma endregion
+
+#pragma region Macros
+#define PROJECT_NAME_STR "Helium"
+#define PROJECT_VER_STR "0.4.0"
+#define PROJECT_DEVSTAT "Pre-Alpha"
+
+#define CFG_FILENAME "HeliumConfig.xml"
 #pragma endregion
 
 #pragma region Constants
@@ -99,21 +112,25 @@ typedef int (*pOnload)(int, int, void*);
 #pragma region Main
 int main()
 {
-    cout << "Hello World!\n";
+    SetConsoleTitle(PROJECT_NAME_STR);
+    
+    cout << PROJECT_NAME_STR << " " << PROJECT_VER_STR << " " << PROJECT_DEVSTAT << endl;
+    cout << "Copyright 2020-2021 Helium Devteam" << endl;
+    cout << "Licensed by MIT License" << endl;
+
+    tinyxml2::XMLDocument config;
+    tinyxml2::XMLElement* pRootEle;
+    if (!config.LoadFile(CFG_FILENAME)) {
+
+    }
+    pRootEle = config.RootElement();
+    if (pRootEle == NULL) {
+
+    }
+    cout << "Helium config file is loaded successfully" << endl;
+
     ServerStartedEvent e = ParseServerStarted("[10:36:31] [Server thread/INFO]: Time elapsed: 15215 ms");
     cout << "服务器已启动，用时" << e.itime << "ms." << endl;
     system("pause");
 }
 #pragma endregion
-
-
-// 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
-// 调试程序: F5 或调试 >“开始调试”菜单
-
-// 入门使用技巧: 
-//   1. 使用解决方案资源管理器窗口添加/管理文件
-//   2. 使用团队资源管理器窗口连接到源代码管理
-//   3. 使用输出窗口查看生成输出和其他消息
-//   4. 使用错误列表窗口查看错误
-//   5. 转到“项目”>“添加新项”以创建新的代码文件，或转到“项目”>“添加现有项”以将现有代码文件添加到项目
-//   6. 将来，若要再次打开此项目，请转到“文件”>“打开”>“项目”并选择 .sln 文件
