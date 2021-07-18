@@ -1,18 +1,15 @@
-﻿// CrystalMinecraftServerManager.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
-//
-#pragma region Includes
+﻿#pragma region Includes
 
 #include<iostream>
 #include<thread>
 #include<Windows.h>
 
-#include"tinyxml2-9.0.0/tinyxml2.h"
+#include"tinyxml2.h"
 #include"parse.h"
 #include"xmlutils.h"
 #include"logger.h"
 
 using namespace std;
-using namespace tinyxml2;
 
 #pragma endregion
 
@@ -113,21 +110,22 @@ typedef int (*pOnload)(int, int, void*);
 int main()
 {
     SetConsoleTitle(PROJECT_NAME_STR);
-    
-    cout << PROJECT_NAME_STR << " " << PROJECT_VER_STR << " " << PROJECT_DEVSTAT << endl;
-    cout << "Copyright 2020-2021 Helium Devteam" << endl;
-    cout << "Licensed by MIT License" << endl;
+    string pns = PROJECT_NAME_STR;
+
+    Info(pns.append(" ").append(PROJECT_VER_STR).append(" ").append(PROJECT_DEVSTAT));
+    Info("Copyright 2020-2021 Helium Devteam");
+    Info("Licensed by MIT License");
 
     tinyxml2::XMLDocument config;
     tinyxml2::XMLElement* pRootEle;
     if (!config.LoadFile(CFG_FILENAME)) {
-
+        CreateConfigFile();
     }
     pRootEle = config.RootElement();
     if (pRootEle == NULL) {
 
     }
-    cout << "Helium config file is loaded successfully" << endl;
+    Debug("Helium config file is loaded successfully");
 
     ServerStartedEvent e = ParseServerStarted("[10:36:31] [Server thread/INFO]: Time elapsed: 15215 ms");
     cout << "服务器已启动，用时" << e.itime << "ms." << endl;

@@ -140,6 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="commands.cpp" />
     <ClCompile Include="Helium.cpp" />
     <ClCompile Include="logger.cpp" />
@@ -149,6 +150,7 @@
     <ClCompile Include="xmlutils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="commands.h" />
     <ClInclude Include="parse.h" />
     <ClInclude Include="utils.h" />

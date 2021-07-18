@@ -40,3 +40,18 @@ public:
 private:
 	LogFile log;
 };
+
+int Debug(string out);
+int Debug(LPCSTR out);
+
+int Info(string out);
+int Info(LPCSTR out);
+
+int Warning(string out);
+int Warning(LPCSTR out);
+
+int Error(string out);
+int Error(LPCSTR out);
+
+int Fatal(string out);
+int Fatal(LPCSTR out);

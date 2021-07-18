@@ -7,13 +7,14 @@ LogFile::LogFile()
 		char time[64], curdir[MAX_PATH];
 		strftime(time, sizeof(time), "%Y-%m-%d-%H-%M-%S", localtime(&t));
 		string _logfilename;
-		_logfilename.append(time).append(".log");
+		_logfilename.append(LOG_DIR).append("\\").append(time).append(".log");
 		logfilename = _logfilename;
 
 		GetCurrentDirectory(sizeof(curdir), curdir);
+		strcat(curdir, "\\");
 		strcat(curdir, LOG_DIR);
 		if (!PathIsDirectory(curdir)) {
-			CreateDirectory(curdir, NULL);
+			CreateDirectory(LOG_DIR, NULL);
 		}
 
 		logfilehandle = CreateFile(
@@ -61,12 +62,13 @@ int HeliumOutput::out(LPSTR sOut, WCHAR wTextAttribute)
 	HANDLE hOutput;
 	CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
 	WORD wOldAttribute;
-	DWORD dbWritten;
+	DWORD dbWritten, temp;
 	hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
 	GetConsoleScreenBufferInfo(hOutput, &csbiInfo);
 	wOldAttribute = csbiInfo.wAttributes;
 	SetConsoleTextAttribute(hOutput, wTextAttribute);
 	WriteFile(hOutput, sOut, lstrlen(sOut), &dbWritten, NULL);
+	WriteFile(hOutput, "\r\n", lstrlen("\r\n"), &temp, NULL);
 	SetConsoleTextAttribute(hOutput, wOldAttribute);
 
 	log << sOut;
@@ -79,15 +81,53 @@ int HeliumOutput::out(LPCSTR sOut, WCHAR wTextAttribute)
 	HANDLE hOutput;
 	CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
 	WORD wOldAttribute;
-	DWORD dbWritten;
+	DWORD dbWritten, temp;
 	hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
 	GetConsoleScreenBufferInfo(hOutput, &csbiInfo);
 	wOldAttribute = csbiInfo.wAttributes;
 	SetConsoleTextAttribute(hOutput, wTextAttribute);
 	WriteFile(hOutput, sOut, lstrlen(sOut), &dbWritten, NULL);
+	WriteFile(hOutput, "\r\n", lstrlen("\r\n"), &temp, NULL);
 	SetConsoleTextAttribute(hOutput, wOldAttribute);
 
 	log << sOut;
 
 	return dbWritten;
+}
+
+HeliumOutput output;
+
+int Debug(string out) {
+	return Debug(out.c_str());
+}
+int Debug(LPCSTR out) {
+	return output.out(out, WHITE);
+}
+
+int Info(string out) {
+	return Info(out.c_str());
+}
+int Info(LPCSTR out) {
+	return output.out(out, WHITE|FOREGROUND_INTENSITY);
+}
+
+int Warning(string out) {
+	return Warning(out.c_str());
+}
+int Warning(LPCSTR out) {
+	return output.out(out, YELLOW_FOREGEOUND);
+}
+
+int Error(string out) {
+	return Error(out.c_str());
+}
+int Error(LPCSTR out) {
+	return output.out(out, RED_FOREGROUND);
+}
+
+int Fatal(string out) {
+	return Fatal(out.c_str());
+}
+int Fatal(LPCSTR out) {
+	return output.out(out, RED_FOREGROUND);
 }
