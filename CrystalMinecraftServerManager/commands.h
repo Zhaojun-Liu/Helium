@@ -10,6 +10,8 @@
 
 using namespace std;
 
+#define MAX_EXECUTORS 64
+
 #define EMPTY_CMD "EMPTY_CMD"
 
 #define CMD_TYPE_BUILTINCMD 0
@@ -62,6 +64,29 @@ public:
 	int DeleteCommand(string command);
 	int DeleteCommand(int index);
 
+	int SetStatus(int stat);
+	int GetStatus();
+
+	int SetType(int type);
+	int GetType();
+
+	int SetTS(int ts);
+	int GetTS();
+
+	int SetCurrIndex(int index);
+	int GetCurrIndex();
+
+	int SetExecutor(int execindex);
+	int GetExecutor();
+
+	int SetQID(int qid);
+	int GetQID();
+
+	bool IsUnstoppable();
+	bool IsImmutable();
+	bool IsCanBeRestarted();
+	bool IsControlledByExecutor();
+
 	bool operator== (CommandQueue queue);
 private:
 	vector<CommandInstance> _cmdqueue;
@@ -73,6 +98,7 @@ private:
 	int timeslice;
 	int currentindex;
 	int executorindex;
+	int qid;
 
 	bool unstoppable;
 	bool immutable;
@@ -94,14 +120,18 @@ class QueueExecutor {
 public:
 	QueueExecutor();
 	int StartExecutorThread();
+	int index;
 private:
+	int qid[];
 	int ExecutorThread();
 };
 
-int StartQueueExecuting();
+int StartQueueExecuting(int exec);
 int DeleteQueue(CommandQueue queue);
 int DeleteRunnableQueue(CommandQueue queue);
 int NewCommandFromConsole(LPCSTR cmd);
+int CreateQueueForShell();
+int NewQID();
 
 bool isCommand(LPCSTR cmd);
 
