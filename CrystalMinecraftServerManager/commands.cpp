@@ -282,7 +282,8 @@ int ExecutorThread()
 int StartQueueExecuting(int exec)
 {
 	for (int i = 0; i < exec; i++) {
-		Executors.push_back(*(new thread(ExecutorThread)));
+		thread th(ExecutorThread);
+		Executors.push_back(th);
 		Executors.back().detach();
 	}
 	return 0;
