@@ -3,7 +3,7 @@
 #include<iostream>
 #include<Windows.h>
 
-#include"shell.h"
+
 #include"logger.h"
 #include"tinyxml2.h"
 #include"parse.h"
@@ -126,8 +126,7 @@ int main()
 
     }
     Debug("Helium config file is loaded successfully\r\n");
-
-    StartShell();
+    
 
     while (true);
 
