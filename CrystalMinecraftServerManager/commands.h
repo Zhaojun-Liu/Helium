@@ -26,6 +26,9 @@ using namespace std;
 #define QUEUE_STATUS_TERMINATED 4
 #define QUEUE_STATUS_SUSPENDED 5
 
+#define QUEUE_TYPE_NORMAL 0
+#define QUEUE_TYPE_SHELL 1
+
 class CommandInstance {
 public:
 	CommandInstance();
@@ -54,6 +57,8 @@ public:
 	int Queue_Suspend();
 	int Queue_Resume();
 	int Queue_Sleep(int slptime);
+
+	int Reinitialize();
 
 	int LoadCommandQueueFromFile(string filename);
 	int DumpCommandQueueToFile();
@@ -87,6 +92,11 @@ public:
 	bool IsCanBeRestarted();
 	bool IsControlledByExecutor();
 
+	bool SetUnstoppable(bool unstoppable);
+	bool SetImmutable(bool immutable);
+	bool SetCanBeRestarted(bool restart);
+	bool SetControlledByExecutor(bool cbe);
+
 	bool operator== (CommandQueue queue);
 private:
 	vector<CommandInstance> _cmdqueue;
@@ -116,16 +126,8 @@ private:
 		a即为当前执行时间的权重,而(1-a)即为历史执行时间的权重,一般选择为1/2,在配置文件中给出选项.
 		同时执行者线程比较当前队列所需执行时间,若超过t1,则适当减少其a,少于t1,则适当增加其a.
 */
-class QueueExecutor {
-public:
-	QueueExecutor();
-	int StartExecutorThread();
-	int index;
-private:
-	int qid[];
-	int ExecutorThread();
-};
 
+int ExecutorThread();
 int StartQueueExecuting(int exec);
 int DeleteQueue(CommandQueue queue);
 int DeleteRunnableQueue(CommandQueue queue);

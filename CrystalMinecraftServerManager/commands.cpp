@@ -2,7 +2,7 @@
 
 int empty_queue_counter = 0;
 
-vector<QueueExecutor> Executors;
+vector<thread> Executors;
 vector<CommandQueue> CommandQueues;
 vector<CommandQueue> RunnableCommandQueues;
 
@@ -20,7 +20,7 @@ CommandInstance::CommandInstance(string command, int type)
 	if (CMD_TYPE_BUILTINCMD <= type || type <= CMD_TYPE_DONOTHING)
 		this->cmdtype = type;
 	else
-		;
+		this->cmdtype = CMD_TYPE_DONOTHING;
 }
 
 string CommandInstance::GetCmd()
@@ -68,16 +68,24 @@ int CommandInstance::ClearExecuteCounter()
 
 CommandQueue::CommandQueue()
 {
-	CommandInstance cmdins;
-	this->InsertCommand(cmdins);
 	this->queuename = "EMPTY_QUEUE_" + empty_queue_counter;
 	this->qid = NewQID();
+	this->controlbyexecutor = true;
+	this->currentindex = 0;
+	this->immutable = false;
+	this->queuestatus = QUEUE_STATUS_LOADING;
+	this->queuetype = QUEUE_TYPE_NORMAL;
+	this->unstoppable = false;
+	this->restart = false;
 	empty_queue_counter++;
 	CommandQueues.push_back(*this);
 }
 
 int CommandQueue::Queue_Suspend()
 {
+	if (this->unstoppable == true) {
+		return -1;
+	}
 	this->queuestatus = QUEUE_STATUS_SUSPENDED;
 	DeleteRunnableQueue(*this);
 	return 0;
@@ -85,15 +93,23 @@ int CommandQueue::Queue_Suspend()
 
 int CommandQueue::Queue_Resume()
 {
-	this->queuestatus = QUEUE_STATUS_READY;
-	RunnableCommandQueues.push_back(*this);
-	return 0;
+	if (this->unstoppable == false) {
+		this->queuestatus = QUEUE_STATUS_READY;
+		RunnableCommandQueues.push_back(*this);
+		return 0;
+	}
+	return -1;
 }
 
 int CommandQueue::Queue_Sleep(int slptime)
 {
 	this->queuestatus = QUEUE_STATUS_SLEEPING;
 	DeleteRunnableQueue(*this);
+	return 0;
+}
+
+int CommandQueue::Reinitialize()
+{
 	return 0;
 }
 
@@ -144,6 +160,7 @@ int CommandQueue::DumpCommandQueueToFile()
 
 int CommandQueue::InsertCommand(CommandInstance command)
 {
+	this->_cmdqueue.push_back(command);
 	return 0;
 }
 
@@ -233,32 +250,40 @@ bool CommandQueue::IsCanBeRestarted() {
 bool CommandQueue::IsControlledByExecutor() {
 	return this->controlbyexecutor;
 }
+
+bool CommandQueue::SetUnstoppable(bool unstoppable) {
+	this->unstoppable = unstoppable;
+	return unstoppable;
+}
+bool CommandQueue::SetImmutable(bool immutable) {
+	this->immutable = immutable;
+	return immutable;
+}
+bool CommandQueue::SetCanBeRestarted(bool restart) {
+	this->restart = restart;
+	return restart;
+}
+bool CommandQueue::SetControlledByExecutor(bool cbe) {
+	this->controlbyexecutor = cbe;
+	return cbe;
+}
+
 #pragma endregion
 
 #pragma region Executor
 
-QueueExecutor::QueueExecutor()
-{
-}
-
-int QueueExecutor::StartExecutorThread()
-{
-	return 0;
-}
-
-int QueueExecutor::ExecutorThread()
-{
-	return 0;
-}
-
 #pragma endregion
+
+int ExecutorThread()
+{
+	return 0;
+}
 
 int StartQueueExecuting(int exec)
 {
 	for (int i = 0; i < exec; i++) {
-		QueueExecutor newexec;
-		newexec.index = i;
-		Executors.push_back(newexec);
+		Executors.push_back(*(new thread(ExecutorThread)));
+		Executors.back().detach();
 	}
 	return 0;
 }
@@ -294,6 +319,11 @@ int NewCommandFromConsole(LPCSTR cmd)
 int CreateQueueForShell()
 {
 	CommandQueue shellqueue;
+	shellqueue.SetCanBeRestarted(false);
+	shellqueue.SetControlledByExecutor(false);
+	shellqueue.SetImmutable(false);
+	shellqueue.SetUnstoppable(true);
+	shellqueue.SetType(QUEUE_TYPE_SHELL);
 	return 0;
 }
 
