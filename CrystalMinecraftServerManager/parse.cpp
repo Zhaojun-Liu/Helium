@@ -9,3 +9,5 @@ ServerStartedEvent ParseServerStarted(const char* content) {
 	e.itime = strtol(m.at(6).c_str(), &str, 10);
 	return e;
 }
+
+

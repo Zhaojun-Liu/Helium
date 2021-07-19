@@ -2,7 +2,7 @@
 //不要随意调换include顺序 awa
 #include<iostream>
 #include<Windows.h>
-
+#include<sstream>
 
 #include"logger.h"
 #include"tinyxml2.h"
@@ -34,6 +34,7 @@ typedef int (*pOnload)(int, int, void*);
 #pragma endregion
 
 #pragma region Var
+Logger logger;
 #pragma endregion
 
 #pragma region Server
@@ -106,15 +107,8 @@ typedef int (*pOnload)(int, int, void*);
 
 #pragma endregion
 
-#pragma region Main
-int main()
-{
-    SetConsoleTitle(PROJECT_NAME_STR);
-    string pns = PROJECT_NAME_STR;
-    pns.append(" ").append(PROJECT_VER_STR).append(" ").append(PROJECT_DEVSTAT);
-    pns.append("\r\n").append("Copyright 2020-2021 Helium Devteam").append("\r\n").append("Licensed by MIT License").append("\r\n");
-
-    Info(pns);
+#pragma region Config
+int readCfg() {
 
     tinyxml2::XMLDocument config;
     tinyxml2::XMLElement* pRootEle;
@@ -125,13 +119,31 @@ int main()
     if (pRootEle == NULL) {
 
     }
-    Debug("Helium config file is loaded successfully\r\n");
+    return 0;
+}
+#pragma endregion
+
+
+#pragma region Main
+int main()
+{
+    SetConsoleTitle(PROJECT_NAME_STR);
+    string pns = PROJECT_NAME_STR;
+    pns.append(" ").append(PROJECT_VER_STR).append(" ").append(PROJECT_DEVSTAT);
+    cout << pns << endl;
     
-
-    while (true);
-
     ServerStartedEvent e = ParseServerStarted("[10:36:31] [Server thread/INFO]: Time elapsed: 15215 ms");
-    cout << "服务器已启动，用时" << e.itime << "ms." << endl;
+    ostringstream ostr;
+    ostr << "服务器已启动，用时" << e.itime << "ms\n";
+    logger.info(ostr.str().c_str());
+    logger.warn(ostr.str().c_str());
+    logger.error(ostr.str().c_str());
+    logger.fatal(ostr.str().c_str());
+    logger.setTimeStamp(DISABLE_TIME_STAMP);
+    logger.info(ostr.str().c_str());
+    logger.warn(ostr.str().c_str());
+    logger.error(ostr.str().c_str());
+    logger.fatal(ostr.str().c_str());
     system("pause");
 }
 #pragma endregion
