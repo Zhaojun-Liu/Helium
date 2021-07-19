@@ -14,7 +14,10 @@
 using namespace std;
 
 typedef struct ServerStartEvent {
-	string port = NULL;
+	LONG port = NULL;
+	ServerStartEvent(int port_) {
+		this->port = port_;
+	}
 } ServerStartEvent;
 
 typedef struct ServerStartedEvent {
@@ -42,5 +45,5 @@ typedef struct PlayerInfoEvent {
 
 //[10:36:31] [Server thread/INFO]: Time elapsed: 15215 ms
 ServerStartedEvent ParseServerStarted(const char* content);
-
+ServerStartEvent ParseServerStart(const char* content);
 #endif // !_H_PARSE

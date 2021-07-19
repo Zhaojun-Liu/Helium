@@ -2,7 +2,7 @@
 
 #ifndef _H_LOGGER
 #define _H_LOGGER
-
+#include<direct.h>
 #include<string>
 #include<ctime>
 #include<Windows.h>

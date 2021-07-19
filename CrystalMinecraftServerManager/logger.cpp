@@ -11,7 +11,9 @@ int HeliumOutput::write(string outstr)
 		ostringstream s;
 		char path[MAX_PATH];
 		GetCurrentDirectory(MAX_PATH, path);
-		s << path << "\\logs\\" << time << ".log";
+		s << path << "\\logs";
+		_mkdir(s.str().c_str());
+		s << "\\" << time << ".log";
 		fstream file(s.str(), fstream::app);
 		if (file.is_open()) {
 			file.write(outstr.c_str(), outstr.length());

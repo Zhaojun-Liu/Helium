@@ -131,7 +131,9 @@ int main()
     string pns = PROJECT_NAME_STR;
     pns.append(" ").append(PROJECT_VER_STR).append(" ").append(PROJECT_DEVSTAT);
     cout << pns << endl;
-    
+    ostringstream ost;
+    ServerStartEvent ev = ParseServerStart("[10:36:14] [Server thread/INFO]: Starting Minecraft server on *:25500");
+    ost << "服务器将在端口" << ev.port << "启动\n";
     ServerStartedEvent e = ParseServerStarted("[10:36:31] [Server thread/INFO]: Time elapsed: 15215 ms");
     ostringstream ostr;
     ostr << "服务器已启动，用时" << e.itime << "ms\n";
@@ -144,6 +146,16 @@ int main()
     logger.warn(ostr.str().c_str());
     logger.error(ostr.str().c_str());
     logger.fatal(ostr.str().c_str());
+    logger.setTimeStamp(ENABLE_TIME_STAMP);
+    logger.info(ost.str().c_str());
+    logger.warn(ost.str().c_str());
+    logger.error(ost.str().c_str());
+    logger.fatal(ost.str().c_str());
+    logger.setTimeStamp(DISABLE_TIME_STAMP);
+    logger.info(ost.str().c_str());
+    logger.warn(ost.str().c_str());
+    logger.error(ost.str().c_str());
+    logger.fatal(ost.str().c_str());
     system("pause");
 }
 #pragma endregion
