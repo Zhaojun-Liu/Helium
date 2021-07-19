@@ -29,20 +29,6 @@ static bool isInitalized = false;
 static string logfilename;
 static HANDLE logfilehandle;
 
-class LogFile {
-public:
-	LogFile();
-	int operator<< (string outstr);
-};
-
-class HeliumOutput {
-public:
-	int out(LPSTR sOut, WCHAR wTextAttribute);
-	int out(LPCSTR sOut, WCHAR wTextAttribute);
-private:
-	LogFile log;
-};
-
 int Debug(string out);
 int Debug(LPCSTR out);
 
@@ -57,5 +43,19 @@ int Error(LPCSTR out);
 
 int Fatal(string out);
 int Fatal(LPCSTR out);
+
+class LogFile {
+public:
+	LogFile();
+	int operator<< (string outstr);
+};
+
+class HeliumOutput {
+public:
+	int out(LPSTR sOut, WCHAR wTextAttribute);
+	int out(LPCSTR sOut, WCHAR wTextAttribute);
+private:
+	LogFile log;
+};
 
 #endif // !_H_LOGGER

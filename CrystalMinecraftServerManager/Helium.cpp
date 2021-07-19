@@ -3,8 +3,8 @@
 #include<iostream>
 #include<Windows.h>
 
-#include"logger.h"
 #include"shell.h"
+#include"logger.h"
 #include"tinyxml2.h"
 #include"parse.h"
 #include"xmlutils.h"

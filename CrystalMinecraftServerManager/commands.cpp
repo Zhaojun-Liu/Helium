@@ -1,7 +1,7 @@
 #include"commands.h"
 
 int empty_queue_counter = 0;
-thread executors[MAX_EXECUTORS];
+
 vector<QueueExecutor> Executors;
 vector<CommandQueue> CommandQueues;
 vector<CommandQueue> RunnableCommandQueues;
@@ -172,17 +172,77 @@ bool CommandQueue::operator==(CommandQueue queue)
 
 #pragma endregion
 
+#pragma region CmdQueueAttrs
+int CommandQueue::SetStatus(int stat) {
+	this->queuestatus = stat;
+	return stat;
+}
+int CommandQueue::GetStatus() {
+	return this->queuestatus;
+}
+
+int CommandQueue::SetType(int type) {
+	this->queuetype = type;
+	return type;
+}
+int CommandQueue::GetType() {
+	return this->queuetype;
+}
+
+int CommandQueue::SetTS(int ts) {
+	this->timeslice = ts;
+	return ts;
+}
+int CommandQueue::GetTS() {
+	return this->timeslice;
+}
+
+int CommandQueue::SetCurrIndex(int index) {
+	this->currentindex = index;
+	return index;
+}
+int CommandQueue::GetCurrIndex() {
+	return this->currentindex;
+}
+
+int CommandQueue::SetExecutor(int execindex) {
+	this->executorindex = execindex;
+	return execindex;
+}
+int CommandQueue::GetExecutor() {
+	return this->executorindex;
+}
+
+int CommandQueue::SetQID(int qid) {
+	this->qid = qid;
+	return qid;
+}
+int CommandQueue::GetQID() {
+	return this->qid;
+}
+
+bool CommandQueue::IsUnstoppable() {
+	return this->unstoppable;
+}
+bool CommandQueue::IsImmutable() {
+	return this->immutable;
+}
+bool CommandQueue::IsCanBeRestarted() {
+	return this->restart;
+}
+bool CommandQueue::IsControlledByExecutor() {
+	return this->controlbyexecutor;
+}
+#pragma endregion
+
 #pragma region Executor
 
 QueueExecutor::QueueExecutor()
 {
-	Executors.push_back(*this);
 }
 
 int QueueExecutor::StartExecutorThread()
 {
-	thread execthread((this->ExecutorThread));
-	executors[this->index] =  ;
 	return 0;
 }
 
@@ -198,6 +258,7 @@ int StartQueueExecuting(int exec)
 	for (int i = 0; i < exec; i++) {
 		QueueExecutor newexec;
 		newexec.index = i;
+		Executors.push_back(newexec);
 	}
 	return 0;
 }
@@ -226,6 +287,7 @@ int DeleteRunnableQueue(CommandQueue queue)
 
 int NewCommandFromConsole(LPCSTR cmd)
 {
+
 	return 0;
 }
 
