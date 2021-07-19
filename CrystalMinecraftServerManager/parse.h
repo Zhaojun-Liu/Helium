@@ -18,14 +18,17 @@ typedef struct ServerStartEvent {
 } ServerStartEvent;
 
 typedef struct ServerStartedEvent {
-	size_t itime;
-	ServerStartedEvent(size_t itime) {
+	long itime;
+	ServerStartedEvent(long itime) {
 		this->itime = itime;
 	}
 }ServerStartedEvent;
 
 typedef struct ServerStopEvent {
-
+	int exitcode = 0;
+	ServerStopEvent(int code) {
+		this->exitcode = code;
+	}
 } ServerStopEvent;
 
 typedef struct ServerInfoEvent {

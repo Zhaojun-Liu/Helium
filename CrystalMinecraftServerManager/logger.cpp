@@ -1,56 +1,106 @@
 #include"logger.h"
 
-LogFile::LogFile()
+
+
+int HeliumOutput::write(string outstr)
 {
-	if (!isInitalized) {
+	
 		time_t t = time(0);
-		char time[64], curdir[MAX_PATH];
-		strftime(time, sizeof(time), "%Y-%m-%d-%H-%M-%S", localtime(&t));
-		string _logfilename;
-		_logfilename.append(LOG_DIR).append("\\").append(time).append(".log");
-		logfilename = _logfilename;
-
-		GetCurrentDirectory(sizeof(curdir), curdir);
-		strcat(curdir, "\\");
-		strcat(curdir, LOG_DIR);
-		if (!PathIsDirectory(curdir)) {
-			CreateDirectory(LOG_DIR, NULL);
+		char time[64];
+		strftime(time, sizeof(time), "%Y-%m-%d", localtime(&t));
+		ostringstream s;
+		char path[MAX_PATH];
+		GetCurrentDirectory(MAX_PATH, path);
+		s << path << "\\logs\\" << time << ".log";
+		fstream file(s.str(), fstream::app);
+		if (file.is_open()) {
+			file.write(outstr.c_str(), outstr.length());
+			file.flush();
+			file.close();
 		}
-
-		logfilehandle = CreateFile(
-			_logfilename.c_str(),
-			GENERIC_READ | GENERIC_WRITE,
-			FILE_SHARE_WRITE,
-			NULL,
-			CREATE_NEW,
-			FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN,
-		    NULL
-			);
-		if (logfilehandle == NULL) {
-			isInitalized = false;
-			return;
-		}
-		else {
-			isInitalized = true;
-			return;
-		}
-	}
-	else {
-		return ;
-	}
+		return 0;
 }
 
-int LogFile::operator<<(string outstr)
+void HeliumOutput::setTimeStamp(bool stat)
 {
-	DWORD writedbytes;
+	this->enableTimeStamp = stat;
+}
 
-	return WriteFile(
-		logfilehandle,
-		outstr.c_str(),
-		outstr.size(),
-		&writedbytes,
-		NULL
-		);
+HeliumOutput::HeliumOutput()
+{
+	this->enableTimeStamp = true;
+}
+
+int HeliumOutput::info(const char* content)
+{
+	string content_;
+	time_t t = time(0);
+	char time[64];
+	strftime(time, sizeof(time), "%Y-%m-%d-%H-%M-%S", localtime(&t));
+	if(enableTimeStamp) content_ += time;
+	content_ += " [INFO] ";
+	content_ += content;
+	this->write(content_);
+	int iWrote = 0;
+	if (enableTimeStamp)iWrote += this->out(time, WHITE);
+	iWrote += this->out(" [INFO] ", GREEN_FOREGROUND);
+	iWrote += this->out(content, WHITE);
+	return iWrote;
+}
+
+int HeliumOutput::warn(const char* content)
+{
+	string content_;
+	time_t t = time(0);
+	char time[64];
+	strftime(time, sizeof(time), "%Y-%m-%d-%H-%M-%S", localtime(&t));
+	if (enableTimeStamp) content_ += time;
+	content_ += " [WARN] ";
+	content_ += content;
+	this->write(content_);
+	int iWrote = 0;
+	if (enableTimeStamp) iWrote += this->out(time, WHITE);
+	iWrote += this->out(" [WARN] ", YELLOW_FOREGEOUND);
+	iWrote += this->out(content, WHITE);
+	return iWrote;
+}
+
+int HeliumOutput::error(const char* content)
+{
+	string content_;
+	time_t t = time(0);
+	char time[64];
+	strftime(time, sizeof(time), "%Y-%m-%d-%H-%M-%S", localtime(&t));
+	if (enableTimeStamp) content_ += time;
+	content_ += " [ERROR] ";
+	content_ += content;
+	this->write(content_);
+	int iWrote = 0;
+	if (enableTimeStamp) iWrote += this->out(time, WHITE);
+	iWrote += this->out(" [ERROR] ", RED_FOREGROUND);
+	iWrote += this->out(content, WHITE);
+	return iWrote;
+}
+
+int HeliumOutput::fatal(const char* content)
+{
+	string content_;
+	time_t t = time(0);
+	char time[64];
+	strftime(time, sizeof(time), "%Y-%m-%d-%H-%M-%S", localtime(&t));
+	if (enableTimeStamp) content_ += time;
+	content_ += " [FATAL] ";
+	content_ += content;
+	this->write(content_);
+	int iWrote = 0;
+	if (enableTimeStamp == true) {
+		iWrote += this->out(content_.c_str(), RED_FOREGROUND);
+	}
+	else {
+		iWrote += this->out(" [FATAL] ", RED_FOREGROUND);
+		iWrote += this->out(content, RED_FOREGROUND);
+	}
+	return iWrote;
 }
 
 int HeliumOutput::out(LPSTR sOut, WCHAR wTextAttribute)
@@ -58,17 +108,14 @@ int HeliumOutput::out(LPSTR sOut, WCHAR wTextAttribute)
 	HANDLE hOutput;
 	CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
 	WORD wOldAttribute;
-	DWORD dbWritten, temp;
+	DWORD dwWritten, temp;
 	hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
 	GetConsoleScreenBufferInfo(hOutput, &csbiInfo);
 	wOldAttribute = csbiInfo.wAttributes;
 	SetConsoleTextAttribute(hOutput, wTextAttribute);
-	WriteFile(hOutput, sOut, lstrlen(sOut), &dbWritten, NULL);
+	WriteFile(hOutput, sOut, lstrlen(sOut), &dwWritten, NULL);
 	SetConsoleTextAttribute(hOutput, wOldAttribute);
-
-	log << sOut;
-
-	return dbWritten;
+	return dwWritten;
 }
 
 int HeliumOutput::out(LPCSTR sOut, WCHAR wTextAttribute)
@@ -76,52 +123,12 @@ int HeliumOutput::out(LPCSTR sOut, WCHAR wTextAttribute)
 	HANDLE hOutput;
 	CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
 	WORD wOldAttribute;
-	DWORD dbWritten, temp;
+	DWORD dwWritten, temp;
 	hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
 	GetConsoleScreenBufferInfo(hOutput, &csbiInfo);
 	wOldAttribute = csbiInfo.wAttributes;
 	SetConsoleTextAttribute(hOutput, wTextAttribute);
-	WriteFile(hOutput, sOut, lstrlen(sOut), &dbWritten, NULL);
+	WriteFile(hOutput, sOut, lstrlen(sOut), &dwWritten, NULL);
 	SetConsoleTextAttribute(hOutput, wOldAttribute);
-
-	log << sOut;
-
-	return dbWritten;
-}
-
-HeliumOutput output;
-
-int Debug(string out) {
-	return Debug(out.c_str());
-}
-int Debug(LPCSTR out) {
-	return output.out(out, WHITE);
-}
-
-int Info(string out) {
-	return Info(out.c_str());
-}
-int Info(LPCSTR out) {
-	return output.out(out, WHITE|FOREGROUND_INTENSITY);
-}
-
-int Warning(string out) {
-	return Warning(out.c_str());
-}
-int Warning(LPCSTR out) {
-	return output.out(out, YELLOW_FOREGEOUND);
-}
-
-int Error(string out) {
-	return Error(out.c_str());
-}
-int Error(LPCSTR out) {
-	return output.out(out, RED_FOREGROUND);
-}
-
-int Fatal(string out) {
-	return Fatal(out.c_str());
-}
-int Fatal(LPCSTR out) {
-	return output.out(out, RED_FOREGROUND);
+	return dwWritten;
 }

@@ -8,7 +8,8 @@
 #include<Windows.h>
 #include<Shlwapi.h>
 #include<iostream>
-
+#include<fstream>
+#include<sstream>
 #pragma comment(lib,"shlwapi.lib")
 
 #define LOG_DIR "logs"
@@ -21,41 +22,27 @@
 #define PURPLE_FOREGROUND FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_BLUE
 #define YELLOW_FOREGEOUND FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_RED
 #define LIME_FOREGROUND FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_BLUE
+#define ENABLE_TIME_STAMP true
+#define DISABLE_TIME_STAMP false
 #pragma endregion
 
 using namespace std;
 
-static bool isInitalized = false;
-static string logfilename;
-static HANDLE logfilehandle;
-
-int Debug(string out);
-int Debug(LPCSTR out);
-
-int Info(string out);
-int Info(LPCSTR out);
-
-int Warning(string out);
-int Warning(LPCSTR out);
-
-int Error(string out);
-int Error(LPCSTR out);
-
-int Fatal(string out);
-int Fatal(LPCSTR out);
-
-class LogFile {
-public:
-	LogFile();
-	int operator<< (string outstr);
-};
 
 class HeliumOutput {
 public:
+	HeliumOutput();
+	int info(const char* content);
+	int warn(const char* content);
+	int error(const char* content);
+	int fatal(const char* content);
+	int write(string outstr);
+	void setTimeStamp(bool stat);
+private:
+	bool enableTimeStamp;
+	HANDLE hLogFile = NULL;
 	int out(LPSTR sOut, WCHAR wTextAttribute);
 	int out(LPCSTR sOut, WCHAR wTextAttribute);
-private:
-	LogFile log;
 };
-
+typedef HeliumOutput Logger;
 #endif // !_H_LOGGER
