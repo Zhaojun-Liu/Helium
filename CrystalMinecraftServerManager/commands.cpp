@@ -2,9 +2,10 @@
 
 int empty_queue_counter = 0;
 
-vector<thread> Executors;
+atomic<int> exaverage(0);
+
+thread* Executors[MAX_EXECUTORS] = { 0 };
 vector<CommandQueue> CommandQueues;
-vector<CommandQueue> RunnableCommandQueues;
 
 #pragma region CommandInstanceFunc
 
@@ -79,6 +80,8 @@ CommandQueue::CommandQueue()
 	this->restart = false;
 	empty_queue_counter++;
 	CommandQueues.push_back(*this);
+	this->_executor = new thread(ExecutorThread, this->qid);
+	this->_executor->detach();
 }
 
 int CommandQueue::Queue_Suspend()
@@ -87,15 +90,13 @@ int CommandQueue::Queue_Suspend()
 		return -1;
 	}
 	this->queuestatus = QUEUE_STATUS_SUSPENDED;
-	DeleteRunnableQueue(*this);
 	return 0;
 }
 
 int CommandQueue::Queue_Resume()
 {
 	if (this->unstoppable == false) {
-		this->queuestatus = QUEUE_STATUS_READY;
-		RunnableCommandQueues.push_back(*this);
+		this->queuestatus = QUEUE_STATUS_RUNNING;
 		return 0;
 	}
 	return -1;
@@ -104,7 +105,6 @@ int CommandQueue::Queue_Resume()
 int CommandQueue::Queue_Sleep(int slptime)
 {
 	this->queuestatus = QUEUE_STATUS_SLEEPING;
-	DeleteRunnableQueue(*this);
 	return 0;
 }
 
@@ -115,6 +115,7 @@ int CommandQueue::Reinitialize()
 
 int CommandQueue::LoadCommandQueueFromFile(string filename)
 {
+	this->queuestatus = QUEUE_STATUS_LOADING;
 	HANDLE queuefile;
 	int filesize;
 	DWORD readbytes;
@@ -270,21 +271,14 @@ bool CommandQueue::SetControlledByExecutor(bool cbe) {
 
 #pragma endregion
 
-#pragma region Executor
-
-#pragma endregion
-
-int ExecutorThread()
+int ExecutorThread(int qid)
 {
-	return 0;
-}
-
-int StartQueueExecuting(int exec)
-{
-	for (int i = 0; i < exec; i++) {
-		thread th(ExecutorThread);
-		Executors.push_back(th);
-		Executors.back().detach();
+	vector<CommandQueue>::iterator queueit = SearchQueueByQID(qid);
+	while (true) {
+		if (queueit->GetStatus() == QUEUE_STATUS_RUNNING) {
+			int index = queueit->GetCurrIndex();
+			string cmd = queueit->_cmdqueue[index].GetCmd();
+		}
 	}
 	return 0;
 }
@@ -295,17 +289,6 @@ int DeleteQueue(CommandQueue queue)
 	for (it = CommandQueues.begin(); it <= CommandQueues.end(); it++) {
 		if (*it == queue) {
 			CommandQueues.erase(it);
-		}
-	}
-	return 0;
-}
-
-int DeleteRunnableQueue(CommandQueue queue)
-{
-	vector<CommandQueue>::iterator it;
-	for (it = RunnableCommandQueues.begin(); it <= RunnableCommandQueues.end(); it++) {
-		if (*it == queue) {
-			RunnableCommandQueues.erase(it);
 		}
 	}
 	return 0;
@@ -339,6 +322,17 @@ int NewQID()
 		}
 	}
 	return newqid;
+}
+
+vector<CommandQueue>::iterator SearchQueueByQID(int qid)
+{
+	vector<CommandQueue>::iterator it;
+	for (it = CommandQueues.begin(); it <= CommandQueues.end(); it++) {
+		if (it->GetQID() == qid) {
+			return it;
+		}
+	}
+	return it;
 }
 
 bool isCommand(LPCSTR cmd)

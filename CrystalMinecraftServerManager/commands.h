@@ -7,10 +7,12 @@
 #include<string>
 #include<thread>	
 #include<Windows.h>
+#include<atomic>
 
 using namespace std;
 
-#define MAX_EXECUTORS 64
+#define MAX_EXECUTORS 2048
+#define MAX_CMD_QUEUE 2048
 
 #define EMPTY_CMD "EMPTY_CMD"
 
@@ -21,10 +23,9 @@ using namespace std;
 
 #define QUEUE_STATUS_RUNNING 0
 #define QUEUE_STATUS_SLEEPING 1
-#define QUEUE_STATUS_READY 2
-#define QUEUE_STATUS_LOADING 3
-#define QUEUE_STATUS_TERMINATED 4
-#define QUEUE_STATUS_SUSPENDED 5
+#define QUEUE_STATUS_LOADING 2
+#define QUEUE_STATUS_TERMINATED 3
+#define QUEUE_STATUS_SUSPENDED 4
 
 #define QUEUE_TYPE_NORMAL 0
 #define QUEUE_TYPE_SHELL 1
@@ -51,6 +52,7 @@ private:
 };
 
 class CommandQueue {
+	friend int ExecutorThread(int qid);
 public:
 	CommandQueue();
 
@@ -100,6 +102,7 @@ public:
 	bool operator== (CommandQueue queue);
 private:
 	vector<CommandInstance> _cmdqueue;
+	thread* _executor;
 
 	string queuename;
 
@@ -117,23 +120,18 @@ private:
 };
 
 /*
-调度算法概述:
-	回归轮转算法(Regressive Round-Robin)的变种:
-		执行开始,给定一个初始指令数a,每个执行的队列在执行完a条指令后让出执行者线程,同时通过测量全部队列每次执行a条指令的时间,
-		计算执行时间的指数平均.
-		即设t1为第n个执行所需时间,t2为下一次执行时间的预测值,τ为过去执行时间的指数平均,对于a(0<=a<=1),有:
-			t2 = a * t1 + ( 1 - a ) * τ
-		a即为当前执行时间的权重,而(1-a)即为历史执行时间的权重,一般选择为1/2,在配置文件中给出选项.
-		同时执行者线程比较当前队列所需执行时间,若超过t1,则适当减少其a,少于t1,则适当增加其a.
+草
+我又不是在写系统
+何必呢
+一比一模型yyds
 */
 
-int ExecutorThread();
-int StartQueueExecuting(int exec);
+int ExecutorThread(int qid);
 int DeleteQueue(CommandQueue queue);
-int DeleteRunnableQueue(CommandQueue queue);
 int NewCommandFromConsole(LPCSTR cmd);
 int CreateQueueForShell();
 int NewQID();
+vector<CommandQueue>::iterator SearchQueueByQID(int qid);
 
 bool isCommand(LPCSTR cmd);
 
