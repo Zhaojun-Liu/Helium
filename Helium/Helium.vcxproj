@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{15ffcbc5-577c-4160-98c1-5f00939dd130}</ProjectGuid>
+    <ProjectGuid>{95EFFF9A-74D3-4808-A30F-94B2971D043E}</ProjectGuid>
     <RootNamespace>CrystalMinecraftServerManager</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>Helium</ProjectName>
