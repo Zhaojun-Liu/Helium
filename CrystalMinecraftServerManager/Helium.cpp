@@ -19,6 +19,7 @@ using namespace std;
 #define PROJECT_DEVSTAT "Pre-Alpha"
 
 #define CFG_FILENAME "HeliumConfig.xml"
+#define gnsbn(name) GetNodeStringByName(pRootEle,name);
 #pragma endregion
 
 #pragma region Constants
@@ -35,6 +36,8 @@ typedef int (*pOnload)(int, int, void*);
 
 #pragma region Var
 Logger logger;
+string xms, xmx, serverdir, serverjar, plugindir, lang, handler, enabletimestamp, jvmoption, serveroption, zheshiyigelinshibianliangbuyaoshanchuxiexie;
+
 #pragma endregion
 
 #pragma region Server
@@ -112,13 +115,25 @@ int readCfg() {
 
     tinyxml2::XMLDocument config;
     tinyxml2::XMLElement* pRootEle;
+    
     if (!config.LoadFile(CFG_FILENAME)) {
         CreateConfigFile();
     }
     pRootEle = config.RootElement();
     if (pRootEle == NULL) {
-
+        return -114514;
     }
+    xmx = gnsbn("ServerMaxMem");
+    xms = gnsbn("ServerMinMem");
+    serverdir = gnsbn("ServerDirectory");
+    serverjar = gnsbn("ServerJarName");
+    serveroption = gnsbn("ServerOption");
+    jvmoption = gnsbn("JvmOption");
+    handler = gnsbn("Handler");
+    enabletimestamp = gnsbn("EnableTimeStamp");
+    lang = gnsbn("Language");
+    plugindir = gnsbn("PluginDirectory");
+    zheshiyigelinshibianliangbuyaoshanchuxiexie = "awa";
     return 0;
 }
 #pragma endregion

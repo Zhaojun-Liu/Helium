@@ -28,8 +28,14 @@ bool GetNodePointerByName(tinyxml2::XMLElement* pRootEle, const char* strNodeNam
 string GetNodeStringByName(tinyxml2::XMLElement* pRootEle, string strNodeName)
 {
 	tinyxml2::XMLElement* pReadEle;
-	GetNodePointerByName(pRootEle, strNodeName.c_str(), pReadEle);
-	return pReadEle->GetText();
+	if(!GetNodePointerByName(pRootEle, strNodeName.c_str(), pReadEle))
+		return pReadEle->GetText();
+	else
+	{
+		string v1;
+		v1 = "";
+		return v1;
+	}
 }
 
 int CreateConfigFile()
