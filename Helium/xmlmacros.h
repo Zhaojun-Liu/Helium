@@ -16,7 +16,7 @@ struct ConfigNode
 	variant<int, double, string, bool> var;
 };
 
-#define START_CONFIG_NODES_REGISTER() vector<ConfigNode> _confignodes_
+#define START_CONFIG_NODES_REGISTER(node) vector<node> _confignodes_
 #define ADD_CONFIG_NODE(nodenamestr, nodename, valuetype) ConfigNode _newnode_##nodename##_ = {nodenamestr, valuetype};\
 _confignodes_.push_back(_newnode_##nodename##_);
 #define VALUE_TYPE_INTEGER 0

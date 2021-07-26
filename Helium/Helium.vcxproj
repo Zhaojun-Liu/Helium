@@ -151,6 +151,7 @@
     <ClCompile Include="xmlutils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="confuses.h" />
     <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="commands.h" />
     <ClInclude Include="parse.h" />

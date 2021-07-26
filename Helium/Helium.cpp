@@ -1,5 +1,6 @@
 ﻿#pragma region Includes
 //不要随意调换include顺序 awa
+
 #define _SILENCE_CXX17_STRSTREAM_DEPRECATION_WARNING
 
 
@@ -12,7 +13,7 @@
 #include"parse.h"
 #include"xmlutils.h"
 #include"xmlmacros.h"
-
+#include "confuses.h"
 using namespace std;
 
 #pragma endregion
@@ -23,7 +24,7 @@ using namespace std;
 #define PROJECT_DEVSTAT "Pre-Alpha"
 
 #define CFG_FILENAME "HeliumConfig.xml"
-#define gnsbn(name) GetNodeStringByName(pRootEle,name);
+#define gnsbn(name) DuN(pRootEle,name);
 #pragma endregion
 
 #pragma region Constants
@@ -115,7 +116,7 @@ string xms, xmx, serverdir, serverjar, plugindir, lang, handler, enabletimestamp
 #pragma endregion
 
 #pragma region Config
-START_CONFIG_NODES_REGISTER();
+START_CONFIG_NODES_REGISTER(ConfigNode);
 
 int readCfg() {
 
