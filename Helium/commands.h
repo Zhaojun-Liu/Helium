@@ -55,6 +55,7 @@ class CommandQueue {
 	friend int ExecutorThread(int qid);
 public:
 	CommandQueue();
+	~CommandQueue();
 
 	int Queue_Suspend();
 	int Queue_Resume();

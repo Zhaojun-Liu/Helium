@@ -70,7 +70,11 @@ int CommandInstance::ClearExecuteCounter()
 CommandQueue::CommandQueue()
 {
 	this->queuename = "EMPTY_QUEUE_" + empty_queue_counter;
-	this->qid = NewQID();
+	auto nqid = NewQID();
+	if (nqid == -1) {
+		return;
+	}
+	this->qid = nqid;
 	this->controlbyexecutor = true;
 	this->currentindex = 0;
 	this->immutable = false;
@@ -82,6 +86,14 @@ CommandQueue::CommandQueue()
 	CommandQueues.push_back(*this);
 	this->_executor = new thread(ExecutorThread, this->qid);
 	this->_executor->detach();
+}
+
+CommandQueue::~CommandQueue()
+{
+	auto exechandle = this->_executor->native_handle();
+	if (!TerminateThread(exechandle, 0)) {
+
+	}
 }
 
 int CommandQueue::Queue_Suspend()
@@ -136,7 +148,7 @@ int CommandQueue::LoadCommandQueueFromFile(string filename)
 
 	filesize = GetFileSize(queuefile, NULL);
 	char* buf = new char[filesize];
-	memset(buf, '\0', sizeof(buf));
+	RtlFillMemory(buf, sizeof(buf), '\0');
 
 	if (!ReadFile(
 		queuefile,
@@ -321,7 +333,7 @@ int NewQID()
 			it = CommandQueues.begin();
 		}
 	}
-	return newqid;
+	return -1;
 }
 
 vector<CommandQueue>::iterator SearchQueueByQID(int qid)

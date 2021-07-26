@@ -1,5 +1,8 @@
 ﻿#pragma region Includes
 //不要随意调换include顺序 awa
+#define _SILENCE_CXX17_STRSTREAM_DEPRECATION_WARNING
+
+
 #include<iostream>
 #include<Windows.h>
 #include<sstream>
@@ -8,6 +11,7 @@
 #include"tinyxml2.h"
 #include"parse.h"
 #include"xmlutils.h"
+#include"xmlmacros.h"
 
 using namespace std;
 
@@ -111,7 +115,21 @@ string xms, xmx, serverdir, serverjar, plugindir, lang, handler, enabletimestamp
 #pragma endregion
 
 #pragma region Config
+START_CONFIG_NODES_REGISTER();
+
 int readCfg() {
+
+    ADD_CONFIG_NODE("ServerMaxMem", ServerMaxMem, VALUE_TYPE_INTEGER);
+    ADD_CONFIG_NODE("ServerMinMem", ServerMinMem, VALUE_TYPE_INTEGER);
+    ADD_CONFIG_NODE("ServerDirectory", ServerDirectory, VALUE_TYPE_STRING);
+    ADD_CONFIG_NODE("ServerJarName", ServerJarName, VALUE_TYPE_STRING);
+    ADD_CONFIG_NODE("JvmOption", JvmOption, VALUE_TYPE_STRING);
+    ADD_CONFIG_NODE("Handler", Handler, VALUE_TYPE_INTEGER);
+    ADD_CONFIG_NODE("EnableTimeStamp", EnableTimeStamp, VALUE_TYPE_BOOLEAN);
+    ADD_CONFIG_NODE("Language", Language, VALUE_TYPE_INTEGER);
+    ADD_CONFIG_NODE("PluginDirectory", PluginDirectory, VALUE_TYPE_STRING);
+    ADD_CONFIG_NODE("MaxQueue", MaxQueue, VALUE_TYPE_INTEGER);
+    ADD_CONFIG_NODE("ServerWorkingDirectory", ServerWorkingDirectory, VALUE_TYPE_STRING)
 
     tinyxml2::XMLDocument config;
     tinyxml2::XMLElement* pRootEle;
@@ -123,17 +141,21 @@ int readCfg() {
     if (pRootEle == NULL) {
         return -114514;
     }
-    xmx = gnsbn("ServerMaxMem");
-    xms = gnsbn("ServerMinMem");
-    serverdir = gnsbn("ServerDirectory");
-    serverjar = gnsbn("ServerJarName");
-    serveroption = gnsbn("ServerOption");
-    jvmoption = gnsbn("JvmOption");
-    handler = gnsbn("Handler");
-    enabletimestamp = gnsbn("EnableTimeStamp");
-    lang = gnsbn("Language");
-    plugindir = gnsbn("PluginDirectory");
-    zheshiyigelinshibianliangbuyaoshanchuxiexie = "awa";
+    for (vector<ConfigNode>::iterator it = _confignodes_.begin(); it <= _confignodes_.end(); it++) {
+        switch (it->valuetype)
+        {
+        case VALUE_TYPE_BOOLEAN:
+            break;
+        case VALUE_TYPE_DOUBLE:
+            break;
+        case VALUE_TYPE_INTEGER:
+            break;
+        case VALUE_TYPE_STRING:
+            break;
+        default:
+            break;
+        }
+    }
     return 0;
 }
 #pragma endregion
@@ -147,9 +169,9 @@ int main()
     pns.append(" ").append(PROJECT_VER_STR).append(" ").append(PROJECT_DEVSTAT);
     cout << pns << endl;
     ostringstream ost;
-    ServerStartEvent ev = ParseServerStart("[10:36:14] [Server thread/INFO]: Starting Minecraft server on *:25500");
+    auto ev = ParseServerStart("[10:36:14] [Server thread/INFO]: Starting Minecraft server on *:25500");
     ost << "服务器将在端口" << ev.port << "启动\n";
-    ServerStartedEvent e = ParseServerStarted("[10:36:31] [Server thread/INFO]: Time elapsed: 15215 ms");
+    auto e = ParseServerStarted("[10:36:31] [Server thread/INFO]: Time elapsed: 15215 ms");
     ostringstream ostr;
     ostr << "服务器已启动，用时" << e.itime << "ms\n";
     logger.info(ostr.str().c_str());
@@ -171,6 +193,9 @@ int main()
     logger.warn(ost.str().c_str());
     logger.error(ost.str().c_str());
     logger.fatal(ost.str().c_str());
+
+    auto ret = readCfg();
+
     system("pause");
 }
 #pragma endregion
