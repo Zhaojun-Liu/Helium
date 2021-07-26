@@ -37,8 +37,3 @@ string GetNodeStringByName(tinyxml2::XMLElement* pRootEle, string strNodeName)
 		return v1;
 	}
 }
-
-int CreateConfigFile()
-{
-	return 0;
-}

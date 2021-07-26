@@ -3,24 +3,24 @@
 
 #define _SILENCE_CXX17_STRSTREAM_DEPRECATION_WARNING
 
-
 #include<iostream>
 #include<Windows.h>
 #include<sstream>
 
+#include"confuses.h"
 #include"logger.h"
 #include"tinyxml2.h"
 #include"parse.h"
 #include"xmlutils.h"
 #include"xmlmacros.h"
-#include "confuses.h"
+
 using namespace std;
 
 #pragma endregion
 
 #pragma region Macros
 #define PROJECT_NAME_STR "Helium"
-#define PROJECT_VER_STR "0.4.0"
+#define PROJECT_VER_STR "0.4.1"
 #define PROJECT_DEVSTAT "Pre-Alpha"
 
 #define CFG_FILENAME "HeliumConfig.xml"
@@ -41,8 +41,6 @@ typedef int (*pOnload)(int, int, void*);
 
 #pragma region Var
 Logger logger;
-string xms, xmx, serverdir, serverjar, plugindir, lang, handler, enabletimestamp, jvmoption, serveroption, zheshiyigelinshibianliangbuyaoshanchuxiexie;
-
 #pragma endregion
 
 #pragma region Server
@@ -118,6 +116,75 @@ string xms, xmx, serverdir, serverjar, plugindir, lang, handler, enabletimestamp
 #pragma region Config
 START_CONFIG_NODES_REGISTER(ConfigNode);
 
+int CreateConfigFile()
+{
+    const char* declaration = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+    tinyxml2::XMLDocument doc;
+    if (auto ret = doc.Parse(declaration); ret != 0) {
+        cout << "Failed to create XML file declaration" << endl;
+        return -1;
+    }
+    
+    tinyxml2::XMLElement* root = doc.NewElement("HeliumConfig");
+    doc.InsertEndChild(root);
+
+    for (vector<ConfigNode>::iterator it = _confignodes_.begin(); it <= _confignodes_.end(); it++) {
+        strstream sstr;
+        
+        switch (it->valuetype)
+        {
+        case VALUE_TYPE_INTEGER:
+            try {
+                sstr << std::get<int>(it->var); // access by type
+            }
+            catch (const std::bad_variant_access& e) { // in case a wrong type/index is used
+                return -1;
+            }
+            break;
+        case VALUE_TYPE_DOUBLE:
+            try {
+                sstr << std::get<double>(it->var); // access by type
+            }
+            catch (const std::bad_variant_access& e) { // in case a wrong type/index is used
+                return -1;
+            }
+            break;
+        case VALUE_TYPE_STRING:
+            try {
+                sstr << std::get<string>(it->var); // access by type
+            }
+            catch (const std::bad_variant_access& e) { // in case a wrong type/index is used
+                return -1;
+            }
+            break;
+        case VALUE_TYPE_BOOLEAN:
+            try {
+                sstr << std::get<bool>(it->var); // access by type
+            }
+            catch (const std::bad_variant_access& e) { // in case a wrong type/index is used
+                return -1;
+            }
+            break;
+        default:
+            break;
+        }
+
+        tinyxml2::XMLElement* newelement = doc.NewElement(it->nodename.c_str());
+        tinyxml2::XMLText* newtext = doc.NewText(sstr.str());
+        doc.InsertEndChild(newelement);
+        newelement->InsertEndChild(newtext);
+
+        sstr.clear();
+    }
+
+    if (ret = doc.SaveFile(CFG_FILENAME); ret != 0) {
+        cout << "Failed to save config file" << endl;
+        return -1;
+    }
+
+    return 0;
+}
+
 int readCfg() {
 
     ADD_CONFIG_NODE("ServerMaxMem", ServerMaxMem, VALUE_TYPE_INTEGER);
@@ -138,25 +205,15 @@ int readCfg() {
     if (!config.LoadFile(CFG_FILENAME)) {
         CreateConfigFile();
     }
-    pRootEle = config.RootElement();
-    if (pRootEle == NULL) {
-        return -114514;
+    
+    if (pRootEle = config.RootElement(); pRootEle == NULL) {
+        return -1;
     }
+
     for (vector<ConfigNode>::iterator it = _confignodes_.begin(); it <= _confignodes_.end(); it++) {
-        switch (it->valuetype)
-        {
-        case VALUE_TYPE_BOOLEAN:
-            break;
-        case VALUE_TYPE_DOUBLE:
-            break;
-        case VALUE_TYPE_INTEGER:
-            break;
-        case VALUE_TYPE_STRING:
-            break;
-        default:
-            break;
-        }
+        it->var = gnsbn(it->nodename);
     }
+
     return 0;
 }
 #pragma endregion
@@ -195,7 +252,9 @@ int main()
     logger.error(ost.str().c_str());
     logger.fatal(ost.str().c_str());
 
-    auto ret = readCfg();
+    if (auto ret = readCfg(); ret == -1) {
+        cout << "Failed to read the config file" << endl;
+    }
 
     system("pause");
 }

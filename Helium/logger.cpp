@@ -1,7 +1,5 @@
 #include"logger.h"
 
-
-
 int HeliumOutput::write(string outstr)
 {
 	
