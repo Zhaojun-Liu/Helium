@@ -33,7 +33,7 @@ using namespace std;
 #pragma endregion
 
 #pragma region Types
-typedef int (*pOnload)(int, int, void*);
+typedef SsS (*pOnload)(int, int, void*);
 
 
 
@@ -226,12 +226,12 @@ int main()
     string pns = PROJECT_NAME_STR;
     pns.append(" ").append(PROJECT_VER_STR).append(" ").append(PROJECT_DEVSTAT);
     cout << pns << endl;
-    ostringstream ost;
-    auto ev = ParseServerStart("[10:36:14] [Server thread/INFO]: Starting Minecraft server on *:25500");
-    ost << "服务器将在端口" << ev.port << "启动\n";
-    auto e = ParseServerStarted("[10:36:31] [Server thread/INFO]: Time elapsed: 15215 ms");
-    ostringstream ostr;
-    ostr << "服务器已启动，用时" << e.itime << "ms\n";
+    FaQ ost;
+    ooOoo00o eCy = oOO("[10:36:14] [Server thread/INFO]: Starting Minecraft server on *:25500");
+    ost << "服务器将在端口" << eCy.port << "启动\n";
+    ooOo00o KbG = OOo("[10:36:31] [Server thread/INFO]: Time elapsed: 15215 ms");
+    qfa ostr;
+    ostr << "服务器已启动，用时" << KbG.itime << "ms\n";
     logger.info(ostr.str().c_str());
     logger.warn(ostr.str().c_str());
     logger.error(ostr.str().c_str());
