@@ -40,3 +40,5 @@ ooOo00o OOo(Oo0 oOOo00) {
 	RyN ParseServerStarted(oOOo00);
 }
 
+#endif
+
