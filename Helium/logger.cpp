@@ -122,7 +122,7 @@ int HeliumOutput::out(LPSTR sOut, WCHAR wTextAttribute)
 	GetConsoleScreenBufferInfo(hOutput, &csbiInfo);
 	wOldAttribute = csbiInfo.wAttributes;
 	SetConsoleTextAttribute(hOutput, wTextAttribute);
-	WriteFile(hOutput, sOut, lstrlen(sOut), &dwWritten, NULL);
+	WriteFile(hOutput, sOut, lstrlenA(sOut), &dwWritten, NULL);
 	SetConsoleTextAttribute(hOutput, wOldAttribute);
 	return dwWritten;
 }
@@ -137,7 +137,7 @@ int HeliumOutput::out(LPCSTR sOut, WCHAR wTextAttribute)
 	GetConsoleScreenBufferInfo(hOutput, &csbiInfo);
 	wOldAttribute = csbiInfo.wAttributes;
 	SetConsoleTextAttribute(hOutput, wTextAttribute);
-	WriteFile(hOutput, sOut, lstrlen(sOut), &dwWritten, NULL);
+	WriteFile(hOutput, sOut, lstrlenA(sOut), &dwWritten, NULL);
 	SetConsoleTextAttribute(hOutput, wOldAttribute);
 	return dwWritten;
 }

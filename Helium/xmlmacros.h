@@ -3,6 +3,8 @@
 #ifndef _H_XMLMACROS
 #define _H_XMLMACROS
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include<string>
 #include<vector>
 #include<variant>
@@ -11,11 +13,15 @@
 using namespace std;
 
 static const char* boolstr[] = { "True", "False" };
+#define VALUE_TYPE_INTEGER 0
+#define VALUE_TYPE_DOUBLE 1
+#define VALUE_TYPE_STRING 2
+#define VALUE_TYPE_BOOLEAN 3
 
 struct ConfigNode
 {
 	string nodename;
-	int valuetype;
+	int valuetype = VALUE_TYPE_INTEGER;
 	variant<int, double, string, bool> var;
 
 	int Print();
@@ -27,9 +33,5 @@ _newnode_##_nodename##_.nodename = nodenamestr;\
 _newnode_##_nodename##_.valuetype = _valuetype;\
 _newnode_##_nodename##_.var.emplace<_valuetype>(defaultvalue);\
 _confignodes_.push_back(_newnode_##_nodename##_);
-#define VALUE_TYPE_INTEGER 0
-#define VALUE_TYPE_DOUBLE 1
-#define VALUE_TYPE_STRING 2
-#define VALUE_TYPE_BOOLEAN 3
 
 #endif // !_H_XMLMACROS

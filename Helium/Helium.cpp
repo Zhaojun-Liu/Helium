@@ -2,8 +2,11 @@
 //不要随意调换include顺序 awa
 
 #define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+
 #include<iostream>
 #include<Windows.h>
+#include<thread>
 #include<strstream>
 
 #include"confuses.h"
@@ -71,30 +74,94 @@ Logger logger;
 #pragma endregion
 
 #pragma region Server
-/*
-[[nodiscard("你他妈做个返回值检查有那么难吗")]]
+int ProcessServerOutput(RedirectInformation inf, HANDLE process, DWORD pid) {
+    cout << "Server started at pid : " << pid << endl;
+    char out_buffer[4096];
+    DWORD dwRead;
+    int iRet = FALSE;
+    DWORD process_exit_code;
+
+    while (GetExitCodeProcess(process, &process_exit_code))
+    {
+        ZeroMemory(out_buffer, sizeof(out_buffer));
+        //用WriteFile，从hStdOutRead读出子进程stdout输出的数据，数据结果在out_buffer中，长度为dwRead  
+        iRet = ReadFile(inf.hStdOutRead, out_buffer, sizeof(out_buffer), &dwRead, NULL);
+        if ((iRet) && (dwRead != 0))  //如果成功了，且长度>0  
+        {
+            cout << out_buffer << endl;
+        }
+        //如果子进程结束，退出循环  
+        if (process_exit_code != STILL_ACTIVE) break;
+    }
+    return process_exit_code;
+}
+
+[[nodiscard("tmd做个返回值检查有那么难吗")]]
 int LaunchMinecraftServer() {
-    int maxmem, minmem;
-    string jvmpath, serverdir, serverjarname, jvmoption;
+    int _maxmem = 0, _minmem = 0;
+    string jvmpath, serverdir, serverjarname, jvmoption, startupcmdline, servercwd, maxmem, minmem;
+    char cwd[MAX_PATH];
     for (auto node : _confignodes_) {
         if (node.nodename == "JvmDirectory") {
-
+            jvmpath = get<VALUE_TYPE_STRING>(node.var);
+        }
+        if (node.nodename == "ServerDirectory") {
+            serverdir = get<VALUE_TYPE_STRING>(node.var);
+        }
+        if (node.nodename == "ServerJarName") {
+            serverjarname = get<VALUE_TYPE_STRING>(node.var);
+        }
+        if (node.nodename == "JvmOption") {
+            jvmoption = get<VALUE_TYPE_STRING>(node.var);
+        }
+        if (node.nodename == "ServerMaxMem") {
+            _maxmem = get<VALUE_TYPE_INTEGER>(node.var);
+        }
+        if (node.nodename == "ServerMinMem") {
+            _minmem = get<VALUE_TYPE_INTEGER>(node.var);
         }
     }
+
+    stringstream sstr;
+    sstr << _maxmem;
+    sstr >> maxmem;
+    sstr.clear();
+    sstr << _minmem;
+    sstr >> minmem;
+    sstr.clear();
+
+    GetCurrentDirectoryA(sizeof(cwd), cwd);
+
+    startupcmdline.append(jvmpath).append(" ").append(jvmoption);
+    startupcmdline.append(" ").append("-Xmx").append(maxmem).append("M").append(" ").append("-Xms").append(minmem).append("M");
+    startupcmdline.append(" ").append(cwd).append("\\").append(serverdir).append("\\").append(serverjarname);
+
+    servercwd.append(cwd).append("\\").append(serverdir);
+
+    cout << startupcmdline << endl;
+    cout << servercwd << endl;
+
     HANDLE hStdInRead = NULL;   //子进程用的stdin的读入端  
     HANDLE hStdInWrite = NULL;  //主程序用的stdin的读入端 
     HANDLE hStdOutRead = NULL;  //主程序用的stdout的读入端  
     HANDLE hStdOutWrite = NULL; //子进程用的stdout的写入端  
-    HANDLE hStdErrWrite = NULL; //子进程用的stderr的写入端  
 
     PROCESS_INFORMATION pi;
-    STARTUPINFO si;
+    STARTUPINFOA si;
     SECURITY_ATTRIBUTES sa;
     RedirectInformation inf;
 
     sa.nLength = sizeof(SECURITY_ATTRIBUTES);
     sa.bInheritHandle = TRUE;
     sa.lpSecurityDescriptor = NULL;
+
+    ZeroMemory(&si, sizeof(STARTUPINFO));
+    si.cb = sizeof(STARTUPINFO);
+    si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
+    si.hStdOutput = hStdOutWrite;   //意思是：子进程的stdout输出到hStdOutWrite  
+    si.hStdError = hStdOutWrite;    //意思是：子进程的stderr输出到hStdErrWrite  
+    si.hStdInput = hStdInRead;
+    si.wShowWindow = SW_HIDE;
 
     unsigned int serverexitcode = 0;
 
@@ -109,11 +176,11 @@ int LaunchMinecraftServer() {
     if (hStdInRead == NULL || hStdInWrite == NULL) return -1;
     if (hStdOutRead == NULL || hStdOutWrite == NULL) return -1;
 
+    /*
     string startupcmd;
     if (servercmdline.find(".bat") != string::npos || servercmdline.find(".cmd") != string::npos)//判断启动命令是否为bat或cmd文件
     {
         startupcmd = servercmdline;
-        dp("startupcmd:" + startupcmd);
     }
     else//不是bat或cmd文件
     {
@@ -130,82 +197,60 @@ int LaunchMinecraftServer() {
             {
                 servcmd.append(i + " ");//不含有 .jar 的直接append
             }
-            dp("startupcmd:" + startupcmd);
         }
         startupcmd.append(servcmd);
-        dp("startupcmd:" + startupcmd);
     }
 
     LPSTR _startcmd = new char[startupcmd.length() + 1];
     memset(_startcmd, '\0', startupcmd.length() + 1);
     strcat_s(_startcmd, startupcmd.length() + 1, startupcmd.c_str());
-    dp("#");
-    dp(_startcmd);
-
-    ZeroMemory(&si, sizeof(STARTUPINFO));
-    si.cb = sizeof(STARTUPINFO);
-    si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
-    si.hStdOutput = hStdOutWrite;   //意思是：子进程的stdout输出到hStdOutWrite  
-    si.hStdError = hStdErrWrite;    //意思是：子进程的stderr输出到hStdErrWrite  
-    si.hStdInput = hStdInRead;
-#ifdef DEBUG_FUNC_ENABLE
-    si.wShowWindow = SW_SHOW;
-#else
-    si.wShowWindow = SW_HIDE;
-#endif
+    */
 
     // STARTF_USESHOWWINDOW:The wShowWindow member contains additional information.
     // STARTF_USESTDHANDLES:The hStdInput, hStdOutput, and hStdError members contain additional information.
     // from MSDN
 
-    dp(servercwd);
-
-    BOOL bSuc = CreateProcess(NULL
-        , _startcmd
+    char* c_scl = const_cast<char*>(startupcmdline.c_str());
+    cout << c_scl << endl;
+    BOOL bSuc = CreateProcessA(NULL
+        , c_scl
         , NULL
         , NULL
-        , TRUE
+        , true
         , CREATE_SUSPENDED
         , NULL
         , servercwd.c_str()
         , &si
         , &pi);
 
-    //CloseHandle(pi.hThread);
-
     if (bSuc == FALSE) {
-        dp("CreateProcess() Failed!");
+        cout << "CreateProcess() failed!" << endl;
         return -1;
     }
 
-    inf = *priInformation;
+    cout << "Minecraft server launched successfully" << endl;
 
-    inf.hStdErrWrite = hStdErrWrite;
+    inf.hStdErrWrite = hStdOutWrite;
     inf.hStdInRead = hStdInRead;
     inf.hStdInWrite = hStdInWrite;
     inf.hStdOutRead = hStdOutRead;
     inf.hStdOutWrite = hStdOutWrite;
 
-    thread ServerOut(ServerSTDOUT, inf, pi.hProcess);
-    ServerOut.detach();
+    thread ServerOut(ProcessServerOutput, inf, pi.hProcess, pi.dwProcessId);
+
+    cout << "Output processing thread create successfully" << endl;
 
     if (ResumeThread(pi.hThread) == -1) {
-        redout.error("Cannot Start Minecraft Server!");
         TerminateProcess(pi.hProcess, serverexitcode);
         return -1;
     }
 
-    dp("##############################################");
-    delete[] _startcmd;
-    _startcmd = NULL;
-    dp("###############################################");
+    cout << "Minecraft server process resumed successfully" << endl;
 
-    writeinf = inf;
-
-    return 0;
+    delete[] c_scl;
+    c_scl = NULL;
     return 0;
 }
-*/
 #pragma endregion
 
 #pragma region Callback
@@ -470,6 +515,8 @@ int main()
     logger.fatal(ost.str().c_str());
 
     Config();
+
+    auto ret = LaunchMinecraftServer();
 
     system("pause");
 }

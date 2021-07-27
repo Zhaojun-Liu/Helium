@@ -4,6 +4,7 @@
 #define _H_UTILS
 
 #define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
 
 #define stdfuncallconv WINAPI
 
