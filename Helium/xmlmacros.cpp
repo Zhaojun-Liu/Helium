@@ -45,5 +45,6 @@ int ConfigNode::Print() {
     [[unlikely]] default:
         break;
     }
+    cout << endl;
 	return 0;
 }

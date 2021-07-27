@@ -11,7 +11,7 @@ bool GetNodePointerByName(tinyxml2::XMLElement* pRootEle, const char* strNodeNam
 	tinyxml2::XMLElement* pEle = pRootEle;
 	for (pEle = pRootEle->FirstChildElement(); pEle; pEle = pEle->NextSiblingElement())
 	{
-		if (0 != strcmp(pEle->Value(), strNodeName))
+		if (0 != strcmp(pEle->Name(), strNodeName))
 		{
 			GetNodePointerByName(pEle, strNodeName, Node);
 		}
@@ -28,7 +28,7 @@ bool GetNodePointerByName(tinyxml2::XMLElement* pRootEle, const char* strNodeNam
 string GetNodeStringByName(tinyxml2::XMLElement* pRootEle, string strNodeName)
 {
 	tinyxml2::XMLElement* pReadEle;
-	if(!GetNodePointerByName(pRootEle, strNodeName.c_str(), pReadEle))
+	if(GetNodePointerByName(pRootEle, strNodeName.c_str(), pReadEle))
 		return pReadEle->GetText();
 	else
 	{

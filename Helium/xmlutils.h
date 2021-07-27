@@ -6,6 +6,7 @@
 #define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
 
 #include<string>
+#include<iostream>
 
 #include"tinyxml2.h"
 

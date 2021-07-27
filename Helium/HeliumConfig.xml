@@ -1,22 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<HeliumConfig/>
-
-<ServerMaxMem>1024ออออออออออออออออออออออออออออýýýýÝÝl</ServerMaxMem>
-
-<ServerMinMem>1024ออออออออออออออออออออออออออออýýýýÝÝÝÝ๕þฺÝ	</ServerMinMem>
-
-<ServerDirectory>serverออออออออออออออออออออออออออýýýýÝÝÝÝณÿÝ(</ServerDirectory>
-
-<ServerJarName>server.jarออออออออออออออออออออออýýýýÝÝÝÝํþฒÝ</ServerJarName>
-
-<JvmOption>_nothing_อออออออออออออออออออออออýýýýÝÝÝÝ;ÿÝ</JvmOption>
-
-<Handler>0อออออออออออออออออออออออออออออออýýýýÝÝÝÝ=ÿbÝ</Handler>
-
-<EnableTimeStamp>1อออออออออออออออออออออออออออออออýýýýÝÝÝÝAÿFÝ</EnableTimeStamp>
-
-<Language>0อออออออออออออออออออออออออออออออýýýýÝÝÝÝ)ÿnÝ</Language>
-
-<PluginDirectory>pluginsอออออออออออออออออออออออออýýýýÝÝÝÝUÿzÝ</PluginDirectory>
-
-<MaxQueue>2048ออออออออออออออออออออออออออออýýýýÝÝÝÝÿธÝ</MaxQueue>
+<HeliumConfig>
+    <ServerMaxMem>4096</ServerMaxMem>
+    <ServerMinMem>1024</ServerMinMem>
+    <ServerDirectory>server</ServerDirectory>
+    <ServerJarName>server.jar</ServerJarName>
+    <JvmOption>-jar</JvmOption>
+    <Handler>0</Handler>
+    <EnableTimeStamp>False</EnableTimeStamp>
+    <Language>0</Language>
+    <PluginDirectory>plugins</PluginDirectory>
+    <MaxQueue>2048</MaxQueue>
+    <JvmDirectory>C:\Program Files\AdoptOpenJDK\jdk-8.0.262.10-openj9\bin\javaw.exe</JvmDirectory>
+</HeliumConfig>
