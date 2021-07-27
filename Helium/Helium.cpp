@@ -19,7 +19,7 @@ using namespace std;
 
 #pragma region Macros
 #define PROJECT_NAME_STR "Helium"
-#define PROJECT_VER_STR "0.4.1"
+#define PROJECT_VER_STR "0.4.1.01"
 #define PROJECT_DEVSTAT "Pre-Alpha"
 
 #define CFG_FILENAME "HeliumConfig.xml"
@@ -376,7 +376,6 @@ int readCfg() {
 
     for (auto node = _confignodes_.begin(); node < _confignodes_.end(); node ++)
     {
-        cout << gnsbn(node->nodename) << endl;
         if (node->valuetype != VALUE_TYPE_BOOLEAN) {
             string temp = gnsbn(node->nodename);
             istringstream iss(temp);
@@ -408,10 +407,6 @@ int readCfg() {
                 node->var.emplace<VALUE_TYPE_BOOLEAN>(false);
             }
         }
-    }
-
-    for (auto node : _confignodes_) {
-        node.Print();
     }
 
     return 0;
