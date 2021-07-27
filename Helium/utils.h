@@ -3,7 +3,10 @@
 #ifndef _H_UTILS
 #define _H_UTILS
 
+#define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
+
 #define stdfuncallconv WINAPI
+
 #include<map>
 #include<vector>
 #include<string>

@@ -3,6 +3,8 @@
 #ifndef _H_XMLUTILS
 #define _H_XMLUTILS
 
+#define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
+
 #include<string>
 
 #include"tinyxml2.h"

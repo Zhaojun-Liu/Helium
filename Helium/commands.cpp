@@ -132,7 +132,7 @@ int CommandQueue::LoadCommandQueueFromFile(string filename)
 	int filesize;
 	DWORD readbytes;
 
-	queuefile = CreateFile(
+	queuefile = CreateFileA(
 		filename.c_str(),
 		GENERIC_ALL,
 		FILE_SHARE_READ,

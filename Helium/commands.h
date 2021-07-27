@@ -3,6 +3,8 @@
 #ifndef _H_COMMANDS
 #define _H_COMMANDS
 
+#define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
+
 #include<vector>
 #include<string>
 #include<thread>	

@@ -1,11 +1,10 @@
 ﻿#pragma region Includes
 //不要随意调换include顺序 awa
 
-#define _SILENCE_CXX17_STRSTREAM_DEPRECATION_WARNING
-
+#define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
 #include<iostream>
 #include<Windows.h>
-#include<sstream>
+#include<strstream>
 
 #include"confuses.h"
 #include"logger.h"
@@ -116,6 +115,7 @@ Logger logger;
 #pragma region Config
 START_CONFIG_NODES_REGISTER(ConfigNode);
 
+[[nodiscard("return value check!!!!")]]
 int CreateConfigFile()
 {
     const char* declaration = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
@@ -128,56 +128,67 @@ int CreateConfigFile()
     tinyxml2::XMLElement* root = doc.NewElement("HeliumConfig");
     doc.InsertEndChild(root);
 
-    for (vector<ConfigNode>::iterator it = _confignodes_.begin(); it <= _confignodes_.end(); it++) {
+    for (auto node : _confignodes_) {
         strstream sstr;
         
-        switch (it->valuetype)
+        switch (node.valuetype)
         {
-        case VALUE_TYPE_INTEGER:
+        [[likely]]case VALUE_TYPE_INTEGER:
             try {
-                sstr << std::get<int>(it->var); // access by type
+                sstr << std::get<int>(node.var); // access by type
+                tinyxml2::XMLElement* newelement = doc.NewElement(node.nodename.c_str());
+                tinyxml2::XMLText* newtext = doc.NewText(sstr.str());
+                doc.InsertEndChild(newelement);
+                newelement->InsertEndChild(newtext);
             }
             catch (const std::bad_variant_access& e) { // in case a wrong type/index is used
-                return -1;
+                cout << "Failed to get the value" << endl;
             }
             break;
-        case VALUE_TYPE_DOUBLE:
+        [[likely]]case VALUE_TYPE_DOUBLE:
             try {
-                sstr << std::get<double>(it->var); // access by type
+                sstr << std::get<double>(node.var); // access by type
+                tinyxml2::XMLElement* newelement = doc.NewElement(node.nodename.c_str());
+                tinyxml2::XMLText* newtext = doc.NewText(sstr.str());
+                doc.InsertEndChild(newelement);
+                newelement->InsertEndChild(newtext);
             }
             catch (const std::bad_variant_access& e) { // in case a wrong type/index is used
-                return -1;
+                cout << "Failed to get the value" << endl;
             }
             break;
-        case VALUE_TYPE_STRING:
+        [[likely]]case VALUE_TYPE_STRING:
             try {
-                sstr << std::get<string>(it->var); // access by type
+                sstr << std::get<string>(node.var); // access by type
+                tinyxml2::XMLElement* newelement = doc.NewElement(node.nodename.c_str());
+                tinyxml2::XMLText* newtext = doc.NewText(sstr.str());
+                doc.InsertEndChild(newelement);
+                newelement->InsertEndChild(newtext);
             }
             catch (const std::bad_variant_access& e) { // in case a wrong type/index is used
-                return -1;
+                cout << "Failed to get the value" << endl;
             }
             break;
-        case VALUE_TYPE_BOOLEAN:
+        [[likely]]case VALUE_TYPE_BOOLEAN:
             try {
-                sstr << std::get<bool>(it->var); // access by type
+                sstr << std::get<bool>(node.var); // access by type
+                tinyxml2::XMLElement* newelement = doc.NewElement(node.nodename.c_str());
+                tinyxml2::XMLText* newtext = doc.NewText(sstr.str());
+                doc.InsertEndChild(newelement);
+                newelement->InsertEndChild(newtext);
             }
             catch (const std::bad_variant_access& e) { // in case a wrong type/index is used
-                return -1;
+                cout << "Failed to get the value" << endl;
             }
             break;
-        default:
+        [[unlikely]]default:
             break;
         }
-
-        tinyxml2::XMLElement* newelement = doc.NewElement(it->nodename.c_str());
-        tinyxml2::XMLText* newtext = doc.NewText(sstr.str());
-        doc.InsertEndChild(newelement);
-        newelement->InsertEndChild(newtext);
 
         sstr.clear();
     }
 
-    if (ret = doc.SaveFile(CFG_FILENAME); ret != 0) {
+    if (auto ret = doc.SaveFile(CFG_FILENAME); ret != 0) {
         cout << "Failed to save config file" << endl;
         return -1;
     }
@@ -185,35 +196,41 @@ int CreateConfigFile()
     return 0;
 }
 
+[[nodiscard("return value check!!!!")]]
 int readCfg() {
-
-    ADD_CONFIG_NODE("ServerMaxMem", ServerMaxMem, VALUE_TYPE_INTEGER);
-    ADD_CONFIG_NODE("ServerMinMem", ServerMinMem, VALUE_TYPE_INTEGER);
-    ADD_CONFIG_NODE("ServerDirectory", ServerDirectory, VALUE_TYPE_STRING);
-    ADD_CONFIG_NODE("ServerJarName", ServerJarName, VALUE_TYPE_STRING);
-    ADD_CONFIG_NODE("JvmOption", JvmOption, VALUE_TYPE_STRING);
-    ADD_CONFIG_NODE("Handler", Handler, VALUE_TYPE_INTEGER);
-    ADD_CONFIG_NODE("EnableTimeStamp", EnableTimeStamp, VALUE_TYPE_BOOLEAN);
-    ADD_CONFIG_NODE("Language", Language, VALUE_TYPE_INTEGER);
-    ADD_CONFIG_NODE("PluginDirectory", PluginDirectory, VALUE_TYPE_STRING);
-    ADD_CONFIG_NODE("MaxQueue", MaxQueue, VALUE_TYPE_INTEGER);
-    ADD_CONFIG_NODE("ServerWorkingDirectory", ServerWorkingDirectory, VALUE_TYPE_STRING)
-
     tinyxml2::XMLDocument config;
     tinyxml2::XMLElement* pRootEle;
     
     if (!config.LoadFile(CFG_FILENAME)) {
-        CreateConfigFile();
+        return CreateConfigFile();
     }
     
     if (pRootEle = config.RootElement(); pRootEle == NULL) {
-        return -1;
+        return CreateConfigFile();
     }
 
-    for (vector<ConfigNode>::iterator it = _confignodes_.begin(); it <= _confignodes_.end(); it++) {
-        it->var = gnsbn(it->nodename);
+    for (auto node : _confignodes_)
+    {
+        node.var = gnsbn(node.nodename);
     }
 
+    return 0;
+}
+
+int InitConfigNode() {
+    ADD_CONFIG_NODE("ServerMaxMem", ServerMaxMem, VALUE_TYPE_INTEGER, 1024);
+    ADD_CONFIG_NODE("ServerMinMem", ServerMinMem, VALUE_TYPE_INTEGER, 1024);
+    ADD_CONFIG_NODE("ServerDirectory", ServerDirectory, VALUE_TYPE_STRING, "server");
+    ADD_CONFIG_NODE("ServerJarName", ServerJarName, VALUE_TYPE_STRING, "server.jar");
+    ADD_CONFIG_NODE("JvmOption", JvmOption, VALUE_TYPE_STRING, "_nothing_");
+    ADD_CONFIG_NODE("Handler", Handler, VALUE_TYPE_INTEGER, 0);
+    ADD_CONFIG_NODE("EnableTimeStamp", EnableTimeStamp, VALUE_TYPE_BOOLEAN, true);
+    ADD_CONFIG_NODE("Language", Language, VALUE_TYPE_INTEGER, 0);
+    ADD_CONFIG_NODE("PluginDirectory", PluginDirectory, VALUE_TYPE_STRING, "plugins");
+    ADD_CONFIG_NODE("MaxQueue", MaxQueue, VALUE_TYPE_INTEGER, 2048);
+    for (auto node : _confignodes_) {
+        node.Print();
+    }
     return 0;
 }
 #pragma endregion
@@ -222,7 +239,7 @@ int readCfg() {
 #pragma region Main
 int main()
 {
-    SetConsoleTitle(PROJECT_NAME_STR);
+    SetConsoleTitleA(PROJECT_NAME_STR);
     string pns = PROJECT_NAME_STR;
     pns.append(" ").append(PROJECT_VER_STR).append(" ").append(PROJECT_DEVSTAT);
     cout << pns << endl;
@@ -252,6 +269,7 @@ int main()
     logger.error(ost.str().c_str());
     logger.fatal(ost.str().c_str());
 
+    InitConfigNode();
     if (auto ret = readCfg(); ret == -1) {
         cout << "Failed to read the config file" << endl;
     }

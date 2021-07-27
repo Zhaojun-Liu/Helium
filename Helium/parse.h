@@ -4,6 +4,7 @@
 #define _H_PARSE
 
 #define NULL 0
+#define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
 
 #include<string>
 #include<map>

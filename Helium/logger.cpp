@@ -1,24 +1,29 @@
 #include"logger.h"
+#define _CRT_SECURE_NO_WARNINGS
 
+[[nodiscard("Ignoring return value of this function may cause log file create incorrectly.")]]
 int HeliumOutput::write(string outstr)
 {
+	time_t t = time(0);
+	char time[64];
+	strftime(time, sizeof(time), "%Y-%m-%d", localtime(&t));
+	ostringstream s;
+	char path[MAX_PATH];
+	GetCurrentDirectoryA(MAX_PATH, path);
+	s << path << "\\logs";
+	auto ret = _mkdir(s.str().c_str());
+	if (ret != 0) {
+		return -1;
+	}
+	s << "\\" << time << ".log";
+	fstream file(s.str(), fstream::app);
+	if (file.is_open()) {
+		file.write(outstr.c_str(), outstr.length());
+		file.flush();
+		file.close();
+	}
 	
-		time_t t = time(0);
-		char time[64];
-		strftime(time, sizeof(time), "%Y-%m-%d", localtime(&t));
-		ostringstream s;
-		char path[MAX_PATH];
-		GetCurrentDirectory(MAX_PATH, path);
-		s << path << "\\logs";
-		_mkdir(s.str().c_str());
-		s << "\\" << time << ".log";
-		fstream file(s.str(), fstream::app);
-		if (file.is_open()) {
-			file.write(outstr.c_str(), outstr.length());
-			file.flush();
-			file.close();
-		}
-		return 0;
+	return 0;
 }
 
 void HeliumOutput::setTimeStamp(bool stat)
@@ -40,7 +45,8 @@ int HeliumOutput::info(const char* content)
 	if(enableTimeStamp) content_ += time;
 	content_ += " [INFO] ";
 	content_ += content;
-	this->write(content_);
+	auto ret = this->write(content_);
+	if (ret != 0) return -1;
 	int iWrote = 0;
 	if (enableTimeStamp)iWrote += this->out(time, WHITE);
 	iWrote += this->out(" [INFO] ", GREEN_FOREGROUND);
@@ -57,7 +63,8 @@ int HeliumOutput::warn(const char* content)
 	if (enableTimeStamp) content_ += time;
 	content_ += " [WARN] ";
 	content_ += content;
-	this->write(content_);
+	auto ret = this->write(content_);
+	if (ret != 0) return -1;
 	int iWrote = 0;
 	if (enableTimeStamp) iWrote += this->out(time, WHITE);
 	iWrote += this->out(" [WARN] ", YELLOW_FOREGEOUND);
@@ -74,7 +81,8 @@ int HeliumOutput::error(const char* content)
 	if (enableTimeStamp) content_ += time;
 	content_ += " [ERROR] ";
 	content_ += content;
-	this->write(content_);
+	auto ret = this->write(content_);
+	if (ret != 0) return -1;
 	int iWrote = 0;
 	if (enableTimeStamp) iWrote += this->out(time, WHITE);
 	iWrote += this->out(" [ERROR] ", RED_FOREGROUND);
@@ -91,7 +99,8 @@ int HeliumOutput::fatal(const char* content)
 	if (enableTimeStamp) content_ += time;
 	content_ += " [FATAL] ";
 	content_ += content;
-	this->write(content_);
+	auto ret = this->write(content_);
+	if (ret != 0) return -1;
 	int iWrote = 0;
 	if (enableTimeStamp == true) {
 		iWrote += this->out(content_.c_str(), RED_FOREGROUND);

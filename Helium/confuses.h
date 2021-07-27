@@ -3,6 +3,8 @@
 #ifndef _H_CONFUSES
 #define _H_CONFUSES
 
+#define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
+
 #include"logger.h"
 #include"commands.h"
 #include"parse.h"

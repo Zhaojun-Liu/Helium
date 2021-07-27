@@ -2,16 +2,17 @@
 
 #ifndef _H_LOGGER
 #define _H_LOGGER
+
+#define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
+
 #include<direct.h>
 #include<string>
 #include<ctime>
+#define _MEMORYAPI_H_
 #include<Windows.h>
-#include<Shlwapi.h>
 #include<iostream>
 #include<fstream>
 #include<sstream>
-#pragma comment(lib,"shlwapi.lib")
-
 #define LOG_DIR "logs"
 
 #pragma region COLORS
