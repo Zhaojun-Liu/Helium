@@ -48,9 +48,9 @@ int HeliumOutput::info(const char* content)
 	auto ret = this->write(content_);
 	if (ret != 0) return -1;
 	int iWrote = 0;
-	if (enableTimeStamp)iWrote += this->out(time, WHITE);
+	if (enableTimeStamp)iWrote += this->out(time, _WHITE);
 	iWrote += this->out(" [INFO] ", GREEN_FOREGROUND);
-	iWrote += this->out(content, WHITE);
+	iWrote += this->out(content, _WHITE);
 	return iWrote;
 }
 
@@ -66,9 +66,9 @@ int HeliumOutput::warn(const char* content)
 	auto ret = this->write(content_);
 	if (ret != 0) return -1;
 	int iWrote = 0;
-	if (enableTimeStamp) iWrote += this->out(time, WHITE);
+	if (enableTimeStamp) iWrote += this->out(time, _WHITE);
 	iWrote += this->out(" [WARN] ", YELLOW_FOREGEOUND);
-	iWrote += this->out(content, WHITE);
+	iWrote += this->out(content, _WHITE);
 	return iWrote;
 }
 
@@ -84,9 +84,9 @@ int HeliumOutput::error(const char* content)
 	auto ret = this->write(content_);
 	if (ret != 0) return -1;
 	int iWrote = 0;
-	if (enableTimeStamp) iWrote += this->out(time, WHITE);
+	if (enableTimeStamp) iWrote += this->out(time, _WHITE);
 	iWrote += this->out(" [ERROR] ", RED_FOREGROUND);
-	iWrote += this->out(content, WHITE);
+	iWrote += this->out(content, _WHITE);
 	return iWrote;
 }
 

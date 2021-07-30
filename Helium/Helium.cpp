@@ -15,6 +15,7 @@
 #include"parse.h"
 #include"xmlutils.h"
 #include"xmlmacros.h"
+#include"replxx/replxx_impl.hxx"
 
 using namespace std;
 
