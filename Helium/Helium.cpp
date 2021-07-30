@@ -95,6 +95,7 @@ int ProcessServerOutput(RedirectInformation inf, HANDLE process, DWORD pid) {
         //如果子进程结束，退出循环  
         if (process_exit_code != STILL_ACTIVE) break;
     }
+    TerminateProcess(process, 0);
     return process_exit_code;
 }
 
