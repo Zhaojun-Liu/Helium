@@ -71,11 +71,12 @@ struct RedirectInformation
 
 #pragma region Var
 Logger logger;
+thread stdoutthread;
 #pragma endregion
 
 #pragma region Server
 int ProcessServerOutput(RedirectInformation inf, HANDLE process, DWORD pid) {
-    cout << "Server started at pid : " << pid << endl;
+    cout << "Server process started with PID : " << pid << endl;
     char out_buffer[4096];
     DWORD dwRead;
     int iRet = FALSE;
@@ -85,10 +86,11 @@ int ProcessServerOutput(RedirectInformation inf, HANDLE process, DWORD pid) {
     {
         ZeroMemory(out_buffer, sizeof(out_buffer));
         //用WriteFile，从hStdOutRead读出子进程stdout输出的数据，数据结果在out_buffer中，长度为dwRead  
-        iRet = ReadFile(inf.hStdOutRead, out_buffer, sizeof(out_buffer), &dwRead, NULL);
-        if ((iRet) && (dwRead != 0))  //如果成功了，且长度>0  
+        iRet = ReadFile(inf.hStdOutRead, out_buffer, sizeof(out_buffer) - 1, &dwRead, NULL);
+        if ((iRet) && (dwRead > 0))  //如果成功了，且长度>0  
         {
-            cout << out_buffer << endl;
+            out_buffer[dwRead] = '\0';
+            cout << out_buffer;
         }
         //如果子进程结束，退出循环  
         if (process_exit_code != STILL_ACTIVE) break;
@@ -151,19 +153,9 @@ int LaunchMinecraftServer() {
     SECURITY_ATTRIBUTES sa;
     RedirectInformation inf;
 
-    sa.nLength = sizeof(SECURITY_ATTRIBUTES);
     sa.bInheritHandle = TRUE;
     sa.lpSecurityDescriptor = NULL;
-
-    ZeroMemory(&si, sizeof(STARTUPINFO));
-    si.cb = sizeof(STARTUPINFO);
-    si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
-    si.hStdOutput = hStdOutWrite;   //意思是：子进程的stdout输出到hStdOutWrite  
-    si.hStdError = hStdOutWrite;    //意思是：子进程的stderr输出到hStdErrWrite  
-    si.hStdInput = hStdInRead;
-    si.wShowWindow = SW_HIDE;
-
-    unsigned int serverexitcode = 0;
+    sa.nLength = sizeof(SECURITY_ATTRIBUTES);
 
     //产生一个用于stdin的管道，得到两个HANDLE:  hStdInRead用于子进程读出数据，hStdInWrite用于主程序写入数据  
     //其中saAttr是一个STARTUPINFO结构体，定义见CreatePipe函数说明  
@@ -175,6 +167,17 @@ int LaunchMinecraftServer() {
 
     if (hStdInRead == NULL || hStdInWrite == NULL) return -1;
     if (hStdOutRead == NULL || hStdOutWrite == NULL) return -1;
+
+    ZeroMemory(&si, sizeof(STARTUPINFO));
+    GetStartupInfoA(&si);
+    si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
+    si.hStdOutput = hStdOutWrite;   //意思是：子进程的stdout输出到hStdOutWrite  
+    si.hStdError = hStdOutWrite;    //意思是：子进程的stderr输出到hStdErrWrite  
+    si.hStdInput = hStdInRead;
+    si.wShowWindow = SW_SHOW;
+    si.cb = sizeof(STARTUPINFOA);
+
+    unsigned int serverexitcode = 0;
 
     /*
     string startupcmd;
@@ -237,6 +240,7 @@ int LaunchMinecraftServer() {
     inf.hStdOutWrite = hStdOutWrite;
 
     thread ServerOut(ProcessServerOutput, inf, pi.hProcess, pi.dwProcessId);
+    stdoutthread = std::move(ServerOut);
 
     cout << "Output processing thread create successfully" << endl;
 
@@ -247,7 +251,6 @@ int LaunchMinecraftServer() {
 
     cout << "Minecraft server process resumed successfully" << endl;
 
-    delete[] c_scl;
     c_scl = NULL;
     return 0;
 }
@@ -517,6 +520,13 @@ int main()
     Config();
 
     auto ret = LaunchMinecraftServer();
+    if (ret == 0) {
+        stdoutthread.join();
+    }
+    
+    ostr.clear();
+    ostr << "Server exited with code : " << ret;
+    logger.info(ostr.str().c_str());
 
     system("pause");
 }
