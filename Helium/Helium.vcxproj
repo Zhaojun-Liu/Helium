@@ -162,6 +162,7 @@
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="xmlutils.cpp" />
     <ClCompile Include="xmlmacros.cpp" />
+    <ClCompile Include="minecraftserver.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="confuses.h" />
@@ -185,9 +186,13 @@
     <ClInclude Include="utils.h" />
     <ClInclude Include="xmlutils.h" />
     <ClInclude Include="xmlmacros.h" />
+    <ClInclude Include="minecraftserver.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="HeliumConfig.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="replxx\replxx-static-rd.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

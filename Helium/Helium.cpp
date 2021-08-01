@@ -8,6 +8,7 @@
 #include<Windows.h>
 #include<thread>
 #include<strstream>
+#include<functional>
 
 #include"confuses.h"
 #include"logger.h"
@@ -15,9 +16,13 @@
 #include"parse.h"
 #include"xmlutils.h"
 #include"xmlmacros.h"
-#include"replxx/replxx_impl.hxx"
+
+#define REPLXX_STATIC
+
+#include"replxx/replxx.hxx"
 
 using namespace std;
+using namespace replxx;
 
 #pragma endregion
 
@@ -484,6 +489,12 @@ int Config() {
 }
 #pragma endregion
 
+#pragma region replxxfuncs
+Replxx::completions_t 
+ReplxxCompletionCallback(std::string const& context, int& contextLen, std::vector<std::string> const& comp) {
+
+}
+#pragma endregion
 
 #pragma region Main
 int main()
@@ -492,6 +503,21 @@ int main()
     string pns = PROJECT_NAME_STR;
     pns.append(" ").append(PROJECT_VER_STR).append(" ").append(PROJECT_DEVSTAT);
     cout << pns << endl;
+
+    Replxx rx;
+    rx.install_window_change_handler();
+
+    vector<string> commands{
+        "..helium", "help"
+    };
+    string heliumhistory = ".\\helium_history.txt";
+    rx.history_load(heliumhistory);
+    rx.set_max_history_size(128);
+    rx.set_max_hint_rows(3);
+
+    using namespace placeholders;
+    rx.set_completion_callback(std::bind(&ReplxxCompletionCallback, _1, _2, cref(commands)));
+
     FaQ ost;
     ooOoo00o eCy = oOO("[10:36:14] [Server thread/INFO]: Starting Minecraft server on *:25500");
     ost << "服务器将在端口" << eCy.port << "启动\n";
@@ -525,7 +551,7 @@ int main()
     if (ret == 0) {
         stdoutthread.join();
     }
-    
+
     ostr.clear();
     ostr << "Server exited with code : " << ret;
     logger.info(ostr.str().c_str());
