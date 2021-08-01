@@ -280,7 +280,9 @@ int Config() {
 #pragma region replxxfuncs
 Replxx::completions_t 
 ReplxxCompletionCallback(std::string const& context, int& contextLen, std::vector<std::string> const& comp) {
-
+    cout << context << endl;
+    Replxx::completions_t completions;
+    return completions;
 }
 #pragma endregion
 
@@ -334,6 +336,11 @@ int main()
     logger.fatal(ost.str().c_str());
 
     Config();
+
+    while (true) {
+        string cmdinput = rx.input("Helium>");
+        cout << "User input : " << cmdinput << endl;
+    }
 
     system("pause");
 }

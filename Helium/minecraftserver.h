@@ -55,6 +55,7 @@ protected:
 	int	   serverstatus;
 
 	thread stdoutthread;
+	HANDLE serverproc;
 
 	RedirectInformation redir;
 public:

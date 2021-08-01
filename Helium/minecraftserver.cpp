@@ -169,8 +169,8 @@ int    MinecraftServerInstance::StartServer() {
     this->redir.hStdOutRead = hStdOutRead;
     this->redir.hStdOutWrite = hStdOutWrite;
 
-    thread tempthread(MinecraftServerInstance::ProcessServerOutput);
-    this->stdoutthread = std::move(tempthread);
+    //thread tempthread(&MinecraftServerInstance::ProcessServerOutput);
+    //this->stdoutthread = std::move(tempthread);
 
     cout << "Output processing thread create successfully" << endl;
 
@@ -186,13 +186,13 @@ int    MinecraftServerInstance::StartServer() {
 }
 [[nodiscard("")]]
 int    MinecraftServerInstance::StopServer() {
-
+    return 0;
 }
 [[nodiscard("")]]
 int    MinecraftServerInstance::RestartServer() {
-
+    return 0;
 }
 
 int    MinecraftServerInstance::ProcessServerOutput() {
-
+    return 0;
 }
