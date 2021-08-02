@@ -278,10 +278,70 @@ int Config() {
 #pragma endregion
 
 #pragma region replxxfuncs
+int utf8str_codepoint_len(char const* s, int utf8len) {
+    int codepointLen = 0;
+    unsigned char m4 = 128 + 64 + 32 + 16;
+    unsigned char m3 = 128 + 64 + 32;
+    unsigned char m2 = 128 + 64;
+    for (int i = 0; i < utf8len; ++i, ++codepointLen) {
+        char c = s[i];
+        if ((c & m4) == m4) {
+            i += 3;
+        }
+        else if ((c & m3) == m3) {
+            i += 2;
+        }
+        else if ((c & m2) == m2) {
+            i += 1;
+        }
+    }
+    return (codepointLen);
+}
+
+int context_len(char const* prefix) {
+    char const wb[] = " \t\n\r\v\f-=+*&^%$#@!,./?<>;:`~'\"[]{}()\\|";
+    int i = (int)strlen(prefix) - 1;
+    int cl = 0;
+    while (i >= 0) {
+        if (strchr(wb, prefix[i]) != NULL) {
+            break;
+        }
+        ++cl;
+        --i;
+    }
+    return (cl);
+}
+
 Replxx::completions_t 
 ReplxxCompletionCallback(std::string const& context, int& contextLen, std::vector<std::string> const& comp) {
-    cout << context << endl;
     Replxx::completions_t completions;
+    int utf8ContextLen(context_len(context.c_str()));
+    int prefixLen(static_cast<int>(context.length()) - utf8ContextLen);
+    if ((prefixLen > 0) && (context[prefixLen - 1] == '\\')) {
+        --prefixLen;
+        ++utf8ContextLen;
+    }
+    contextLen = utf8str_codepoint_len(context.c_str() + prefixLen, utf8ContextLen);
+
+    std::string prefix{ context.substr(prefixLen) };
+    if (prefix == "\\pi") {
+        completions.push_back("π");
+    }
+    else {
+        for (auto const& e : comp) {
+            if (e.compare(0, prefix.size(), prefix) == 0) {
+                Replxx::Color c(Replxx::Color::DEFAULT);
+                if (e.find("brightred") != std::string::npos) {
+                    c = Replxx::Color::BRIGHTRED;
+                }
+                else if (e.find("red") != std::string::npos) {
+                    c = Replxx::Color::RED;
+                }
+                completions.emplace_back(e.c_str(), c);
+            }
+        }
+    }
+
     return completions;
 }
 #pragma endregion
@@ -298,7 +358,7 @@ int main()
     rx.install_window_change_handler();
 
     vector<string> commands{
-        "..helium", "help"
+        ".helium", "help"
     };
     string heliumhistory = ".\\helium_history.txt";
     rx.history_load(heliumhistory);
