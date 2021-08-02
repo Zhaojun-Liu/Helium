@@ -1,14 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <HeliumConfig>
-    <ServerMaxMem>4096</ServerMaxMem>
-    <ServerMinMem>1024</ServerMinMem>
-    <ServerDirectory>server</ServerDirectory>
-    <ServerJarName>server.jar</ServerJarName>
-    <JvmOption>-jar</JvmOption>
-    <Handler>0</Handler>
     <EnableTimeStamp>False</EnableTimeStamp>
     <Language>0</Language>
     <PluginDirectory>plugins</PluginDirectory>
     <MaxQueue>2048</MaxQueue>
-    <JvmDirectory>C:\Program Files\AdoptOpenJDK\jdk-8.0.262.10-openj9\bin\javaw.exe</JvmDirectory>
+	<MinecraftServer type="vanilla" startuptype="jar" autostart="true" outputvisibility="true">
+		<ServerName>test1</ServerName>
+		<ServerDirectory>test1</ServerDirectory>
+		<JVMDirectory>C:\Program Files\AdoptOpenJDK\jdk-14.0.2.12-openj9\bin\javaw.exe</JVMDirectory>
+		<JVMOption></JVMOption>
+		<ServerFileName>server.jar nogui</ServerFileName>
+		<MaxMemory>4096M</MaxMemory>
+		<MinMemory>1024M</MinMemory>
+	</MinecraftServer>
+	<MinecraftServer type="vanilla" startuptype="jar" autostart="true" outputvisibility="true">
+		<ServerName>test2</ServerName>
+		<ServerDirectory>test2</ServerDirectory>
+		<JVMDirectory>C:\Program Files\Java\jdk-16.0.2\bin\javaw.exe</JVMDirectory>
+		<JVMOption></JVMOption>
+		<ServerFileName>server.jar nogui</ServerFileName>
+		<MaxMemory>4096M</MaxMemory>
+		<MinMemory>1024M</MinMemory>
+	</MinecraftServer>
 </HeliumConfig>

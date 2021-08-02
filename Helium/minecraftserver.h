@@ -11,6 +11,23 @@
 
 using namespace std;
 
+#define SERVER_STATUS_RUNNING		0
+#define SERVER_STATUS_TERMINATED	1
+#define SERVER_STATUS_PAUSED		2
+#define SERVER_STATUS_UNDEF			3
+
+#define SERVER_TYPE_VANILLA		0
+#define SERVER_TYPE_FORGE		1
+#define SERVER_TYPE_BUKKIT		2
+#define SERVER_TYPE_BUKKIT14	3
+#define SERVER_TYPE_BUNGEECORD	4
+#define SERVER_TYPE_WATERFALL	5
+#define SERVER_TYPE_CAT			6
+#define SERVER_TYPE_BETA18		7
+
+#define STARTUP_TYPE_JAR 0
+#define STARTUP_TYPE_BAT 1
+
 struct RedirectInformation
 {
 
@@ -44,7 +61,7 @@ class MinecraftServerInstance {
 protected:
 	string servername;
 	string jvmdirectory;
-	string serverjarname;
+	string serverfilename;
 	string jvmoption;
 	string serverdirectory;
 	string minmem;
@@ -54,13 +71,17 @@ protected:
 	int	   servertype;
 	int	   serverstatus;
 
+	bool   outputvisibility;
+	bool   autostart;
+
 	thread stdoutthread;
 	HANDLE serverproc;
 
 	RedirectInformation redir;
 public:
 	MinecraftServerInstance();
-	MinecraftServerInstance(const MinecraftServerInstance const* ins);
+	MinecraftServerInstance(const MinecraftServerInstance const* ins) = delete;
+	MinecraftServerInstance(MinecraftServerInstance&& ins);
 
 	~MinecraftServerInstance();
 
@@ -72,8 +93,8 @@ public:
 	string SetJVMDirectory(string dir);
 	string GetJVMDirectory();
 
-	string SetServerJarName(string name);
-	string GetServerJarName();
+	string SetServerFileName(string name);
+	string GetServerFileName();
 
 	string SetJVMOption(string option);
 	string GetJVMOption();
@@ -81,10 +102,10 @@ public:
 	string SetServerDirectory(string dir);
 	string GetServerDirectory();
 
-	string    SetMaxmem(string mem);
-	string    SetMinmem(string mem);
-	string    GetMaxmem();
-	string    GetMinmem();
+	string SetMaxmem(string mem);
+	string SetMinmem(string mem);
+	string GetMaxmem();
+	string GetMinmem();
 
 	int    SetStartupType(int type);
 	int    GetStartupType();
@@ -94,6 +115,12 @@ public:
 
 	int    SetServerStatus(int stat);
 	int    GetServerStatus();
+
+	bool   SetVisibility(bool vis);
+	bool   GetVisibility();
+
+	bool   SetAutoStart(bool start);
+	bool   GetAutoStart();
 
 	int    StartServer();
 	int    StopServer();

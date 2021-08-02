@@ -1,14 +1,36 @@
 #include"minecraftserver.h"
 
 MinecraftServerInstance::MinecraftServerInstance() {
-
+    this->serverproc = INVALID_HANDLE_VALUE;
+    this->serverstartuptype = STARTUP_TYPE_JAR;
+    this->serverstatus = SERVER_STATUS_TERMINATED;
+    this->servertype = SERVER_TYPE_VANILLA;
+    this->outputvisibility = true;
+    this->autostart = false;
 }
-MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance const* ins) {
 
+MinecraftServerInstance::MinecraftServerInstance(MinecraftServerInstance&& ins) {
+    this->servername = ins.servername;
+    this->jvmdirectory = ins.jvmdirectory;
+    this->serverfilename = ins.serverfilename;
+    this->jvmoption = ins.jvmoption;
+    this->serverdirectory = ins.serverdirectory;
+    this->minmem = ins.minmem;
+    this->maxmem = ins.maxmem;
+
+    this->serverstartuptype = ins.serverstartuptype;
+    this->servertype = ins.servertype;
+    this->serverstatus = ins.serverstatus;
+
+    this->stdoutthread = move(ins.stdoutthread);
+    this->serverproc = ins.serverproc;
+    
+    this->outputvisibility = ins.outputvisibility;
+    this->autostart = ins.autostart;
 }
 
 MinecraftServerInstance::~MinecraftServerInstance() {
-
+    TerminateProcess(this->serverproc, 0);
 }
 
 string MinecraftServerInstance::SetServerName(string servername) {
@@ -27,12 +49,12 @@ string MinecraftServerInstance::GetJVMDirectory() {
 	return this->jvmdirectory;
 }
 
-string MinecraftServerInstance::SetServerJarName(string name) {
-	this->serverjarname = name;
+string MinecraftServerInstance::SetServerFileName(string name) {
+	this->serverfilename = name;
 	return name;
 }
-string MinecraftServerInstance::GetServerJarName() {
-	return this->serverjarname;
+string MinecraftServerInstance::GetServerFileName() {
+	return this->serverfilename;
 }
 
 string MinecraftServerInstance::SetJVMOption(string option) {
@@ -90,6 +112,22 @@ string MinecraftServerInstance::GetMinmem() {
     return this->minmem;
 }
 
+bool   MinecraftServerInstance::SetVisibility(bool vis) {
+    this->outputvisibility = vis;
+    return vis;
+}
+bool   MinecraftServerInstance::GetVisibility() {
+    return this->outputvisibility;
+}
+
+bool   MinecraftServerInstance::SetAutoStart(bool start) {
+    this->autostart = start;
+    return start;
+}
+bool   MinecraftServerInstance::GetAutoStart() {
+    return this->autostart;
+}
+
 [[nodiscard("")]]
 int    MinecraftServerInstance::StartServer() {
     char cwd[MAX_PATH];
@@ -100,7 +138,7 @@ int    MinecraftServerInstance::StartServer() {
 
     startupcmdline.append(this->jvmdirectory).append(" ").append(this->jvmoption);
     startupcmdline.append(" ").append("-Xmx").append(this->maxmem).append(" ").append("-Xms").append(this->minmem);
-    startupcmdline.append(" ").append(cwd).append("\\").append(this->serverdirectory).append("\\").append(this->serverjarname);
+    startupcmdline.append(" ").append(cwd).append("\\").append(this->serverdirectory).append("\\").append(this->serverfilename);
 
     servercwd.append(cwd).append("\\").append(this->serverdirectory);
 
@@ -169,8 +207,8 @@ int    MinecraftServerInstance::StartServer() {
     this->redir.hStdOutRead = hStdOutRead;
     this->redir.hStdOutWrite = hStdOutWrite;
 
-    //thread tempthread(&MinecraftServerInstance::ProcessServerOutput);
-    //this->stdoutthread = std::move(tempthread);
+    thread tempthread(&MinecraftServerInstance::ProcessServerOutput);
+    this->stdoutthread = std::move(tempthread);
 
     cout << "Output processing thread create successfully" << endl;
 
@@ -186,10 +224,11 @@ int    MinecraftServerInstance::StartServer() {
 }
 [[nodiscard("")]]
 int    MinecraftServerInstance::StopServer() {
-    return 0;
+    
 }
 [[nodiscard("")]]
 int    MinecraftServerInstance::RestartServer() {
+    if(this->serverstatus)
     return 0;
 }
 
