@@ -80,8 +80,8 @@ protected:
 	RedirectInformation redir;
 public:
 	MinecraftServerInstance();
-	MinecraftServerInstance(const MinecraftServerInstance const* ins) = delete;
-	MinecraftServerInstance(MinecraftServerInstance&& ins);
+	MinecraftServerInstance(const MinecraftServerInstance const* ins);
+	MinecraftServerInstance(const MinecraftServerInstance& ins);
 
 	~MinecraftServerInstance();
 

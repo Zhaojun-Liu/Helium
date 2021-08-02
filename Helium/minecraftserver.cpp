@@ -9,7 +9,27 @@ MinecraftServerInstance::MinecraftServerInstance() {
     this->autostart = false;
 }
 
-MinecraftServerInstance::MinecraftServerInstance(MinecraftServerInstance&& ins) {
+MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance const* ins) {
+    this->servername = ins->servername;
+    this->jvmdirectory = ins->jvmdirectory;
+    this->serverfilename = ins->serverfilename;
+    this->jvmoption = ins->jvmoption;
+    this->serverdirectory = ins->serverdirectory;
+    this->minmem = ins->minmem;
+    this->maxmem = ins->maxmem;
+
+    this->serverstartuptype = ins->serverstartuptype;
+    this->servertype = ins->servertype;
+    this->serverstatus = ins->serverstatus;
+
+    this->stdoutthread = const_cast<thread&&>(move(ins->stdoutthread));
+    this->serverproc = ins->serverproc;
+
+    this->outputvisibility = ins->outputvisibility;
+    this->autostart = ins->autostart;
+}
+
+MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance& ins) {
     this->servername = ins.servername;
     this->jvmdirectory = ins.jvmdirectory;
     this->serverfilename = ins.serverfilename;
@@ -22,7 +42,7 @@ MinecraftServerInstance::MinecraftServerInstance(MinecraftServerInstance&& ins) 
     this->servertype = ins.servertype;
     this->serverstatus = ins.serverstatus;
 
-    this->stdoutthread = move(ins.stdoutthread);
+    this->stdoutthread = const_cast<thread&&>(move(ins.stdoutthread));
     this->serverproc = ins.serverproc;
     
     this->outputvisibility = ins.outputvisibility;
@@ -207,7 +227,7 @@ int    MinecraftServerInstance::StartServer() {
     this->redir.hStdOutRead = hStdOutRead;
     this->redir.hStdOutWrite = hStdOutWrite;
 
-    thread tempthread(&MinecraftServerInstance::ProcessServerOutput);
+    thread tempthread(&MinecraftServerInstance::ProcessServerOutput, this);
     this->stdoutthread = std::move(tempthread);
 
     cout << "Output processing thread create successfully" << endl;
@@ -224,7 +244,7 @@ int    MinecraftServerInstance::StartServer() {
 }
 [[nodiscard("")]]
 int    MinecraftServerInstance::StopServer() {
-    
+    return 0;
 }
 [[nodiscard("")]]
 int    MinecraftServerInstance::RestartServer() {
