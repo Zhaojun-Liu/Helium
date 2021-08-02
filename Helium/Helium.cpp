@@ -119,6 +119,152 @@ vector<MinecraftServerInstance> serverlist;
 #pragma region Config
 [[nodiscard("Do not discard return value of SaveConfigFile() plz")]]
 int SaveConfigFile() {
+    tinyxml2::XMLDocument doc;
+    if (auto ret = doc.LoadFile(CFG_FILENAME); ret != 0) {
+        cout << "Failed to create XML file declaration" << endl;
+        return -1;
+    }
+
+    tinyxml2::XMLElement* root = doc.NewElement("HeliumConfig");
+    doc.InsertEndChild(root);
+
+    for (auto node : _confignodes_) {
+        stringstream sstr;
+
+        switch (node.valuetype)
+        {
+        [[likely]] case VALUE_TYPE_INTEGER:
+            try {
+                sstr << std::get<int>(node.var); // access by type
+                tinyxml2::XMLElement* newelement = doc.NewElement(node.nodename.c_str());
+                tinyxml2::XMLText* newtext = doc.NewText(sstr.str().c_str());
+                root->InsertEndChild(newelement);
+                newelement->InsertEndChild(newtext);
+            }
+            catch (const std::bad_variant_access& e) { // in case a wrong type/index is used
+                cout << "Failed to get the value" << endl;
+            }
+            break;
+        [[likely]] case VALUE_TYPE_DOUBLE:
+            try {
+                sstr << std::get<double>(node.var); // access by type
+                tinyxml2::XMLElement* newelement = doc.NewElement(node.nodename.c_str());
+                tinyxml2::XMLText* newtext = doc.NewText(sstr.str().c_str());
+                root->InsertEndChild(newelement);
+                newelement->InsertEndChild(newtext);
+            }
+            catch (const std::bad_variant_access& e) { // in case a wrong type/index is used
+                cout << "Failed to get the value" << endl;
+            }
+            break;
+        [[likely]] case VALUE_TYPE_STRING:
+            try {
+                sstr << std::get<string>(node.var); // access by type
+                tinyxml2::XMLElement* newelement = doc.NewElement(node.nodename.c_str());
+                tinyxml2::XMLText* newtext = doc.NewText(sstr.str().c_str());
+                root->InsertEndChild(newelement);
+                newelement->InsertEndChild(newtext);
+            }
+            catch (const std::bad_variant_access& e) { // in case a wrong type/index is used
+                cout << "Failed to get the value" << endl;
+            }
+            break;
+        [[likely]] case VALUE_TYPE_BOOLEAN:
+            try {
+                sstr << boolstr[std::get<bool>(node.var)]; // access by type
+                tinyxml2::XMLElement* newelement = doc.NewElement(node.nodename.c_str());
+                tinyxml2::XMLText* newtext = doc.NewText(sstr.str().c_str());
+                root->InsertEndChild(newelement);
+                newelement->InsertEndChild(newtext);
+            }
+            catch (const std::bad_variant_access& e) { // in case a wrong type/index is used
+                cout << "Failed to get the value" << endl;
+            }
+            break;
+        [[unlikely]] default:
+            break;
+        }
+
+        sstr.clear();
+    }
+
+    for (vector<MinecraftServerInstance>::iterator it = serverlist.begin(); it < serverlist.end(); it++) {
+        tinyxml2::XMLElement* newelem = doc.NewElement("MinecraftServer");
+        string temp;
+        switch (it->GetServerType())
+        {
+        [[likely]] case SERVER_TYPE_VANILLA:
+            temp = "vanilla";
+            break;
+        [[likely]] case SERVER_TYPE_FORGE:
+            temp = "forge";
+            break;
+        [[likely]] case SERVER_TYPE_BUKKIT:
+            temp = "bukkit";
+            break;
+        [[likely]] case SERVER_TYPE_BUKKIT14:
+            temp = "bukkit14";
+            break;
+        [[likely]] case SERVER_TYPE_BUNGEECORD:
+            temp = "bungeecord";
+            break;
+        [[likely]] case SERVER_TYPE_WATERFALL:
+            temp = "waterfall";
+            break;
+        [[likely]] case SERVER_TYPE_CAT:
+            temp = "cat";
+            break;
+        [[likely]] case SERVER_TYPE_BETA18:
+            temp = "beta18";
+            break;
+        [[unlikely]] default:
+            temp = "undef";
+            break;
+        }
+        newelem->SetAttribute("type", temp.c_str());
+
+        temp.clear();
+        if (it->GetStartupType() == STARTUP_TYPE_JAR) temp = "jar";
+        else temp = "bat";
+        newelem->SetAttribute("startuptype", temp.c_str());
+
+        temp.clear();
+        if (it->GetAutoStart()) temp = "true";
+        else temp = "false";
+        newelem->SetAttribute("autostart", temp.c_str());
+
+        temp.clear();
+        if (it->GetVisibility()) temp = "true";
+        else temp = "false";
+        newelem->SetAttribute("outputvisibility", temp.c_str());
+
+        tinyxml2::XMLElement* newchild = newelem->InsertNewChildElement("ServerName");
+        newchild->SetText(it->GetServerName().c_str());
+
+        newchild = newelem->InsertNewChildElement("ServerDirectory");
+        newchild->SetText(it->GetServerDirectory().c_str());
+
+        newchild = newelem->InsertNewChildElement("JVMDirectory");
+        newchild->SetText(it->GetJVMDirectory().c_str());
+
+        newchild = newelem->InsertNewChildElement("JVMOption");
+        newchild->SetText(it->GetJVMOption().c_str());
+
+        newchild = newelem->InsertNewChildElement("ServerFileName");
+        newchild->SetText(it->GetServerFileName().c_str());
+
+        newchild = newelem->InsertNewChildElement("MaxMemory");
+        newchild->SetText(it->GetMaxmem().c_str());
+
+        newchild = newelem->InsertNewChildElement("MinMemory");
+        newchild->SetText(it->GetMinmem().c_str());
+    }
+
+    if (auto ret = doc.SaveFile(CFG_FILENAME); ret != 0) {
+        cout << "Failed to save config file" << endl;
+        return -1;
+    }
+
     return 0;
 }
 
@@ -330,13 +476,15 @@ int readCfg() {
     }
 
     servernode = pRootEle->FirstChildElement("MinecraftServer");
-    while (servernode) {
+    if (servernode == NULL)return -1;
+    print("0");
+    while (true) {
         tinyxml2::XMLElement* servernodechild;
         tinyxml2::XMLAttribute* attr;   
         MinecraftServerInstance tempins;
         bool tempbool;
         stringstream sstr;
-        
+        print("1");
         attr = const_cast<tinyxml2::XMLAttribute*>(servernode->FindAttribute("type"));
 
         if (strcmp(attr->Value(), "vanilla"))       tempins.SetServerType(SERVER_TYPE_VANILLA);
@@ -347,12 +495,12 @@ int readCfg() {
         if (strcmp(attr->Value(), "waterfall"))     tempins.SetServerType(SERVER_TYPE_WATERFALL);
         if (strcmp(attr->Value(), "cat"))           tempins.SetServerType(SERVER_TYPE_CAT);
         if (strcmp(attr->Value(), "beta18"))        tempins.SetServerType(SERVER_TYPE_BETA18);
-
+        print("2");
         attr = const_cast<tinyxml2::XMLAttribute*>(servernode->FindAttribute("startuptype"));
         
         if (strcmp(attr->Value(), "jar"))           tempins.SetStartupType(STARTUP_TYPE_JAR);
         if (strcmp(attr->Value(), "bat"))           tempins.SetStartupType(STARTUP_TYPE_BAT);
-
+        print("3");
         attr = const_cast<tinyxml2::XMLAttribute*>(servernode->FindAttribute("autostart"));
 
         sstr << attr->Value();
@@ -387,10 +535,13 @@ int readCfg() {
 
         servernodechild = servernode->FirstChildElement("MinMemory");
         tempins.SetMinmem(servernodechild->Value());
-
+        print("4");
         serverlist.push_back(tempins);
+        print("5");
+        servernode = pRootEle->NextSiblingElement("MinecraftServer");
+        if (servernode == NULL)break;
     }
-
+    print("6");
     return 0;
 }
 

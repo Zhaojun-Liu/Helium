@@ -159,6 +159,7 @@ int    MinecraftServerInstance::StartServer() {
     startupcmdline.append(this->jvmdirectory).append(" ").append(this->jvmoption);
     startupcmdline.append(" ").append("-Xmx").append(this->maxmem).append(" ").append("-Xms").append(this->minmem);
     startupcmdline.append(" ").append(cwd).append("\\").append(this->serverdirectory).append("\\").append(this->serverfilename);
+    cout << startupcmdline << endl;
 
     servercwd.append(cwd).append("\\").append(this->serverdirectory);
 
