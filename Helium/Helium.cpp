@@ -429,6 +429,11 @@ int readCfg() {
     tinyxml2::XMLDocument config;
     tinyxml2::XMLElement* pRootEle;
     tinyxml2::XMLElement* servernode;
+    tinyxml2::XMLElement* servernodechild;
+    tinyxml2::XMLAttribute* attr;
+    MinecraftServerInstance tempins;
+    bool tempbool;
+    stringstream sstr;
     
     auto ret = config.LoadFile(CFG_FILENAME);
 
@@ -476,15 +481,11 @@ int readCfg() {
     }
 
     servernode = pRootEle->FirstChildElement("MinecraftServer");
+    servernodechild = servernode->FirstChildElement("ServerName");
+
     if (servernode == NULL)return -1;
-    print("0");
     while (true) {
-        tinyxml2::XMLElement* servernodechild;
-        tinyxml2::XMLAttribute* attr;   
-        MinecraftServerInstance tempins;
-        bool tempbool;
-        stringstream sstr;
-        print("1");
+
         attr = const_cast<tinyxml2::XMLAttribute*>(servernode->FindAttribute("type"));
 
         if (strcmp(attr->Value(), "vanilla"))       tempins.SetServerType(SERVER_TYPE_VANILLA);
@@ -495,12 +496,10 @@ int readCfg() {
         if (strcmp(attr->Value(), "waterfall"))     tempins.SetServerType(SERVER_TYPE_WATERFALL);
         if (strcmp(attr->Value(), "cat"))           tempins.SetServerType(SERVER_TYPE_CAT);
         if (strcmp(attr->Value(), "beta18"))        tempins.SetServerType(SERVER_TYPE_BETA18);
-        print("2");
         attr = const_cast<tinyxml2::XMLAttribute*>(servernode->FindAttribute("startuptype"));
         
         if (strcmp(attr->Value(), "jar"))           tempins.SetStartupType(STARTUP_TYPE_JAR);
         if (strcmp(attr->Value(), "bat"))           tempins.SetStartupType(STARTUP_TYPE_BAT);
-        print("3");
         attr = const_cast<tinyxml2::XMLAttribute*>(servernode->FindAttribute("autostart"));
 
         sstr << attr->Value();
@@ -515,33 +514,33 @@ int readCfg() {
         tempins.SetVisibility(tempbool);
         sstr.clear();
 
-        servernodechild = servernode->FirstChildElement("ServerName");
-        tempins.SetServerName(servernodechild->Value());
-
+        if (auto ret = servernode->GetText(); ret != NULL)tempins.SetServerName(servernode->GetText());
+        print("awa")
         servernodechild = servernode->FirstChildElement("ServerDirectory");
-        tempins.SetServerDirectory(servernodechild->Value());
-
+        if (auto ret = servernode->GetText(); ret != NULL)tempins.SetServerDirectory(servernode->GetText());
+        print("awa")
         servernodechild = servernode->FirstChildElement("JVMDirectory");
-        tempins.SetJVMDirectory(servernodechild->Value());
-
+        if (auto ret = servernode->GetText(); ret != NULL)tempins.SetJVMDirectory(servernode->GetText());
+        print("awa")
         servernodechild = servernode->FirstChildElement("JVMOption");
-        tempins.SetJVMOption(servernodechild->Value());
-
+        if (auto ret = servernode->GetText(); ret != NULL)tempins.SetJVMOption(servernode->GetText());
+        print("awa")
         servernodechild = servernode->FirstChildElement("ServerFileName");
-        tempins.SetServerFileName(servernodechild->Value());
-
+        if (auto ret = servernode->GetText(); ret != NULL)tempins.SetServerFileName(servernode->GetText());
+        print("awa")
         servernodechild = servernode->FirstChildElement("MaxMemory");
-        tempins.SetMaxmem(servernodechild->Value());
-
+        if (auto ret = servernode->GetText(); ret != NULL)tempins.SetMaxmem(servernode->GetText());
+        print("awa")
         servernodechild = servernode->FirstChildElement("MinMemory");
-        tempins.SetMinmem(servernodechild->Value());
-        print("4");
+        if (auto ret = servernode->GetText(); ret != NULL)tempins.SetMinmem(servernode->GetText());
+        print("awa")
         serverlist.push_back(tempins);
-        print("5");
-        servernode = pRootEle->NextSiblingElement("MinecraftServer");
-        if (servernode == NULL)break;
+        servernode = pRootEle->NextSiblingElement();
+        if (servernode == NULL) { 
+            print("break")
+            break; 
+        }
     }
-    print("6");
     return 0;
 }
 
@@ -550,8 +549,6 @@ int Config() {
     ADD_CONFIG_NODE("Language", Language, VALUE_TYPE_INTEGER, 0);
     ADD_CONFIG_NODE("PluginDirectory", PluginDirectory, VALUE_TYPE_STRING, "plugins");
     ADD_CONFIG_NODE("MaxQueue", MaxQueue, VALUE_TYPE_INTEGER, 2048);
-
-
 
     string jvmpath = getenv("JAVA_HOME");
     jvmpath.append("bin\\javaw.exe");
