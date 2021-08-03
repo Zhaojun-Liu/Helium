@@ -125,6 +125,8 @@ public:
 	int    StartServer();
 	int    StopServer();
 	int    RestartServer();
+
+	void   Print();
 };
 
 #endif // !_H_MINECRAFTSERVER

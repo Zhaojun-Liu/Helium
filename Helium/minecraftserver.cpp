@@ -54,7 +54,7 @@ MinecraftServerInstance::~MinecraftServerInstance() {
 }
 
 string MinecraftServerInstance::SetServerName(string servername) {
-	this->servername = servername;
+	this->servername = move(servername);
 	return servername;
 }
 string MinecraftServerInstance::GetServerName() {
@@ -62,7 +62,7 @@ string MinecraftServerInstance::GetServerName() {
 }
 
 string MinecraftServerInstance::SetJVMDirectory(string dir) {
-	this->jvmdirectory = dir;
+	this->jvmdirectory = move(dir);
 	return dir;
 }
 string MinecraftServerInstance::GetJVMDirectory() {
@@ -70,7 +70,7 @@ string MinecraftServerInstance::GetJVMDirectory() {
 }
 
 string MinecraftServerInstance::SetServerFileName(string name) {
-	this->serverfilename = name;
+	this->serverfilename = move(name);
 	return name;
 }
 string MinecraftServerInstance::GetServerFileName() {
@@ -78,7 +78,7 @@ string MinecraftServerInstance::GetServerFileName() {
 }
 
 string MinecraftServerInstance::SetJVMOption(string option) {
-	this->jvmoption = option;
+	this->jvmoption = move(option);
 	return option;
 }
 string MinecraftServerInstance::GetJVMOption() {
@@ -86,7 +86,7 @@ string MinecraftServerInstance::GetJVMOption() {
 }
 
 string MinecraftServerInstance::SetServerDirectory(string dir) {
-	this->serverdirectory = dir;
+	this->serverdirectory = move(dir);
 	return dir;
 }
 string MinecraftServerInstance::GetServerDirectory() {
@@ -118,11 +118,11 @@ int    MinecraftServerInstance::GetServerStatus() {
 }
 
 string MinecraftServerInstance::SetMaxmem(string mem) {
-    this->maxmem = mem;
+    this->maxmem = move(mem);
     return mem;
 }
 string MinecraftServerInstance::SetMinmem(string mem) {
-    this->minmem = mem;
+    this->minmem = move(mem);
     return mem;
 }
 string MinecraftServerInstance::GetMaxmem() {
@@ -255,4 +255,21 @@ int    MinecraftServerInstance::RestartServer() {
 
 int    MinecraftServerInstance::ProcessServerOutput() {
     return 0;
+}
+
+void   MinecraftServerInstance::Print() {
+    cout << endl << "Minecraft Server Instance Debug Print" << endl;
+    cout << "Server Name : " << this->servername << endl;
+    cout << "Server Directory :" << this->serverdirectory << endl;
+    cout << "Server File Name : " << this->serverfilename << endl;
+    cout << "JVM Directory : " << this->jvmdirectory << endl;
+    cout << "JVM Option : " << this->jvmoption << endl;
+    cout << "Max Memory : " << this->maxmem << endl;
+    cout << "Min Memory : " << this->minmem << endl << endl;
+    cout << "Startup Type : " << this->serverstartuptype << endl;
+    cout << "Server Type : " << this->servertype << endl;
+    cout << "Server Status : " << this->serverstatus << endl << endl;
+    cout << "Output Visibility : " << this->outputvisibility << endl;
+    cout << "Auto Start : " << this->autostart << endl << endl;
+    return;
 }

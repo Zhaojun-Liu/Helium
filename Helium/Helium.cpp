@@ -117,6 +117,7 @@ vector<MinecraftServerInstance> serverlist;
 #pragma endregion
 
 #pragma region Config
+
 [[nodiscard("Do not discard return value of SaveConfigFile() plz")]]
 int SaveConfigFile() {
     tinyxml2::XMLDocument doc;
@@ -470,11 +471,13 @@ int readCfg() {
         }
         else if (node->valuetype == VALUE_TYPE_BOOLEAN) {
             string temp = gnsbn(node->nodename);
+            bool tempbool;
+            istringstream(temp) >> boolalpha >> tempbool;
             if (temp == "True") {
-                node->var.emplace<VALUE_TYPE_BOOLEAN>(true);
-            }
+                node->var.emplace<VALUE_TYPE_BOOLEAN>(tempbool);
+           } 
             else {
-                node->var.emplace<VALUE_TYPE_BOOLEAN>(false);
+                node->var.emplace<VALUE_TYPE_BOOLEAN>(tempbool);
             }
         }
     }
@@ -487,7 +490,7 @@ int readCfg() {
         MinecraftServerInstance tempins;
         ZeroMemory(&tempins, sizeof(tempins));
         attr = const_cast<tinyxml2::XMLAttribute*>(servernode->FindAttribute("type"));
-        
+            
         if (strcmp(attr->Value(), "vanilla"))       tempins.SetServerType(SERVER_TYPE_VANILLA);
         if (strcmp(attr->Value(), "forge"))         tempins.SetServerType(SERVER_TYPE_FORGE);
         if (strcmp(attr->Value(), "bukkit"))        tempins.SetServerType(SERVER_TYPE_BUKKIT);
@@ -502,37 +505,63 @@ int readCfg() {
         if (strcmp(attr->Value(), "bat"))           tempins.SetStartupType(STARTUP_TYPE_BAT);
         attr = const_cast<tinyxml2::XMLAttribute*>(servernode->FindAttribute("autostart"));
         
-        sstr << attr->Value();
-        sstr >> tempbool;
+        istringstream(attr->Value()) >> boolalpha >> tempbool;
         tempins.SetAutoStart(tempbool);
-        sstr.clear();
         
         attr = const_cast<tinyxml2::XMLAttribute*>(servernode->FindAttribute("outputvisibility"));
         
-        sstr << attr->Value();
-        sstr >> tempbool;
+        istringstream(attr->Value()) >> boolalpha >> tempbool;
         tempins.SetVisibility(tempbool);
-        sstr.clear();
         
-        if (auto ret = servernode->GetText(); ret != NULL)tempins.SetServerName(servernode->GetText());
+        servernodechild = servernode->FirstChildElement("ServerName");
+        if(servernodechild)
+            if (servernodechild->GetText()) { 
+                tempins.SetServerName(servernodechild->GetText()); 
+                print(servernodechild->GetText())
+            }
+
         servernodechild = servernode->FirstChildElement("ServerDirectory");
-        
-        if (auto ret = servernode->GetText(); ret != NULL)tempins.SetServerDirectory(servernode->GetText());
+        if (servernodechild)
+            if (servernodechild->GetText()) { 
+                tempins.SetServerDirectory(servernodechild->GetText());
+                print(servernodechild->GetText())
+        }
+
         servernodechild = servernode->FirstChildElement("JVMDirectory");
-        
-        if (auto ret = servernode->GetText(); ret != NULL)tempins.SetJVMDirectory(servernode->GetText());
+        if (servernodechild)
+            if (servernodechild->GetText()) { 
+                tempins.SetJVMDirectory(servernodechild->GetText()); 
+                print(servernodechild->GetText())
+            }
+
         servernodechild = servernode->FirstChildElement("JVMOption");
-        
-        if (auto ret = servernode->GetText(); ret != NULL)tempins.SetJVMOption(servernode->GetText());
+        if (servernodechild)
+            if (servernodechild->GetText()) { 
+                tempins.SetJVMOption(servernodechild->GetText()); 
+                print(servernodechild->GetText())
+            }
+
         servernodechild = servernode->FirstChildElement("ServerFileName");
-        
-        if (auto ret = servernode->GetText(); ret != NULL)tempins.SetServerFileName(servernode->GetText());
+        if (servernodechild)
+            if (servernodechild->GetText()) { 
+                tempins.SetServerFileName(servernodechild->GetText()); 
+                print(servernodechild->GetText())
+            }
+
         servernodechild = servernode->FirstChildElement("MaxMemory");
-        
-        if (auto ret = servernode->GetText(); ret != NULL)tempins.SetMaxmem(servernode->GetText());
+        if (servernodechild)
+            if (servernodechild->GetText()) { 
+                tempins.SetMaxmem(servernodechild->GetText()); 
+                print(servernodechild->GetText())
+            }
+
         servernodechild = servernode->FirstChildElement("MinMemory");
-        
-        if (auto ret = servernode->GetText(); ret != NULL)tempins.SetMinmem(servernode->GetText());
+        if (servernodechild)
+            if (servernodechild->GetText()) { 
+                tempins.SetMinmem(servernodechild->GetText()); 
+                print(servernodechild->GetText())
+            }
+
 
         serverlist.push_back(move(tempins));
         servernode = servernode->NextSiblingElement("MinecraftServer");
@@ -679,11 +708,15 @@ int main()
     }
 
     for (auto ins : serverlist) {
+        ins.Print();
         int ret;
-        if (ins.GetAutoStart())
+        if (ins.GetAutoStart()) {
+            cout << "Starting Minecraft Server : " << ins.GetServerName() << endl;
             ret = ins.StartServer();
-        else
+        }
+        else {
             continue;
+        }
         if (ret != 0) {
             cout << "Error starting Minecraft server : " << ins.GetServerName() << endl;
         }
