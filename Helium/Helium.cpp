@@ -431,7 +431,6 @@ int readCfg() {
     tinyxml2::XMLElement* servernode;
     tinyxml2::XMLElement* servernodechild;
     tinyxml2::XMLAttribute* attr;
-    MinecraftServerInstance tempins;
     bool tempbool;
     stringstream sstr;
     
@@ -484,10 +483,11 @@ int readCfg() {
     servernodechild = servernode->FirstChildElement("ServerName");
 
     if (servernode == NULL)return -1;
-    while (true) {
-
+    while (servernode) {
+        MinecraftServerInstance tempins;
+        ZeroMemory(&tempins, sizeof(tempins));
         attr = const_cast<tinyxml2::XMLAttribute*>(servernode->FindAttribute("type"));
-
+        
         if (strcmp(attr->Value(), "vanilla"))       tempins.SetServerType(SERVER_TYPE_VANILLA);
         if (strcmp(attr->Value(), "forge"))         tempins.SetServerType(SERVER_TYPE_FORGE);
         if (strcmp(attr->Value(), "bukkit"))        tempins.SetServerType(SERVER_TYPE_BUKKIT);
@@ -501,46 +501,43 @@ int readCfg() {
         if (strcmp(attr->Value(), "jar"))           tempins.SetStartupType(STARTUP_TYPE_JAR);
         if (strcmp(attr->Value(), "bat"))           tempins.SetStartupType(STARTUP_TYPE_BAT);
         attr = const_cast<tinyxml2::XMLAttribute*>(servernode->FindAttribute("autostart"));
-
+        
         sstr << attr->Value();
         sstr >> tempbool;
         tempins.SetAutoStart(tempbool);
         sstr.clear();
-
+        
         attr = const_cast<tinyxml2::XMLAttribute*>(servernode->FindAttribute("outputvisibility"));
-
+        
         sstr << attr->Value();
         sstr >> tempbool;
         tempins.SetVisibility(tempbool);
         sstr.clear();
-
+        
         if (auto ret = servernode->GetText(); ret != NULL)tempins.SetServerName(servernode->GetText());
-        print("awa")
         servernodechild = servernode->FirstChildElement("ServerDirectory");
+        
         if (auto ret = servernode->GetText(); ret != NULL)tempins.SetServerDirectory(servernode->GetText());
-        print("awa")
         servernodechild = servernode->FirstChildElement("JVMDirectory");
+        
         if (auto ret = servernode->GetText(); ret != NULL)tempins.SetJVMDirectory(servernode->GetText());
-        print("awa")
         servernodechild = servernode->FirstChildElement("JVMOption");
+        
         if (auto ret = servernode->GetText(); ret != NULL)tempins.SetJVMOption(servernode->GetText());
-        print("awa")
         servernodechild = servernode->FirstChildElement("ServerFileName");
+        
         if (auto ret = servernode->GetText(); ret != NULL)tempins.SetServerFileName(servernode->GetText());
-        print("awa")
         servernodechild = servernode->FirstChildElement("MaxMemory");
+        
         if (auto ret = servernode->GetText(); ret != NULL)tempins.SetMaxmem(servernode->GetText());
-        print("awa")
         servernodechild = servernode->FirstChildElement("MinMemory");
+        
         if (auto ret = servernode->GetText(); ret != NULL)tempins.SetMinmem(servernode->GetText());
-        print("awa")
-        serverlist.push_back(tempins);
-        servernode = pRootEle->NextSiblingElement();
-        if (servernode == NULL) { 
-            print("break")
-            break; 
-        }
+
+        serverlist.push_back(move(tempins));
+        servernode = servernode->NextSiblingElement("MinecraftServer");
     }
+    print("exiting readCfg()");
     return 0;
 }
 
@@ -549,10 +546,7 @@ int Config() {
     ADD_CONFIG_NODE("Language", Language, VALUE_TYPE_INTEGER, 0);
     ADD_CONFIG_NODE("PluginDirectory", PluginDirectory, VALUE_TYPE_STRING, "plugins");
     ADD_CONFIG_NODE("MaxQueue", MaxQueue, VALUE_TYPE_INTEGER, 2048);
-
-    string jvmpath = getenv("JAVA_HOME");
-    jvmpath.append("bin\\javaw.exe");
-    ADD_CONFIG_NODE("JvmDirectory", JvmDirectory, VALUE_TYPE_STRING, jvmpath);
+    
     if (auto ret = readCfg(); ret == -1) {
         cout << "Failed to read the config file" << endl;
         return -1;
@@ -679,11 +673,17 @@ int main()
     logger.error(ost.str().c_str());
     logger.fatal(ost.str().c_str());
 
-    Config();
+    if (auto ret = Config(); ret != 0) {
+        print("Failed to read config");
+        return -1;
+    }
 
     for (auto ins : serverlist) {
         int ret;
-        if (ins.GetAutoStart()) ret = ins.StartServer();
+        if (ins.GetAutoStart())
+            ret = ins.StartServer();
+        else
+            continue;
         if (ret != 0) {
             cout << "Error starting Minecraft server : " << ins.GetServerName() << endl;
         }
