@@ -1,5 +1,8 @@
 #include"minecraftserver.h"
 
+CRITICAL_SECTION cs;
+static bool isinit = false;
+
 MinecraftServerInstance::MinecraftServerInstance() {
     this->serverproc = INVALID_HANDLE_VALUE;
     this->serverstartuptype = STARTUP_TYPE_JAR;
@@ -7,6 +10,8 @@ MinecraftServerInstance::MinecraftServerInstance() {
     this->servertype = SERVER_TYPE_VANILLA;
     this->outputvisibility = true;
     this->autostart = false;
+
+    if (!isinit) InitializeCriticalSection(&cs);
 }
 
 MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance const* ins) {
@@ -27,6 +32,8 @@ MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance c
 
     this->outputvisibility = ins->outputvisibility;
     this->autostart = ins->autostart;
+
+    if (!isinit) InitializeCriticalSection(&cs);
 }
 
 MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance& ins) {
@@ -47,10 +54,13 @@ MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance& 
     
     this->outputvisibility = ins.outputvisibility;
     this->autostart = ins.autostart;
+
+    if (!isinit) InitializeCriticalSection(&cs);
 }
 
 MinecraftServerInstance::~MinecraftServerInstance() {
     TerminateProcess(this->serverproc, 0);
+    if (!isinit) DeleteCriticalSection(&cs);
 }
 
 string MinecraftServerInstance::SetServerName(string servername) {
@@ -376,12 +386,14 @@ int    MinecraftServerInstance::ProcessServerOutput(string servername, bool visi
                 string temp(out_buffer);
                 auto outputs = split(temp, "\r\n");
                 for (auto line : outputs) {
-                    if (line.find("\r\n") == string::npos)
-                        line.append("\r\n");
-                    ServerLineOutput tempoutput;
-                    tempoutput.servername = servername;
-                    tempoutput.output = line;
-                    serveroutputs.push_back(move(tempoutput));
+                    EnterCriticalSection(&cs);
+                    string outputstr;
+                    if (line.find("\r\n") != string::npos && !line.empty())
+                        outputstr.append(servername).append(">").append(line);
+                    else
+                        outputstr.append(servername).append(">").append(line).append("\r\n");
+                    cout << outputstr;
+                    LeaveCriticalSection(&cs);
                 }
             }
         }
@@ -407,23 +419,4 @@ void   MinecraftServerInstance::Print() {
     cout << "Output Visibility : " << this->outputvisibility << endl;
     cout << "Auto Start : " << this->autostart << endl << endl;
     return;
-}
-
-int OutputProcessThread() {
-    cout << "Enter OutputProcessThread()" << endl;
-    while (true) {
-        if (serveroutputs.size() > 0) {
-            for (auto line:serveroutputs) {
-                cout << line.servername << ">" << line.output;
-            }
-            serveroutputs.clear();
-        }
-    }
-    return 0;
-}
-
-int StartOutputProcessThread() {
-    outputprocessthread = move(thread(OutputProcessThread));
-    outputprocessthread.detach();
-    return 0;
 }

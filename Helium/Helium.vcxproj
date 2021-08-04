@@ -163,6 +163,7 @@
     <ClCompile Include="xmlutils.cpp" />
     <ClCompile Include="xmlmacros.cpp" />
     <ClCompile Include="minecraftserver.cpp" />
+    <ClCompile Include="plugins.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="confuses.h" />
@@ -187,6 +188,7 @@
     <ClInclude Include="xmlutils.h" />
     <ClInclude Include="xmlmacros.h" />
     <ClInclude Include="minecraftserver.h" />
+    <ClInclude Include="plugins.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="HeliumConfig.xml" />

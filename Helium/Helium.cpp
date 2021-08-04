@@ -708,8 +708,6 @@ int main()
         return -1;
     }
 
-    StartOutputProcessThread();
-
     for (auto ins : serverlist) {
         int ret;
         if (ins.GetAutoStart()) {

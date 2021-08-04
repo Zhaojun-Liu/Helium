@@ -39,9 +39,6 @@ struct ServerLineOutput {
 	string output;
 };
 
-static vector<ServerLineOutput> serveroutputs;
-static thread outputprocessthread;
-
 struct RedirectInformation
 {
 
@@ -142,8 +139,5 @@ public:
 
 	void   Print();
 };
-
-int OutputProcessThread();
-int StartOutputProcessThread();
 
 #endif // !_H_MINECRAFTSERVER
