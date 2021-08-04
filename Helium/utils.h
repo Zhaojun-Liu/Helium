@@ -24,6 +24,7 @@ vector<string> split(const string& str, const string& pattern);
 
 //用指定字符串{pattern}切片{str}
 list<string> splittolist(const string& str, const string& pattern);
+vector<string> split(string str, const char* pattern);
 
 //从字符串list生成字符串,以指定字符串分隔
 string makestring(list<string> list_, string spiliter);

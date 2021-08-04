@@ -150,97 +150,202 @@ bool   MinecraftServerInstance::GetAutoStart() {
 
 [[nodiscard("")]]
 int    MinecraftServerInstance::StartServer() {
-    char cwd[MAX_PATH];
-    string startupcmdline, servercwd;
-    stringstream sstr;
+    if (this->serverstartuptype == STARTUP_TYPE_JAR) {
+        char cwd[MAX_PATH];
+        string startupcmdline, servercwd;
+        stringstream sstr;
 
-    GetCurrentDirectoryA(sizeof(cwd), cwd);
+        GetCurrentDirectoryA(sizeof(cwd), cwd);
 
-    startupcmdline.append(this->jvmdirectory).append(" ").append(this->jvmoption);
-    startupcmdline.append(" ").append("-Xmx").append(this->maxmem).append(" ").append("-Xms").append(this->minmem);
-    startupcmdline.append(" ").append(cwd).append("\\").append(this->serverdirectory).append("\\").append(this->serverfilename);
-    cout << startupcmdline << endl;
+        startupcmdline.append(this->jvmdirectory).append(" ").append("-jar").append(" ").append(this->jvmoption);
+        startupcmdline.append(" ").append("-Xmx").append(this->maxmem).append(" ").append("-Xms").append(this->minmem);
+        if (this->serverdirectory.find(':') == string::npos) {
+            startupcmdline.append(" ").append(cwd).append("\\").append(this->serverdirectory).append("\\").append(this->serverfilename);
+            servercwd.append(cwd).append("\\").append(this->serverdirectory);
+        }
+        else {
+            startupcmdline.append(" ").append(this->serverdirectory).append("\\").append(this->serverfilename);
+            servercwd = this->serverdirectory;
+        }
 
-    servercwd.append(cwd).append("\\").append(this->serverdirectory);
+        cout << startupcmdline << endl;
+        cout << servercwd << endl;
 
-    cout << startupcmdline << endl;
-    cout << servercwd << endl;
+        HANDLE hStdInRead = NULL;   //子进程用的stdin的读入端  
+        HANDLE hStdInWrite = NULL;  //主程序用的stdin的读入端 
+        HANDLE hStdOutRead = NULL;  //主程序用的stdout的读入端  
+        HANDLE hStdOutWrite = NULL; //子进程用的stdout的写入端  
 
-    HANDLE hStdInRead = NULL;   //子进程用的stdin的读入端  
-    HANDLE hStdInWrite = NULL;  //主程序用的stdin的读入端 
-    HANDLE hStdOutRead = NULL;  //主程序用的stdout的读入端  
-    HANDLE hStdOutWrite = NULL; //子进程用的stdout的写入端  
+        PROCESS_INFORMATION pi;
+        STARTUPINFOA si;
+        SECURITY_ATTRIBUTES sa;
+        RedirectInformation inf;
 
-    PROCESS_INFORMATION pi;
-    STARTUPINFOA si;
-    SECURITY_ATTRIBUTES sa;
-    RedirectInformation inf;
+        sa.bInheritHandle = TRUE;
+        sa.lpSecurityDescriptor = NULL;
+        sa.nLength = sizeof(SECURITY_ATTRIBUTES);
 
-    sa.bInheritHandle = TRUE;
-    sa.lpSecurityDescriptor = NULL;
-    sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+        //产生一个用于stdin的管道，得到两个HANDLE:  hStdInRead用于子进程读出数据，hStdInWrite用于主程序写入数据  
+        //其中saAttr是一个STARTUPINFO结构体，定义见CreatePipe函数说明  
+        if (!CreatePipe(&hStdInRead, &hStdInWrite, &sa, 0))
+            return -1;
+        //产生一个用于stdout的管道，得到两个HANDLE:  hStdOutRead用于主程序读出数据，hStdOutWrite用于子程序写入数据  
+        if (!CreatePipe(&hStdOutRead, &hStdOutWrite, &sa, 0))
+            return -1;
 
-    //产生一个用于stdin的管道，得到两个HANDLE:  hStdInRead用于子进程读出数据，hStdInWrite用于主程序写入数据  
-    //其中saAttr是一个STARTUPINFO结构体，定义见CreatePipe函数说明  
-    if (!CreatePipe(&hStdInRead, &hStdInWrite, &sa, 0))
-        return -1;
-    //产生一个用于stdout的管道，得到两个HANDLE:  hStdOutRead用于主程序读出数据，hStdOutWrite用于子程序写入数据  
-    if (!CreatePipe(&hStdOutRead, &hStdOutWrite, &sa, 0))
-        return -1;
+        if (hStdInRead == NULL || hStdInWrite == NULL) return -1;
+        if (hStdOutRead == NULL || hStdOutWrite == NULL) return -1;
 
-    if (hStdInRead == NULL || hStdInWrite == NULL) return -1;
-    if (hStdOutRead == NULL || hStdOutWrite == NULL) return -1;
+        ZeroMemory(&si, sizeof(STARTUPINFO));
+        GetStartupInfoA(&si);
+        si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
+        si.hStdOutput = hStdOutWrite;   //意思是：子进程的stdout输出到hStdOutWrite  
+        si.hStdError = hStdOutWrite;    //意思是：子进程的stderr输出到hStdErrWrite  
+        si.hStdInput = hStdInRead;
+        si.wShowWindow = SW_SHOW;
+        si.cb = sizeof(STARTUPINFOA);
 
-    ZeroMemory(&si, sizeof(STARTUPINFO));
-    GetStartupInfoA(&si);
-    si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
-    si.hStdOutput = hStdOutWrite;   //意思是：子进程的stdout输出到hStdOutWrite  
-    si.hStdError = hStdOutWrite;    //意思是：子进程的stderr输出到hStdErrWrite  
-    si.hStdInput = hStdInRead;
-    si.wShowWindow = SW_SHOW;
-    si.cb = sizeof(STARTUPINFOA);
+        unsigned int serverexitcode = 0;
 
-    unsigned int serverexitcode = 0;
+        char* c_scl = const_cast<char*>(startupcmdline.c_str());
+        cout << c_scl << endl;
+        BOOL bSuc = CreateProcessA(NULL
+            , c_scl
+            , NULL
+            , NULL
+            , true
+            , CREATE_SUSPENDED
+            , NULL
+            , servercwd.c_str()
+            , &si
+            , &pi);
 
-    char* c_scl = const_cast<char*>(startupcmdline.c_str());
-    cout << c_scl << endl;
-    BOOL bSuc = CreateProcessA(NULL
-        , c_scl
-        , NULL
-        , NULL
-        , true
-        , CREATE_SUSPENDED
-        , NULL
-        , servercwd.c_str()
-        , &si
-        , &pi);
+        if (bSuc == FALSE) {
+            cout << "CreateProcess() failed!" << endl;
+            return -1;
+        }
 
-    if (bSuc == FALSE) {
-        cout << "CreateProcess() failed!" << endl;
-        return -1;
+        this->serverstatus = SERVER_STATUS_RUNNING;
+        cout << "Minecraft server launched successfully" << endl;
+
+        this->redir.hStdErrWrite = hStdOutWrite;
+        this->redir.hStdInRead = hStdInRead;
+        this->redir.hStdInWrite = hStdInWrite;
+        this->redir.hStdOutRead = hStdOutRead;
+        this->redir.hStdOutWrite = hStdOutWrite;
+
+        thread tempthread(&MinecraftServerInstance::ProcessServerOutput, this, this->servername, this->outputvisibility);
+        this->stdoutthread = std::move(tempthread);
+        this->stdoutthread.detach();
+
+        cout << "Output processing thread create successfully" << endl;
+
+        if (ResumeThread(pi.hThread) == -1) {
+            TerminateProcess(pi.hProcess, serverexitcode);
+            return -1;
+        }
+
+        cout << "Minecraft server process resumed successfully" << endl;
+
+        c_scl = NULL;
     }
+    else if (this->serverstartuptype == STARTUP_TYPE_BAT) {
+        if (this->serverstartuptype == STARTUP_TYPE_JAR) {
+            char cwd[MAX_PATH];
+            string startupcmdline, servercwd;
+            stringstream sstr;
 
-    cout << "Minecraft server launched successfully" << endl;
+            GetCurrentDirectoryA(sizeof(cwd), cwd);
 
-    this->redir.hStdErrWrite = hStdOutWrite;
-    this->redir.hStdInRead = hStdInRead;
-    this->redir.hStdInWrite = hStdInWrite;
-    this->redir.hStdOutRead = hStdOutRead;
-    this->redir.hStdOutWrite = hStdOutWrite;
+            startupcmdline.append(cwd).append(this->serverfilename);
+            if (this->serverdirectory.find(':') == string::npos) {
+                servercwd.append(cwd).append("\\").append(this->serverdirectory);
+            }
+            else {
+                servercwd = this->serverdirectory;
+            }
 
-    thread tempthread(&MinecraftServerInstance::ProcessServerOutput, this);
-    this->stdoutthread = std::move(tempthread);
+            cout << startupcmdline << endl;
+            cout << servercwd << endl;
 
-    cout << "Output processing thread create successfully" << endl;
+            HANDLE hStdInRead = NULL;   //子进程用的stdin的读入端  
+            HANDLE hStdInWrite = NULL;  //主程序用的stdin的读入端 
+            HANDLE hStdOutRead = NULL;  //主程序用的stdout的读入端  
+            HANDLE hStdOutWrite = NULL; //子进程用的stdout的写入端  
 
-    if (ResumeThread(pi.hThread) == -1) {
-        TerminateProcess(pi.hProcess, serverexitcode);
-        return -1;
+            PROCESS_INFORMATION pi;
+            STARTUPINFOA si;
+            SECURITY_ATTRIBUTES sa;
+            RedirectInformation inf;
+
+            sa.bInheritHandle = TRUE;
+            sa.lpSecurityDescriptor = NULL;
+            sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+
+            //产生一个用于stdin的管道，得到两个HANDLE:  hStdInRead用于子进程读出数据，hStdInWrite用于主程序写入数据  
+            //其中saAttr是一个STARTUPINFO结构体，定义见CreatePipe函数说明  
+            if (!CreatePipe(&hStdInRead, &hStdInWrite, &sa, 0))
+                return -1;
+            //产生一个用于stdout的管道，得到两个HANDLE:  hStdOutRead用于主程序读出数据，hStdOutWrite用于子程序写入数据  
+            if (!CreatePipe(&hStdOutRead, &hStdOutWrite, &sa, 0))
+                return -1;
+
+            if (hStdInRead == NULL || hStdInWrite == NULL) return -1;
+            if (hStdOutRead == NULL || hStdOutWrite == NULL) return -1;
+
+            ZeroMemory(&si, sizeof(STARTUPINFO));
+            GetStartupInfoA(&si);
+            si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
+            si.hStdOutput = hStdOutWrite;   //意思是：子进程的stdout输出到hStdOutWrite  
+            si.hStdError = hStdOutWrite;    //意思是：子进程的stderr输出到hStdErrWrite  
+            si.hStdInput = hStdInRead;
+            si.wShowWindow = SW_SHOW;
+            si.cb = sizeof(STARTUPINFOA);
+
+            unsigned int serverexitcode = 0;
+
+            char* c_scl = const_cast<char*>(startupcmdline.c_str());
+            cout << c_scl << endl;
+            BOOL bSuc = CreateProcessA(NULL
+                , c_scl
+                , NULL
+                , NULL
+                , true
+                , CREATE_SUSPENDED
+                , NULL
+                , servercwd.c_str()
+                , &si
+                , &pi);
+
+            if (bSuc == FALSE) {
+                cout << "CreateProcess() failed!" << endl;
+                return -1;
+            }
+            
+            this->serverstatus = SERVER_STATUS_RUNNING;
+            cout << "Minecraft server launched successfully" << endl;
+
+            this->redir.hStdErrWrite = hStdOutWrite;
+            this->redir.hStdInRead = hStdInRead;
+            this->redir.hStdInWrite = hStdInWrite;
+            this->redir.hStdOutRead = hStdOutRead;
+            this->redir.hStdOutWrite = hStdOutWrite;
+
+            thread tempthread(&MinecraftServerInstance::ProcessServerOutput, this, this->servername, this->outputvisibility);
+            this->stdoutthread = std::move(tempthread);
+
+            cout << "Output processing thread create successfully" << endl;
+
+            if (ResumeThread(pi.hThread) == -1) {
+                TerminateProcess(pi.hProcess, serverexitcode);
+                return -1;
+            }
+
+            cout << "Minecraft server process resumed successfully" << endl;
+
+            c_scl = NULL;
+        }
     }
-
-    cout << "Minecraft server process resumed successfully" << endl;
-
-    c_scl = NULL;
     return 0;
 }
 [[nodiscard("")]]
@@ -249,12 +354,42 @@ int    MinecraftServerInstance::StopServer() {
 }
 [[nodiscard("")]]
 int    MinecraftServerInstance::RestartServer() {
-    if(this->serverstatus)
     return 0;
 }
 
-int    MinecraftServerInstance::ProcessServerOutput() {
-    return 0;
+int    MinecraftServerInstance::ProcessServerOutput(string servername, bool visi) {
+    cout << "Enter ProcessServerOutput()" << endl;
+    char out_buffer[BUFSIZE];
+    DWORD dwRead;
+    int ret = FALSE;
+    DWORD process_exit_code;
+
+    while (this->serverstatus != SERVER_STATUS_TERMINATED)
+    {
+        ZeroMemory(out_buffer, BUFSIZE);
+        //用WriteFile，从hStdOutRead读出子进程stdout输出的数据，数据结果在out_buffer中，长度为dwRead  
+        ret = ReadFile(this->redir.hStdOutRead, out_buffer, BUFSIZE - 1, &dwRead, NULL);
+        if ((ret) && (dwRead != 0))  //如果成功了，且长度>0  
+        {
+            out_buffer[dwRead] = '\0';
+            if (visi) {
+                string temp(out_buffer);
+                auto outputs = split(temp, "\r\n");
+                for (auto line : outputs) {
+                    if (line.find("\r\n") == string::npos)
+                        line.append("\r\n");
+                    ServerLineOutput tempoutput;
+                    tempoutput.servername = servername;
+                    tempoutput.output = line;
+                    serveroutputs.push_back(move(tempoutput));
+                }
+            }
+        }
+        //如果子进程结束，退出循环  
+    }
+    GetExitCodeProcess(this->serverproc, &process_exit_code);
+    cout << "Exiting ProcessServerOutput()" << endl;
+    return process_exit_code;
 }
 
 void   MinecraftServerInstance::Print() {
@@ -272,4 +407,23 @@ void   MinecraftServerInstance::Print() {
     cout << "Output Visibility : " << this->outputvisibility << endl;
     cout << "Auto Start : " << this->autostart << endl << endl;
     return;
+}
+
+int OutputProcessThread() {
+    cout << "Enter OutputProcessThread()" << endl;
+    while (true) {
+        if (serveroutputs.size() > 0) {
+            for (auto line:serveroutputs) {
+                cout << line.servername << ">" << line.output;
+            }
+            serveroutputs.clear();
+        }
+    }
+    return 0;
+}
+
+int StartOutputProcessThread() {
+    outputprocessthread = move(thread(OutputProcessThread));
+    outputprocessthread.detach();
+    return 0;
 }

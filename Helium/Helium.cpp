@@ -425,7 +425,7 @@ int CreateConfigFile()
 
 [[nodiscard("Ignoring return value may cause invaild attribute value.")]]
 int readCfg() {
-    cout << "Enter readCfg()" << endl;
+    cout << "Reading config file...";
 
     tinyxml2::XMLDocument config;
     tinyxml2::XMLElement* pRootEle;
@@ -434,6 +434,7 @@ int readCfg() {
     tinyxml2::XMLAttribute* attr;
     bool tempbool;
     stringstream sstr;
+    string str;
     
     auto ret = config.LoadFile(CFG_FILENAME);
 
@@ -489,27 +490,34 @@ int readCfg() {
     while (servernode) {
         MinecraftServerInstance tempins;
         ZeroMemory(&tempins, sizeof(tempins));
+
         attr = const_cast<tinyxml2::XMLAttribute*>(servernode->FindAttribute("type"));
-            
-        if (strcmp(attr->Value(), "vanilla"))       tempins.SetServerType(SERVER_TYPE_VANILLA);
-        if (strcmp(attr->Value(), "forge"))         tempins.SetServerType(SERVER_TYPE_FORGE);
-        if (strcmp(attr->Value(), "bukkit"))        tempins.SetServerType(SERVER_TYPE_BUKKIT);
-        if (strcmp(attr->Value(), "bukkit14"))      tempins.SetServerType(SERVER_TYPE_BUKKIT14);
-        if (strcmp(attr->Value(), "bungeecord"))    tempins.SetServerType(SERVER_TYPE_BUNGEECORD);
-        if (strcmp(attr->Value(), "waterfall"))     tempins.SetServerType(SERVER_TYPE_WATERFALL);
-        if (strcmp(attr->Value(), "cat"))           tempins.SetServerType(SERVER_TYPE_CAT);
-        if (strcmp(attr->Value(), "beta18"))        tempins.SetServerType(SERVER_TYPE_BETA18);
+        if (attr)
+            if (attr->Value()) {
+                str = attr->Value();
+                if (str == "vanilla")       tempins.SetServerType(SERVER_TYPE_VANILLA);
+                if (str == "forge")         tempins.SetServerType(SERVER_TYPE_FORGE);
+                if (str == "bukkit")        tempins.SetServerType(SERVER_TYPE_BUKKIT);
+                if (str == "bukkit14")      tempins.SetServerType(SERVER_TYPE_BUKKIT14);
+                if (str == "bungeecord")    tempins.SetServerType(SERVER_TYPE_BUNGEECORD);
+                if (str == "waterfall")     tempins.SetServerType(SERVER_TYPE_WATERFALL);
+                if (str == "cat")           tempins.SetServerType(SERVER_TYPE_CAT);
+                if (str == "beta18")        tempins.SetServerType(SERVER_TYPE_BETA18);
+            }
+
         attr = const_cast<tinyxml2::XMLAttribute*>(servernode->FindAttribute("startuptype"));
-        
-        if (strcmp(attr->Value(), "jar"))           tempins.SetStartupType(STARTUP_TYPE_JAR);
-        if (strcmp(attr->Value(), "bat"))           tempins.SetStartupType(STARTUP_TYPE_BAT);
+        if (attr)
+            if (attr->Value()) {
+                str = attr->Value();
+                if (str == "jar")           tempins.SetStartupType(STARTUP_TYPE_JAR);
+                if (str == "bat")           tempins.SetStartupType(STARTUP_TYPE_BAT);
+            }
+
         attr = const_cast<tinyxml2::XMLAttribute*>(servernode->FindAttribute("autostart"));
-        
         istringstream(attr->Value()) >> boolalpha >> tempbool;
         tempins.SetAutoStart(tempbool);
         
         attr = const_cast<tinyxml2::XMLAttribute*>(servernode->FindAttribute("outputvisibility"));
-        
         istringstream(attr->Value()) >> boolalpha >> tempbool;
         tempins.SetVisibility(tempbool);
         
@@ -517,56 +525,49 @@ int readCfg() {
         if(servernodechild)
             if (servernodechild->GetText()) { 
                 tempins.SetServerName(servernodechild->GetText()); 
-                print(servernodechild->GetText())
             }
 
         servernodechild = servernode->FirstChildElement("ServerDirectory");
         if (servernodechild)
             if (servernodechild->GetText()) { 
                 tempins.SetServerDirectory(servernodechild->GetText());
-                print(servernodechild->GetText())
         }
 
         servernodechild = servernode->FirstChildElement("JVMDirectory");
         if (servernodechild)
             if (servernodechild->GetText()) { 
                 tempins.SetJVMDirectory(servernodechild->GetText()); 
-                print(servernodechild->GetText())
             }
 
         servernodechild = servernode->FirstChildElement("JVMOption");
         if (servernodechild)
             if (servernodechild->GetText()) { 
                 tempins.SetJVMOption(servernodechild->GetText()); 
-                print(servernodechild->GetText())
             }
 
         servernodechild = servernode->FirstChildElement("ServerFileName");
         if (servernodechild)
             if (servernodechild->GetText()) { 
                 tempins.SetServerFileName(servernodechild->GetText()); 
-                print(servernodechild->GetText())
             }
 
         servernodechild = servernode->FirstChildElement("MaxMemory");
         if (servernodechild)
             if (servernodechild->GetText()) { 
                 tempins.SetMaxmem(servernodechild->GetText()); 
-                print(servernodechild->GetText())
             }
 
         servernodechild = servernode->FirstChildElement("MinMemory");
         if (servernodechild)
             if (servernodechild->GetText()) { 
                 tempins.SetMinmem(servernodechild->GetText()); 
-                print(servernodechild->GetText())
             }
 
 
         serverlist.push_back(move(tempins));
         servernode = servernode->NextSiblingElement("MinecraftServer");
     }
-    print("exiting readCfg()");
+    cout << "Done." << endl;
     return 0;
 }
 
@@ -707,12 +708,14 @@ int main()
         return -1;
     }
 
+    StartOutputProcessThread();
+
     for (auto ins : serverlist) {
-        ins.Print();
         int ret;
         if (ins.GetAutoStart()) {
             cout << "Starting Minecraft Server : " << ins.GetServerName() << endl;
             ret = ins.StartServer();
+            cout << "Started with return code : " << ret << endl;
         }
         else {
             continue;
@@ -723,8 +726,7 @@ int main()
     }
 
     while (true) {
-        string cmdinput = rx.input("Helium>");
-        cout << "User input : " << cmdinput << endl;
+        ;
     }
 
     system("pause");

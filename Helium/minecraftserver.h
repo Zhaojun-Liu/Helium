@@ -3,11 +3,15 @@
 #ifndef _H_MINECRAFTSERVER
 #define _H_MINECRAFTSERVER
 
+#define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
+
 #include<string>
 #include<thread>
 #include<iostream>
 
 #include<Windows.h>
+
+#include"utils.h"
 
 using namespace std;
 
@@ -27,6 +31,16 @@ using namespace std;
 
 #define STARTUP_TYPE_JAR 0
 #define STARTUP_TYPE_BAT 1
+
+#define BUFSIZE 4096
+
+struct ServerLineOutput {
+	string servername;
+	string output;
+};
+
+static vector<ServerLineOutput> serveroutputs;
+static thread outputprocessthread;
 
 struct RedirectInformation
 {
@@ -85,7 +99,7 @@ public:
 
 	~MinecraftServerInstance();
 
-	int    ProcessServerOutput();
+	int    ProcessServerOutput(string servername, bool visi);
 
 	string SetServerName(string servername);
 	string GetServerName();
@@ -128,5 +142,8 @@ public:
 
 	void   Print();
 };
+
+int OutputProcessThread();
+int StartOutputProcessThread();
 
 #endif // !_H_MINECRAFTSERVER
