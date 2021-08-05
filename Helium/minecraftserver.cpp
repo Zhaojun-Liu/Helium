@@ -17,7 +17,7 @@ MinecraftServerInstance::MinecraftServerInstance() {
     }
 }
 
-MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance const* ins) {
+MinecraftServerInstance::MinecraftServerInstance(MinecraftServerInstance* ins) {
     this->servername = ins->servername;
     this->jvmdirectory = ins->jvmdirectory;
     this->serverfilename = ins->serverfilename;
@@ -42,7 +42,7 @@ MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance c
     }
 }
 
-MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance& ins) {
+MinecraftServerInstance::MinecraftServerInstance(MinecraftServerInstance& ins) {
     this->servername = ins.servername;
     this->jvmdirectory = ins.jvmdirectory;
     this->serverfilename = ins.serverfilename;
