@@ -91,8 +91,8 @@ protected:
 	RedirectInformation redir;
 public:
 	MinecraftServerInstance();
-	MinecraftServerInstance(const MinecraftServerInstance const* ins);
-	MinecraftServerInstance(const MinecraftServerInstance& ins);
+	MinecraftServerInstance(MinecraftServerInstance* ins);
+	MinecraftServerInstance(MinecraftServerInstance& ins);
 
 	~MinecraftServerInstance();
 

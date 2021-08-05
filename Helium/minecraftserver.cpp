@@ -14,7 +14,7 @@ MinecraftServerInstance::MinecraftServerInstance() {
     if (!isinit) InitializeCriticalSection(&cs);
 }
 
-MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance const* ins) {
+MinecraftServerInstance::MinecraftServerInstance(MinecraftServerInstance* ins) {
     this->servername = ins->servername;
     this->jvmdirectory = ins->jvmdirectory;
     this->serverfilename = ins->serverfilename;
@@ -36,7 +36,7 @@ MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance c
     if (!isinit) InitializeCriticalSection(&cs);
 }
 
-MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance& ins) {
+MinecraftServerInstance::MinecraftServerInstance(MinecraftServerInstance& ins) {
     this->servername = ins.servername;
     this->jvmdirectory = ins.jvmdirectory;
     this->serverfilename = ins.serverfilename;
