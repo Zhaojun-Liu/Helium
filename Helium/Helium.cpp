@@ -48,6 +48,7 @@ START_CONFIG_NODES_REGISTER(ConfigNode);
 #pragma region Var
 Logger logger;
 vector<MinecraftServerInstance> serverlist;
+Replxx rx;
 #pragma endregion
 
 #pragma region Callback
@@ -640,8 +641,8 @@ int main()
     string pns = PROJECT_NAME_STR;
     pns.append(" ").append(PROJECT_VER_STR).append(" ").append(PROJECT_DEVSTAT);
     cout << pns << endl;
-
-    Replxx rx;
+    
+    
     rx.install_window_change_handler();
 
     vector<string> commands{
@@ -693,7 +694,7 @@ int main()
     }
 
     while (true) {
-        string cmdinput = rx.input("Helium>");
+        string cmdinput = rx.input("[Helium]$ ");
         cout << "User input : " << cmdinput << endl;
     }
 
