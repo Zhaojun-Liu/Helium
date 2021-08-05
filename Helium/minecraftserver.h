@@ -34,11 +34,6 @@ using namespace std;
 
 #define BUFSIZE 8192
 
-struct ServerLineOutput {
-	string servername;
-	string output;
-};
-
 struct RedirectInformation
 {
 
@@ -69,6 +64,7 @@ struct RedirectInformation
 };
 
 class MinecraftServerInstance {
+	friend int ProcessServerOutput(MinecraftServerInstance* ptr);
 protected:
 	string servername;
 	string jvmdirectory;
@@ -92,11 +88,9 @@ protected:
 public:
 	MinecraftServerInstance();
 	MinecraftServerInstance(MinecraftServerInstance* ins);
-	MinecraftServerInstance(MinecraftServerInstance& ins);
+	MinecraftServerInstance(const MinecraftServerInstance& ins);
 
 	~MinecraftServerInstance();
-
-	int    ProcessServerOutput(string servername, bool visi);
 
 	string SetServerName(string servername);
 	string GetServerName();
@@ -139,5 +133,7 @@ public:
 
 	void   Print();
 };
+
+int ProcessServerOutput(MinecraftServerInstance* ptr);
 
 #endif // !_H_MINECRAFTSERVER

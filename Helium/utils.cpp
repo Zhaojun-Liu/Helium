@@ -75,7 +75,8 @@ vector<string> split(string str, const char* pattern)
             return resVec;
         }
          //方便截取最后一段数据
-        std::string strs = str + pattern;
+        std::string strs;
+        strs.append(pattern);
     
         size_t pos = strs.find(pattern);
         size_t size = strs.size();
@@ -83,7 +84,8 @@ vector<string> split(string str, const char* pattern)
         while (pos != std::string::npos)
         {
             std::string x = strs.substr(0, pos);
-            resVec.push_back(x);
+            if(!x.empty())
+                resVec.push_back(x);
             strs = strs.substr(pos + 1, size);
             pos = strs.find(pattern);
         }
