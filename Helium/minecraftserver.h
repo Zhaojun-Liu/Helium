@@ -32,7 +32,7 @@ using namespace std;
 #define STARTUP_TYPE_JAR 0
 #define STARTUP_TYPE_BAT 1
 
-#define BUFSIZE 4096
+#define BUFSIZE 8192
 
 struct ServerLineOutput {
 	string servername;

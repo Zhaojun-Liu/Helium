@@ -69,21 +69,26 @@ vector<string> split(const string& str, const string& pattern)
 
 vector<string> split(string str, const char* pattern)
 {
-    std::vector<std::string> strings;
-
-    std::string::size_type pos = 0;
-    std::string::size_type prev = 0;
-    while ((pos = str.find(pattern, prev)) != std::string::npos)
-    {
-        strings.push_back(str.substr(prev, pos - prev));
-        prev = pos + 1;
-    }
-
-    // To get the last substring (or only, if delimiter is not found) 
-    strings.push_back(str.substr(prev));
-
-    return strings;
-
+    std::vector<std::string> resVec;
+        if ("" == str)
+        {
+            return resVec;
+        }
+         //方便截取最后一段数据
+        std::string strs = str + pattern;
+    
+        size_t pos = strs.find(pattern);
+        size_t size = strs.size();
+    
+        while (pos != std::string::npos)
+        {
+            std::string x = strs.substr(0, pos);
+            resVec.push_back(x);
+            strs = strs.substr(pos + 1, size);
+            pos = strs.find(pattern);
+        }
+    
+        return resVec;
 }
 
 

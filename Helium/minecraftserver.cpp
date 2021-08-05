@@ -11,7 +11,10 @@ MinecraftServerInstance::MinecraftServerInstance() {
     this->outputvisibility = true;
     this->autostart = false;
 
-    if (!isinit) InitializeCriticalSection(&cs);
+    if (!isinit) { 
+        InitializeCriticalSection(&cs); 
+        isinit = true;
+    }
 }
 
 MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance const* ins) {
@@ -33,7 +36,10 @@ MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance c
     this->outputvisibility = ins->outputvisibility;
     this->autostart = ins->autostart;
 
-    if (!isinit) InitializeCriticalSection(&cs);
+    if (!isinit) {
+        InitializeCriticalSection(&cs);
+        isinit = true;
+    }
 }
 
 MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance& ins) {
@@ -55,12 +61,18 @@ MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance& 
     this->outputvisibility = ins.outputvisibility;
     this->autostart = ins.autostart;
 
-    if (!isinit) InitializeCriticalSection(&cs);
+    if (!isinit) {
+        InitializeCriticalSection(&cs);
+        isinit = true;
+    }
 }
 
 MinecraftServerInstance::~MinecraftServerInstance() {
     TerminateProcess(this->serverproc, 0);
-    if (!isinit) DeleteCriticalSection(&cs);
+    if (!isinit) { 
+        DeleteCriticalSection(&cs); 
+        isinit = false;
+    }
 }
 
 string MinecraftServerInstance::SetServerName(string servername) {
@@ -384,13 +396,11 @@ int    MinecraftServerInstance::ProcessServerOutput(string servername, bool visi
             out_buffer[dwRead] = '\0';
             if (visi) {
                 string temp(out_buffer);
-                auto outputs = split(temp, "\r\n");
+                auto outputs = split(temp, "\n");
                 for (auto line : outputs) {
                     EnterCriticalSection(&cs);
                     string outputstr;
-                    if (line.find("\r\n") != string::npos && !line.empty())
-                        outputstr.append(servername).append(">").append(line);
-                    else
+                    if (!line.empty() && line != "\n")
                         outputstr.append(servername).append(">").append(line).append("\r\n");
                     cout << outputstr;
                     LeaveCriticalSection(&cs);
