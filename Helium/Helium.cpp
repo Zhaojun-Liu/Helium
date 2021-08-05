@@ -48,7 +48,6 @@ START_CONFIG_NODES_REGISTER(ConfigNode);
 #pragma region Var
 Logger logger;
 vector<MinecraftServerInstance> serverlist;
-Replxx rx;
 #pragma endregion
 
 #pragma region Callback
@@ -118,6 +117,7 @@ Replxx rx;
 #pragma endregion
 
 #pragma region Config
+
 [[nodiscard("Do not discard return value of SaveConfigFile() plz")]]
 int SaveConfigFile() {
     tinyxml2::XMLDocument doc;
@@ -425,11 +425,16 @@ int CreateConfigFile()
 
 [[nodiscard("Ignoring return value may cause invaild attribute value.")]]
 int readCfg() {
-    cout << "Enter readCfg()" << endl;
+    cout << "Reading config file...";
 
     tinyxml2::XMLDocument config;
     tinyxml2::XMLElement* pRootEle;
     tinyxml2::XMLElement* servernode;
+    tinyxml2::XMLElement* servernodechild;
+    tinyxml2::XMLAttribute* attr;
+    bool tempbool;
+    stringstream sstr;
+    string str;
     
     auto ret = config.LoadFile(CFG_FILENAME);
 
@@ -467,82 +472,102 @@ int readCfg() {
         }
         else if (node->valuetype == VALUE_TYPE_BOOLEAN) {
             string temp = gnsbn(node->nodename);
+            bool tempbool;
+            istringstream(temp) >> boolalpha >> tempbool;
             if (temp == "True") {
-                node->var.emplace<VALUE_TYPE_BOOLEAN>(true);
-            }
+                node->var.emplace<VALUE_TYPE_BOOLEAN>(tempbool);
+           } 
             else {
-                node->var.emplace<VALUE_TYPE_BOOLEAN>(false);
+                node->var.emplace<VALUE_TYPE_BOOLEAN>(tempbool);
             }
         }
     }
 
     servernode = pRootEle->FirstChildElement("MinecraftServer");
+    servernodechild = servernode->FirstChildElement("ServerName");
+
     if (servernode == NULL)return -1;
-    print("0");
-    while (true) {
-        tinyxml2::XMLElement* servernodechild;
-        tinyxml2::XMLAttribute* attr;   
+    while (servernode) {
         MinecraftServerInstance tempins;
-        bool tempbool;
-        stringstream sstr;
-        print("1");
+        ZeroMemory(&tempins, sizeof(tempins));
+
         attr = const_cast<tinyxml2::XMLAttribute*>(servernode->FindAttribute("type"));
+        if (attr)
+            if (attr->Value()) {
+                str = attr->Value();
+                if (str == "vanilla")       tempins.SetServerType(SERVER_TYPE_VANILLA);
+                if (str == "forge")         tempins.SetServerType(SERVER_TYPE_FORGE);
+                if (str == "bukkit")        tempins.SetServerType(SERVER_TYPE_BUKKIT);
+                if (str == "bukkit14")      tempins.SetServerType(SERVER_TYPE_BUKKIT14);
+                if (str == "bungeecord")    tempins.SetServerType(SERVER_TYPE_BUNGEECORD);
+                if (str == "waterfall")     tempins.SetServerType(SERVER_TYPE_WATERFALL);
+                if (str == "cat")           tempins.SetServerType(SERVER_TYPE_CAT);
+                if (str == "beta18")        tempins.SetServerType(SERVER_TYPE_BETA18);
+            }
 
-        if (strcmp(attr->Value(), "vanilla"))       tempins.SetServerType(SERVER_TYPE_VANILLA);
-        if (strcmp(attr->Value(), "forge"))         tempins.SetServerType(SERVER_TYPE_FORGE);
-        if (strcmp(attr->Value(), "bukkit"))        tempins.SetServerType(SERVER_TYPE_BUKKIT);
-        if (strcmp(attr->Value(), "bukkit14"))      tempins.SetServerType(SERVER_TYPE_BUKKIT14);
-        if (strcmp(attr->Value(), "bungeecord"))    tempins.SetServerType(SERVER_TYPE_BUNGEECORD);
-        if (strcmp(attr->Value(), "waterfall"))     tempins.SetServerType(SERVER_TYPE_WATERFALL);
-        if (strcmp(attr->Value(), "cat"))           tempins.SetServerType(SERVER_TYPE_CAT);
-        if (strcmp(attr->Value(), "beta18"))        tempins.SetServerType(SERVER_TYPE_BETA18);
-        print("2");
         attr = const_cast<tinyxml2::XMLAttribute*>(servernode->FindAttribute("startuptype"));
-        
-        if (strcmp(attr->Value(), "jar"))           tempins.SetStartupType(STARTUP_TYPE_JAR);
-        if (strcmp(attr->Value(), "bat"))           tempins.SetStartupType(STARTUP_TYPE_BAT);
-        print("3");
+        if (attr)
+            if (attr->Value()) {
+                str = attr->Value();
+                if (str == "jar")           tempins.SetStartupType(STARTUP_TYPE_JAR);
+                if (str == "bat")           tempins.SetStartupType(STARTUP_TYPE_BAT);
+            }
+
         attr = const_cast<tinyxml2::XMLAttribute*>(servernode->FindAttribute("autostart"));
-
-        sstr << attr->Value();
-        sstr >> tempbool;
+        istringstream(attr->Value()) >> boolalpha >> tempbool;
         tempins.SetAutoStart(tempbool);
-        sstr.clear();
-
+        
         attr = const_cast<tinyxml2::XMLAttribute*>(servernode->FindAttribute("outputvisibility"));
-
-        sstr << attr->Value();
-        sstr >> tempbool;
+        istringstream(attr->Value()) >> boolalpha >> tempbool;
         tempins.SetVisibility(tempbool);
-        sstr.clear();
-
+        
         servernodechild = servernode->FirstChildElement("ServerName");
-        tempins.SetServerName(servernodechild->Value());
+        if(servernodechild)
+            if (servernodechild->GetText()) { 
+                tempins.SetServerName(servernodechild->GetText()); 
+            }
 
         servernodechild = servernode->FirstChildElement("ServerDirectory");
-        tempins.SetServerDirectory(servernodechild->Value());
+        if (servernodechild)
+            if (servernodechild->GetText()) { 
+                tempins.SetServerDirectory(servernodechild->GetText());
+        }
 
         servernodechild = servernode->FirstChildElement("JVMDirectory");
-        tempins.SetJVMDirectory(servernodechild->Value());
+        if (servernodechild)
+            if (servernodechild->GetText()) { 
+                tempins.SetJVMDirectory(servernodechild->GetText()); 
+            }
 
         servernodechild = servernode->FirstChildElement("JVMOption");
-        tempins.SetJVMOption(servernodechild->Value());
+        if (servernodechild)
+            if (servernodechild->GetText()) { 
+                tempins.SetJVMOption(servernodechild->GetText()); 
+            }
 
         servernodechild = servernode->FirstChildElement("ServerFileName");
-        tempins.SetServerFileName(servernodechild->Value());
+        if (servernodechild)
+            if (servernodechild->GetText()) { 
+                tempins.SetServerFileName(servernodechild->GetText()); 
+            }
 
         servernodechild = servernode->FirstChildElement("MaxMemory");
-        tempins.SetMaxmem(servernodechild->Value());
+        if (servernodechild)
+            if (servernodechild->GetText()) { 
+                tempins.SetMaxmem(servernodechild->GetText()); 
+            }
 
         servernodechild = servernode->FirstChildElement("MinMemory");
-        tempins.SetMinmem(servernodechild->Value());
-        print("4");
-        serverlist.push_back(tempins);
-        print("5");
-        servernode = pRootEle->NextSiblingElement("MinecraftServer");
-        if (servernode == NULL)break;
+        if (servernodechild)
+            if (servernodechild->GetText()) { 
+                tempins.SetMinmem(servernodechild->GetText()); 
+            }
+
+
+        serverlist.push_back(move(tempins));
+        servernode = servernode->NextSiblingElement("MinecraftServer");
     }
-    print("6");
+    cout << "Done." << endl;
     return 0;
 }
 
@@ -551,12 +576,7 @@ int Config() {
     ADD_CONFIG_NODE("Language", Language, VALUE_TYPE_INTEGER, 0);
     ADD_CONFIG_NODE("PluginDirectory", PluginDirectory, VALUE_TYPE_STRING, "plugins");
     ADD_CONFIG_NODE("MaxQueue", MaxQueue, VALUE_TYPE_INTEGER, 2048);
-
-
-
-    string jvmpath = getenv("JAVA_HOME");
-    jvmpath.append("bin\\javaw.exe");
-    ADD_CONFIG_NODE("JvmDirectory", JvmDirectory, VALUE_TYPE_STRING, jvmpath);
+    
     if (auto ret = readCfg(); ret == -1) {
         cout << "Failed to read the config file" << endl;
         return -1;
@@ -641,8 +661,8 @@ int main()
     string pns = PROJECT_NAME_STR;
     pns.append(" ").append(PROJECT_VER_STR).append(" ").append(PROJECT_DEVSTAT);
     cout << pns << endl;
-    
-    
+
+    Replxx rx;
     rx.install_window_change_handler();
 
     vector<string> commands{
@@ -683,19 +703,28 @@ int main()
     logger.error(ost.str().c_str());
     logger.fatal(ost.str().c_str());
 
-    Config();
+    if (auto ret = Config(); ret != 0) {
+        print("Failed to read config");
+        return -1;
+    }
 
     for (auto ins : serverlist) {
         int ret;
-        if (ins.GetAutoStart()) ret = ins.StartServer();
+        if (ins.GetAutoStart()) {
+            cout << "Starting Minecraft Server : " << ins.GetServerName() << endl;
+            ret = ins.StartServer();
+            cout << "Started with return code : " << ret << endl;
+        }
+        else {
+            continue;
+        }
         if (ret != 0) {
             cout << "Error starting Minecraft server : " << ins.GetServerName() << endl;
         }
     }
 
     while (true) {
-        string cmdinput = rx.input("[Helium]$ ");
-        cout << "User input : " << cmdinput << endl;
+        ;
     }
 
     system("pause");
