@@ -64,7 +64,7 @@ struct RedirectInformation
 };
 
 class MinecraftServerInstance {
-	friend int ProcessServerOutput(MinecraftServerInstance* ptr);
+	friend int ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread);
 protected:
 	string servername;
 	string jvmdirectory;
@@ -83,6 +83,7 @@ protected:
 
 	thread stdoutthread;
 	HANDLE serverproc;
+	DWORD  serverpid;
 
 	RedirectInformation redir;
 public:
@@ -134,6 +135,6 @@ public:
 	void   Print();
 };
 
-int ProcessServerOutput(MinecraftServerInstance* ptr);
+int ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread);
 
 #endif // !_H_MINECRAFTSERVER

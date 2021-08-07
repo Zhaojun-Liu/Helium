@@ -255,10 +255,12 @@ int    MinecraftServerInstance::StartServer() {
         this->redir.hStdInWrite = hStdInWrite;
         this->redir.hStdOutRead = hStdOutRead;
         this->redir.hStdOutWrite = hStdOutWrite;
+        this->serverpid = pi.dwProcessId;
 
-        thread tempthread(ProcessServerOutput, this);
+        thread tempthread(ProcessServerOutput, this, this->servername, hStdOutRead);
         this->stdoutthread = std::move(tempthread);
         this->stdoutthread.detach();
+        this_thread::yield();
 
         cout << "Output processing thread create successfully" << endl;
 
@@ -352,9 +354,12 @@ int    MinecraftServerInstance::StartServer() {
             this->redir.hStdInWrite = hStdInWrite;
             this->redir.hStdOutRead = hStdOutRead;
             this->redir.hStdOutWrite = hStdOutWrite;
+            this->serverpid = pi.dwProcessId;
 
-            thread tempthread(ProcessServerOutput, (MinecraftServerInstance*)this);
+            thread tempthread(ProcessServerOutput, (MinecraftServerInstance*)this, this->servername, hStdOutRead);
             this->stdoutthread = std::move(tempthread);
+            this->stdoutthread.detach();
+            this_thread::yield();
 
             cout << "Output processing thread create successfully" << endl;
 
@@ -379,32 +384,36 @@ int    MinecraftServerInstance::RestartServer() {
     return 0;
 }
 
-int    ProcessServerOutput(MinecraftServerInstance* ptr) {
-    cout << "Enter ProcessServerOutput()" << endl;
+int    ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread) {
+    cout << "Server started at PID : " << ptr->serverpid << endl;
     char out_buffer[BUFSIZE];
     DWORD dwRead;
-    int ret = FALSE;
+    bool ret = FALSE;
     DWORD process_exit_code;
 
     while (ptr->serverstatus != SERVER_STATUS_TERMINATED)
     {
         ZeroMemory(out_buffer, BUFSIZE);
         //用WriteFile，从hStdOutRead读出子进程stdout输出的数据，数据结果在out_buffer中，长度为dwRead  
-        ret = ReadFile(ptr->redir.hStdOutRead, out_buffer, BUFSIZE - 1, &dwRead, NULL);
-        if ((ret == 0) && (dwRead != 0))  //如果成功了，且长度>0  
+        EnterCriticalSection(&cs);
+        ret = ReadFile(stdread, out_buffer, BUFSIZE - 1, &dwRead, NULL);
+        LeaveCriticalSection(&cs);
+        if ((ret) && (dwRead != 0))  //如果成功了，且长度>0  
         {
             out_buffer[dwRead] = '\0';
             if (ptr->outputvisibility) {
                 string temp(out_buffer);
-                auto outputs(split(temp, "\n"));
+                string pat("\r\n");
+                auto outputs = split(temp, pat);
                 for (auto it = outputs.begin(); it < outputs.end(); it++) {
-                    EnterCriticalSection(&cs);
                     string outputstr;
                     if (!it->empty() && *it != "\n")
-                        outputstr.append(ptr->servername).append(">").append(*it).append("\r\n");
+                        outputstr.append(servername).append(">").append(*it).append("\r\n");
+                    EnterCriticalSection(&cs);
                     cout << outputstr;
                     LeaveCriticalSection(&cs);
                 }
+                Sleep(20);
             }
         }
         //如果子进程结束，退出循环  
