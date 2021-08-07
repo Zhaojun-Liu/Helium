@@ -17,7 +17,7 @@ MinecraftServerInstance::MinecraftServerInstance() {
     }
 }
 
-MinecraftServerInstance::MinecraftServerInstance(MinecraftServerInstance* ins) {
+MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance* ins) {
     this->servername = ins->servername;
     this->jvmdirectory = ins->jvmdirectory;
     this->serverfilename = ins->serverfilename;
@@ -65,6 +65,26 @@ MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance& 
         InitializeCriticalSection(&cs);
         isinit = true;
     }
+}
+
+void MinecraftServerInstance::operator=(const MinecraftServerInstance&& ins) {
+    this->servername = ins.servername;
+    this->jvmdirectory = ins.jvmdirectory;
+    this->serverfilename = ins.serverfilename;
+    this->jvmoption = ins.jvmoption;
+    this->serverdirectory = ins.serverdirectory;
+    this->minmem = ins.minmem;
+    this->maxmem = ins.maxmem;
+
+    this->serverstartuptype = ins.serverstartuptype;
+    this->servertype = ins.servertype;
+    this->serverstatus = ins.serverstatus;
+
+    this->stdoutthread = const_cast<thread&&>(move(ins.stdoutthread));
+    this->serverproc = ins.serverproc;
+
+    this->outputvisibility = ins.outputvisibility;
+    this->autostart = ins.autostart;
 }
 
 MinecraftServerInstance::~MinecraftServerInstance() {

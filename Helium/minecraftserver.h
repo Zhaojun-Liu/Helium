@@ -88,8 +88,10 @@ protected:
 	RedirectInformation redir;
 public:
 	MinecraftServerInstance();
-	MinecraftServerInstance(MinecraftServerInstance* ins);
+	MinecraftServerInstance(const MinecraftServerInstance* ins);
 	MinecraftServerInstance(const MinecraftServerInstance& ins);
+
+	void operator=(const MinecraftServerInstance&& ins);
 
 	~MinecraftServerInstance();
 
