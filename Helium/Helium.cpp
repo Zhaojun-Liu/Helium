@@ -29,7 +29,7 @@ using namespace replxx;
 
 #pragma region Macros
 #define PROJECT_NAME_STR "Helium"
-#define PROJECT_VER_STR "0.4.2.02"
+#define PROJECT_VER_STR "0.4.2.03"
 #define PROJECT_DEVSTAT "Pre-Alpha"
 
 #define CFG_FILENAME "HeliumConfig.xml"

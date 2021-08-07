@@ -40,7 +40,7 @@ GUID   HeliumExtension::GetExtGUID() {
 int    HeliumExtension::LoadExt() {
 
 }
-int    HeliumExtension::UnloadExt(bool forceunload = false) {
+int    HeliumExtension::UnloadExt(bool forceunload) {
 
 }
 int    HeliumExtension::Expire() {
