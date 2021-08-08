@@ -16,7 +16,8 @@
 #define EXT_STATUS_LOADED 2
 #define EXT_STATUS_UNLOADING 3
 #define EXT_STATUS_EXPIRED 4
-
+#define awa return 0
+#define retstr string ret = "";return ret
 using namespace std;
 
 class HeliumExtension {
@@ -43,8 +44,8 @@ protected:
 public:
 	int    GetExtStatus();
 
-	GUID   SetExtGUID(GUID guid);
-	GUID   GetExtGUID();
+	int   SetExtGUID(GUID guid);
+	int   GetExtGUID(LPGUID lpGuid);
 
 	int    LoadExt();
 	int    UnloadExt(bool forceunload = false);
