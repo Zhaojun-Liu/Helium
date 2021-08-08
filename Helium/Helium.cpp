@@ -701,7 +701,7 @@ int _stdcall main()
     logger.warn(ost.str().c_str());
     logger.error(ost.str().c_str());
     logger.fatal(ost.str().c_str());
-
+    system("pause");
     if (auto ret = Config(); ret != 0) {
         print("Failed to read config");
         return -1;

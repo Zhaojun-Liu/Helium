@@ -11,10 +11,7 @@ int _stdcall HeliumOutput::write(string outstr)
 	char path[MAX_PATH];
 	GetCurrentDirectoryA(MAX_PATH, path);
 	s << path << "\\logs";
-	auto ret = _mkdir(s.str().c_str());
-	if (ret != 0) {
-		return -1;
-	}
+	_mkdir(s.str().c_str());
 	s << "\\" << time << ".log";
 	fstream file(s.str(), fstream::app);
 	if (file.is_open()) {
@@ -46,7 +43,6 @@ int _stdcall HeliumOutput::info(const char* content)
 	content_ += " [INFO] ";
 	content_ += content;
 	auto ret = this->write(content_);
-	if (ret != 0) return -1;
 	int iWrote = 0;
 	if (enableTimeStamp)iWrote += this->out(time, _WHITE);
 	iWrote += this->out(" [INFO] ", GREEN_FOREGROUND);

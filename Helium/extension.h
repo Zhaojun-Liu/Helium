@@ -24,7 +24,8 @@ if(tempptr == NULL) {\
 	return -1;\
 }\
 this->extfuncptrcache.push_back(tempptr)
-
+#define awa return 0
+#define retstr string ret = "";return ret
 using namespace std;
 
 class HeliumExtension {
@@ -55,8 +56,8 @@ protected:
 public:
 	int    _stdcall GetExtStatus();
 
-	GUID   _stdcall SetExtGUID(GUID guid);
-	GUID   _stdcall GetExtGUID();
+	int   SetExtGUID(GUID guid);
+	int   GetExtGUID(LPGUID lpGuid);
 
 	int    _stdcall LoadExt();
 	int    _stdcall UnloadExt(bool forceunload = false);
