@@ -2,7 +2,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 [[nodiscard("Ignoring return value of this function may cause log file create incorrectly.")]]
-int HeliumOutput::write(string outstr)
+int _stdcall HeliumOutput::write(string outstr)
 {
 	time_t t = time(0);
 	char time[64];
@@ -26,17 +26,17 @@ int HeliumOutput::write(string outstr)
 	return 0;
 }
 
-void HeliumOutput::setTimeStamp(bool stat)
+void _stdcall HeliumOutput::setTimeStamp(bool stat)
 {
 	this->enableTimeStamp = stat;
 }
 
-HeliumOutput::HeliumOutput()
+_stdcall HeliumOutput::HeliumOutput()
 {
 	this->enableTimeStamp = true;
 }
 
-int HeliumOutput::info(const char* content)
+int _stdcall HeliumOutput::info(const char* content)
 {
 	string content_;
 	time_t t = time(0);
@@ -54,7 +54,7 @@ int HeliumOutput::info(const char* content)
 	return iWrote;
 }
 
-int HeliumOutput::warn(const char* content)
+int _stdcall HeliumOutput::warn(const char* content)
 {
 	string content_;
 	time_t t = time(0);
@@ -72,7 +72,7 @@ int HeliumOutput::warn(const char* content)
 	return iWrote;
 }
 
-int HeliumOutput::error(const char* content)
+int _stdcall HeliumOutput::error(const char* content)
 {
 	string content_;
 	time_t t = time(0);
@@ -90,7 +90,7 @@ int HeliumOutput::error(const char* content)
 	return iWrote;
 }
 
-int HeliumOutput::fatal(const char* content)
+int _stdcall HeliumOutput::fatal(const char* content)
 {
 	string content_;
 	time_t t = time(0);
@@ -112,7 +112,7 @@ int HeliumOutput::fatal(const char* content)
 	return iWrote;
 }
 
-int HeliumOutput::out(LPSTR sOut, WCHAR wTextAttribute)
+int _stdcall HeliumOutput::out(LPSTR sOut, WCHAR wTextAttribute)
 {
 	HANDLE hOutput;
 	CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
@@ -127,7 +127,7 @@ int HeliumOutput::out(LPSTR sOut, WCHAR wTextAttribute)
 	return dwWritten;
 }
 
-int HeliumOutput::out(LPCSTR sOut, WCHAR wTextAttribute)
+int _stdcall HeliumOutput::out(LPCSTR sOut, WCHAR wTextAttribute)
 {
 	HANDLE hOutput;
 	CONSOLE_SCREEN_BUFFER_INFO csbiInfo;

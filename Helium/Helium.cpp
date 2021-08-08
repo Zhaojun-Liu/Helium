@@ -119,7 +119,7 @@ vector<MinecraftServerInstance> serverlist;
 #pragma region Config
 
 [[nodiscard("Do not discard return value of SaveConfigFile() plz")]]
-int SaveConfigFile() {
+int _stdcall SaveConfigFile() {
     tinyxml2::XMLDocument doc;
     if (auto ret = doc.LoadFile(CFG_FILENAME); ret != 0) {
         cout << "Failed to create XML file declaration" << endl;
@@ -270,7 +270,7 @@ int SaveConfigFile() {
 }
 
 [[nodiscard("Ignoring return value may cause config file create incorrectly.")]]
-int CreateConfigFile()
+int _stdcall CreateConfigFile()
 {
     cout << "Enter CreateConfigFile()" << endl;
     const char* declaration = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
@@ -424,7 +424,7 @@ int CreateConfigFile()
 }
 
 [[nodiscard("Ignoring return value may cause invaild attribute value.")]]
-int readCfg() {
+int _stdcall readCfg() {
     cout << "Reading config file...";
 
     tinyxml2::XMLDocument config;
@@ -571,7 +571,7 @@ int readCfg() {
     return 0;
 }
 
-int Config() {
+int _stdcall Config() {
     ADD_CONFIG_NODE("EnableTimeStamp", EnableTimeStamp, VALUE_TYPE_BOOLEAN, true);
     ADD_CONFIG_NODE("Language", Language, VALUE_TYPE_INTEGER, 0);
     ADD_CONFIG_NODE("PluginDirectory", PluginDirectory, VALUE_TYPE_STRING, "plugins");
@@ -586,7 +586,7 @@ int Config() {
 #pragma endregion
 
 #pragma region replxxfuncs
-int utf8str_codepoint_len(char const* s, int utf8len) {
+int _stdcall utf8str_codepoint_len(char const* s, int utf8len) {
     int codepointLen = 0;
     unsigned char m4 = 128 + 64 + 32 + 16;
     unsigned char m3 = 128 + 64 + 32;
@@ -606,7 +606,7 @@ int utf8str_codepoint_len(char const* s, int utf8len) {
     return (codepointLen);
 }
 
-int context_len(char const* prefix) {
+int _stdcall context_len(char const* prefix) {
     char const wb[] = " \t\n\r\v\f-=+*&^%$#@!,./?<>;:`~'\"[]{}()\\|";
     int i = (int)strlen(prefix) - 1;
     int cl = 0;
@@ -620,8 +620,7 @@ int context_len(char const* prefix) {
     return (cl);
 }
 
-Replxx::completions_t 
-ReplxxCompletionCallback(std::string const& context, int& contextLen, std::vector<std::string> const& comp) {
+Replxx::completions_t _stdcall ReplxxCompletionCallback(std::string const& context, int& contextLen, std::vector<std::string> const& comp) {
     Replxx::completions_t completions;
     int utf8ContextLen(context_len(context.c_str()));
     int prefixLen(static_cast<int>(context.length()) - utf8ContextLen);
@@ -655,7 +654,7 @@ ReplxxCompletionCallback(std::string const& context, int& contextLen, std::vecto
 #pragma endregion
 
 #pragma region Main
-int main()
+int _stdcall main()
 {
     SetConsoleTitleA(PROJECT_NAME_STR);
     string pns = PROJECT_NAME_STR;

@@ -64,7 +64,7 @@ struct RedirectInformation
 };
 
 class MinecraftServerInstance {
-	friend int ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread);
+	friend int _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread);
 protected:
 	string servername;
 	string jvmdirectory;
@@ -87,56 +87,56 @@ protected:
 
 	RedirectInformation redir;
 public:
-	MinecraftServerInstance();
-	MinecraftServerInstance(const MinecraftServerInstance* ins);
-	MinecraftServerInstance(const MinecraftServerInstance& ins);
+	_stdcall MinecraftServerInstance();
+	_stdcall MinecraftServerInstance(const MinecraftServerInstance* ins);
+	_stdcall MinecraftServerInstance(const MinecraftServerInstance& ins);
 
-	void operator=(const MinecraftServerInstance&& ins);
+	void _stdcall operator=(const MinecraftServerInstance&& ins);
 
-	~MinecraftServerInstance();
+	_stdcall ~MinecraftServerInstance();
 
-	string SetServerName(string servername);
-	string GetServerName();
+	string _stdcall SetServerName(string servername);
+	string _stdcall GetServerName();
 
-	string SetJVMDirectory(string dir);
-	string GetJVMDirectory();
+	string _stdcall SetJVMDirectory(string dir);
+	string _stdcall GetJVMDirectory();
 
-	string SetServerFileName(string name);
-	string GetServerFileName();
+	string _stdcall SetServerFileName(string name);
+	string _stdcall GetServerFileName();
 
-	string SetJVMOption(string option);
-	string GetJVMOption();
+	string _stdcall SetJVMOption(string option);
+	string _stdcall GetJVMOption();
 
-	string SetServerDirectory(string dir);
-	string GetServerDirectory();
+	string _stdcall SetServerDirectory(string dir);
+	string _stdcall GetServerDirectory();
 
-	string SetMaxmem(string mem);
-	string SetMinmem(string mem);
-	string GetMaxmem();
-	string GetMinmem();
+	string _stdcall SetMaxmem(string mem);
+	string _stdcall SetMinmem(string mem);
+	string _stdcall GetMaxmem();
+	string _stdcall GetMinmem();
 
-	int    SetStartupType(int type);
-	int    GetStartupType();
+	int    _stdcall SetStartupType(int type);
+	int    _stdcall GetStartupType();
 
-	int    SetServerType(int type);
-	int    GetServerType();
+	int    _stdcall SetServerType(int type);
+	int    _stdcall GetServerType();
 
-	int    SetServerStatus(int stat);
-	int    GetServerStatus();
+	int    _stdcall SetServerStatus(int stat);
+	int    _stdcall GetServerStatus();
 
-	bool   SetVisibility(bool vis);
-	bool   GetVisibility();
+	bool   _stdcall SetVisibility(bool vis);
+	bool   _stdcall GetVisibility();
 
-	bool   SetAutoStart(bool start);
-	bool   GetAutoStart();
+	bool   _stdcall SetAutoStart(bool start);
+	bool   _stdcall GetAutoStart();
 
-	int    StartServer();
-	int    StopServer();
-	int    RestartServer();
+	int    _stdcall StartServer();
+	int    _stdcall StopServer();
+	int    _stdcall RestartServer();
 
-	void   Print();
+	void   _stdcall Print();
 };
 
-int ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread);
+int _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread);
 
 #endif // !_H_MINECRAFTSERVER

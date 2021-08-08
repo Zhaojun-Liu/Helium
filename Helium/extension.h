@@ -5,6 +5,7 @@
 
 #include<string>
 #include<vector>
+#include<iostream>
 
 #include<Windows.h>
 #include<guiddef.h>
@@ -17,6 +18,13 @@
 #define EXT_STATUS_UNLOADING 3
 #define EXT_STATUS_EXPIRED 4
 
+#define GET_EXT_FUNCPTR(name) tempptr = GetProcAddress(dllhandle, name);\
+if(tempptr == NULL) {\
+	cout << "Get extension function pointer failed : " << name << endl;\
+	return -1;\
+}\
+this->extfuncptrcache.push_back(tempptr)
+
 using namespace std;
 
 class HeliumExtension {
@@ -27,28 +35,32 @@ protected:
 	int			extstatus;
 	
 	GUID		extguid;
+
+	HMODULE		exthandle;
+
+	vector<FARPROC>	extfuncptrcache;
 public:
-	HeliumExtension();
-	HeliumExtension(const HeliumExtension* ext);
-	~HeliumExtension();
+	_stdcall HeliumExtension();
+	_stdcall HeliumExtension(const HeliumExtension* ext);
+	_stdcall ~HeliumExtension();
 
-	string SetExtName(string name);
-	string GetExtName();
+	string _stdcall SetExtName(string name);
+	string _stdcall GetExtName();
 
-	string SetExtFileName(string name);
-	string GetExtFileName();
+	string _stdcall SetExtFileName(string name);
+	string _stdcall GetExtFileName();
 
 protected:
-	int    SetExtStatus(int stat);
+	int    _stdcall SetExtStatus(int stat);
 public:
-	int    GetExtStatus();
+	int    _stdcall GetExtStatus();
 
-	GUID   SetExtGUID(GUID guid);
-	GUID   GetExtGUID();
+	GUID   _stdcall SetExtGUID(GUID guid);
+	GUID   _stdcall GetExtGUID();
 
-	int    LoadExt();
-	int    UnloadExt(bool forceunload = false);
-	int    Expire();
+	int    _stdcall LoadExt();
+	int    _stdcall UnloadExt(bool forceunload = false);
+	int    _stdcall Expire();
 };
 
 #endif //!_H_EXTENSION

@@ -46,6 +46,6 @@ typedef struct PlayerInfoEvent {
 } PlayerInfoEvent;
 
 //[10:36:31] [Server thread/INFO]: Time elapsed: 15215 ms
-ServerStartedEvent ParseServerStarted(const char* content);
-ServerStartEvent ParseServerStart(const char* content);
+ServerStartedEvent _stdcall ParseServerStarted(const char* content);
+ServerStartEvent _stdcall ParseServerStart(const char* content);
 #endif // !_H_PARSE

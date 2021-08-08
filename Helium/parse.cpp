@@ -1,6 +1,6 @@
 #include"parse.h"
 
-ServerStartedEvent ParseServerStarted(const char* content) {
+ServerStartedEvent _stdcall ParseServerStarted(const char* content) {
 	ServerStartedEvent e(0);
 	string c = content;
 	map<size_t, string> m;
@@ -9,7 +9,7 @@ ServerStartedEvent ParseServerStarted(const char* content) {
 	e.itime = strtol(m.at(6).c_str(), &str, 10);
 	return e;
 }
-ServerStartEvent ParseServerStart(const char* content) {
+ServerStartEvent _stdcall ParseServerStart(const char* content) {
 	ServerStartEvent e(0);
 	string c = content;
 	map<size_t, string> m;

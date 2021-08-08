@@ -33,18 +33,18 @@ using namespace std;
 
 class HeliumOutput {
 public:
-	HeliumOutput();
-	int info(const char* content);
-	int warn(const char* content);
-	int error(const char* content);
-	int fatal(const char* content);
-	int write(string outstr);
-	void setTimeStamp(bool stat);
+	_stdcall HeliumOutput();
+	int _stdcall info(const char* content);
+	int _stdcall warn(const char* content);
+	int _stdcall error(const char* content);
+	int _stdcall fatal(const char* content);
+	int _stdcall write(string outstr);
+	void _stdcall setTimeStamp(bool stat);
 private:
 	bool enableTimeStamp;
 	HANDLE hLogFile = NULL;
-	int out(LPSTR sOut, WCHAR wTextAttribute);
-	int out(LPCSTR sOut, WCHAR wTextAttribute);
+	int _stdcall out(LPSTR sOut, WCHAR wTextAttribute);
+	int _stdcall out(LPCSTR sOut, WCHAR wTextAttribute);
 };
 typedef HeliumOutput Logger;
 #endif // !_H_LOGGER

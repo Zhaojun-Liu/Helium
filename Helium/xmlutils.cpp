@@ -1,6 +1,6 @@
 #include"xmlutils.h"
 
-bool GetNodePointerByName(tinyxml2::XMLElement* pRootEle, const char* strNodeName, tinyxml2::XMLElement*& Node)
+bool _stdcall GetNodePointerByName(tinyxml2::XMLElement* pRootEle, const char* strNodeName, tinyxml2::XMLElement*& Node)
 {
 	if (0 == strcmp(strNodeName, pRootEle->Value()))
 	{
@@ -25,7 +25,7 @@ bool GetNodePointerByName(tinyxml2::XMLElement* pRootEle, const char* strNodeNam
 	return false;
 }//https://blog.csdn.net/masikkk/article/details/14191933?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.add_param_isCf&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.add_param_isCf
 
-string GetNodeStringByName(tinyxml2::XMLElement* pRootEle, string strNodeName)
+string _stdcall GetNodeStringByName(tinyxml2::XMLElement* pRootEle, string strNodeName)
 {
 	tinyxml2::XMLElement* pReadEle;
 	if(GetNodePointerByName(pRootEle, strNodeName.c_str(), pReadEle))

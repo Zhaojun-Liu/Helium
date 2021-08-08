@@ -27,19 +27,19 @@ typedef FaQ qfa;
 #define OOO fra
 #define RyN OOO
 //GetNodeStringByName
-ooU DuN(awQ *PQb, ooU eCd) {
+ooU _stdcall DuN(awQ *PQb, ooU eCd) {
 	fra GetNodeStringByName(PQb, eCd);
 }
 //GetNodePointerByName
-buT TcD(awQ* pRE, Oo0 sNN, awQ*& NhE) {
+buT _stdcall TcD(awQ* pRE, Oo0 sNN, awQ*& NhE) {
 	fra GetNodePointerByName(pRE, sNN, NhE);
 }
 //ParseServerStart
-ooOoo00o oOO(Oo0 OooO) {
+ooOoo00o _stdcall oOO(Oo0 OooO) {
 	OOO ParseServerStart(OooO);
 }
 //ParseServerStarted
-ooOo00o OOo(Oo0 oOOo00) {
+ooOo00o _stdcall OOo(Oo0 oOOo00) {
 	RyN ParseServerStarted(oOOo00);
 }
 
