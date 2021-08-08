@@ -30,6 +30,18 @@ int    _stdcall HeliumExtension::SetExtStatus(int stat) {
 	this->extstatus = stat;
 	return stat;
 }
+
+void* _stdcall HeliumExtension::GetFuncPtr(const char* lpFuncName)
+{
+	if (this->exthandle == NULL)
+	{
+		return NULL;
+	}
+	void* ptr;
+	ptr = GetProcAddress(this->exthandle, lpFuncName);
+	return ptr;
+}
+
 int    _stdcall HeliumExtension::GetExtStatus() {
 	return this->extstatus;
 }
@@ -38,6 +50,7 @@ int   _stdcall HeliumExtension::SetExtGUID(GUID guid) {
 	this->extguid = guid;
 	return 0;
 }
+
 int   _stdcall HeliumExtension::GetExtGUID(LPGUID lpGuid) {
 	*lpGuid = this->extguid;
 }
@@ -54,9 +67,38 @@ int    _stdcall HeliumExtension::LoadExt() {
 		extpath.append(cwd).append("\\").append("extensions").append("\\").append(this->extfilename);
 
 		auto dllhandle = LoadLibraryA(extpath.c_str());
-
-		GET_EXT_FUNCPTR("OnExtensionLoad");
-		GET_EXT_FUNCPTR("OnServerStartup");
+		if (dllhandle == NULL)
+		{
+			return -2;
+		}
+		else
+		{
+			//GET_EXT_FUNCPTR("OnExtensionLoad");
+			//GET_EXT_FUNCPTR("OnServerStartup");
+			pair<int, void*> p;
+			this->exthandle = dllhandle;
+			fd(ON_LOAD, "OnLoad")
+			ins
+			fd(ON_INFO, "OnInfo")
+			ins
+			fd(ON_SERVER_LAUNCH, "OnServerLaunch")
+			ins
+			fd(ON_SERVER_START, "OnServerStart")
+			ins
+			fd(ON_SERVER_STARTUP, "OnServerStartup")
+			ins
+			fd(ON_SERVER_STOP, "OnServerStop")
+			ins
+			fd(ON_CONSOLE_INPUT, "OnConsoleInput")
+			ins
+			fd(ON_PLAYER_INFO, "OnPlayerInfo")
+			ins
+			fd(ON_UNLOAD, "OnUnload")
+			ins
+			fd(ON_HELIUM_STOP, "OnHeliumStop")
+			ins
+		}
+		
 
 		this->extstatus = EXT_STATUS_LOADED;
 		return 0;
