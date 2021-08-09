@@ -64,8 +64,8 @@ struct RedirectInformation
 };
 
 class MinecraftServerInstance {
-private:
-	int _stdcall ProcessServerOutput(string servername, HANDLE stdread);
+
+	 friend int _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread);
 protected:
 	string servername;
 	string jvmdirectory;
@@ -83,8 +83,10 @@ protected:
 	bool   autostart;
 
 	thread stdoutthread;
-	HANDLE serverproc;
-	DWORD  serverpid;
+	HANDLE hProc;
+	DWORD  dwPid;
+	DWORD dwReturnValue;
+
 
 	RedirectInformation redir;
 public:
@@ -130,6 +132,9 @@ public:
 
 	bool   _stdcall SetAutoStart(bool start);
 	bool   _stdcall GetAutoStart();
+
+	int    _stdcall SetServerReturnValue(DWORD wdnmd);
+	int    _stdcall GetServerReturnValue(LPDWORD wdnmd);
 
 	int    _stdcall StartServer();
 	int    _stdcall StopServer();

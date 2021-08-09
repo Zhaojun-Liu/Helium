@@ -446,6 +446,7 @@ int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servernam
     GetExitCodeProcess(ptr->hProc, &dwCode);
     cout << "Exiting ProcessServerOutput()" << endl;
     ptr->SetServerReturnValue(dwCode);
+    ptr->SetServerStatus(1);
     return 114514;
 }
 
