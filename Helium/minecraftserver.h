@@ -12,6 +12,7 @@
 #include<Windows.h>
 
 #include"utils.h"
+#include"commands.h"
 
 using namespace std;
 

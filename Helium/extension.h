@@ -10,8 +10,6 @@
 #include<Windows.h>
 #include<guiddef.h>
 
-#include"replxx/replxx.hxx"
-
 #define EXT_STATUS_EMPTY 0
 #define EXT_STATUS_LOADING 1
 #define EXT_STATUS_LOADED 2
