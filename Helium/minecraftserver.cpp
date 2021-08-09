@@ -277,7 +277,7 @@ int    MinecraftServerInstance::StartServer() {
         this->redir.hStdOutWrite = hStdOutWrite;
         this->serverpid = pi.dwProcessId;
 
-        thread tempthread(this->ProcessServerOutput, this, this->servername, hStdOutRead);
+        thread tempthread(&MinecraftServerInstance::ProcessServerOutput, this, this->servername, hStdOutRead);
         this->stdoutthread = std::move(tempthread);
         this->stdoutthread.detach();
         this_thread::yield();
@@ -375,7 +375,7 @@ int    MinecraftServerInstance::StartServer() {
             this->redir.hStdOutWrite = hStdOutWrite;
             this->serverpid = pi.dwProcessId;
 
-            thread tempthread(this->ProcessServerOutput, (MinecraftServerInstance*)this, this->servername, hStdOutRead);
+            thread tempthread(&MinecraftServerInstance::ProcessServerOutput, (MinecraftServerInstance*)this, this->servername, hStdOutRead);
             this->stdoutthread = std::move(tempthread);
             this->stdoutthread.detach();
             this_thread::yield();
