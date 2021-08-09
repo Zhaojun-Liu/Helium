@@ -14,129 +14,75 @@
 
 using namespace std;
 
-#define MAX_EXECUTORS 2048
-#define MAX_CMD_QUEUE 2048
+#define CMD_TYPE_EMPTY
+#define CMD_TYPE_HELIUM
+#define CMD_TYPE_MINECRAFT
 
-#define EMPTY_CMD "EMPTY_CMD"
+#define QUEUE_STAT_EMPTY
+#define QUEUE_STAT_LOADING
+#define QUEUE_STAT_READY
+#define QUEUE_STAT_EXECUTING
+#define QUEUE_STAT_PAUSED
+#define QUEUE_STAT_TERMINATED
+#define QUEUE_STAT_DUMPING
 
-#define CMD_TYPE_BUILTINCMD 0
-#define CMD_TYPE_MCCMD 1
-#define CMD_TYPE_PROCESSCTRL 2
-#define CMD_TYPE_DONOTHING 3
-
-#define QUEUE_STATUS_RUNNING 0
-#define QUEUE_STATUS_SLEEPING 1
-#define QUEUE_STATUS_LOADING 2
-#define QUEUE_STATUS_TERMINATED 3
-#define QUEUE_STATUS_SUSPENDED 4
-
-#define QUEUE_TYPE_NORMAL 0
-#define QUEUE_TYPE_SHELL 1
-
-class CommandInstance {
-public:
-	CommandInstance();
-	CommandInstance(string command, int type);
-
-	string GetCmd();
-	string SetCmd(string command);
-
-	int GetCmdType();
-	int SetCmdType(int type);
-
-	int IncExecuteCounter();
-	int GetExecuteCounter();
-	int ClearExecuteCounter();
-private:
+class HeliumCommand {
+protected:
 	string command;
 
-	int cmdtype;
 	int executecounter;
+	int commandtype;
+
+public:
+	_stdcall HeliumCommand();
+	_stdcall HeliumCommand(const HeliumCommand* cmd);
+	_stdcall HeliumCommand(string cmd);
+
+	int _stdcall Execute();
+	int _stdcall AutoSetType();
+	
+	string _stdcall GetCommand();
+	string _stdcall SetCommand(string cmd);
+
+	int _stdcall GetExecCounter();
+protected:
+	int _stdcall IncExecCounter();
+public:
+
+	int _stdcall GetCommandType();
 };
 
-class CommandQueue {
-	friend int ExecutorThread(int qid);
-public:
-	CommandQueue();
-	~CommandQueue();
-
-	int Queue_Suspend();
-	int Queue_Resume();
-	int Queue_Sleep(int slptime);
-
-	int Reinitialize();
-
-	int LoadCommandQueueFromFile(string filename);
-	int DumpCommandQueueToFile();
-
-	int InsertCommand(CommandInstance command);
-	int InsertCommand(CommandInstance command, int index);
-
-	int DeleteCommand(string command);
-	int DeleteCommand(int index);
-
-	int SetStatus(int stat);
-	int GetStatus();
-
-	int SetType(int type);
-	int GetType();
-
-	int SetTS(int ts);
-	int GetTS();
-
-	int SetCurrIndex(int index);
-	int GetCurrIndex();
-
-	int SetExecutor(int execindex);
-	int GetExecutor();
-
-	int SetQID(int qid);
-	int GetQID();
-
-	bool IsUnstoppable();
-	bool IsImmutable();
-	bool IsCanBeRestarted();
-	bool IsControlledByExecutor();
-
-	bool SetUnstoppable(bool unstoppable);
-	bool SetImmutable(bool immutable);
-	bool SetCanBeRestarted(bool restart);
-	bool SetControlledByExecutor(bool cbe);
-
-	bool operator== (CommandQueue queue);
-private:
-	vector<CommandInstance> _cmdqueue;
-	thread* _executor;
-
-	string queuename;
+class HeliumCommandQueue {
+protected:
+	vector<HeliumCommand> commands;
+	thread execthread;
 
 	int queuestatus;
-	int queuetype;
-	int timeslice;
-	int currentindex;
-	int executorindex;
-	int qid;
-
+	int queueid;
+	
+	bool restart;
 	bool unstoppable;
 	bool immutable;
-	bool restart;
-	bool controlbyexecutor;
+
+	int _stdcall ExecThreadFunc();
+public:
+	_stdcall HeliumCommandQueue();
+	_stdcall HeliumCommandQueue(const HeliumCommandQueue* queue);
+	_stdcall HeliumCommandQueue(const vector<HeliumCommand>* cmds);
+
+	int _stdcall NewQID();
+	int _stdcall GetQID();
+
+	int _stdcall GetQueueStatus();
+
+	bool GetRestart();
+	bool SetRestart(bool r);
+
+	bool GetUnstoppable();
+	bool SetUnstoppable(bool u);
+
+	bool GetImmutable();
+	bool SetImmutable(bool i);
 };
-
-/*
-草
-我又不是在写系统
-何必呢
-一比一模型yyds
-*/
-
-int ExecutorThread(int qid);
-int DeleteQueue(CommandQueue queue);
-int NewCommandFromConsole(LPCSTR cmd);
-int CreateQueueForShell();
-int NewQID();
-vector<CommandQueue>::iterator SearchQueueByQID(int qid);
-
-bool isCommand(LPCSTR cmd);
 
 #endif // !_H_COMMANDS

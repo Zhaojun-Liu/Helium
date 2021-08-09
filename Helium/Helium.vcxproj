@@ -153,6 +153,7 @@
     <ClCompile Include="xmlmacros.cpp" />
     <ClCompile Include="minecraftserver.cpp" />
     <ClCompile Include="extension.cpp" />
+    <ClCompile Include="permissions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="confuses.h" />
@@ -164,9 +165,13 @@
     <ClInclude Include="xmlmacros.h" />
     <ClInclude Include="minecraftserver.h" />
     <ClInclude Include="extension.h" />
+    <ClInclude Include="permissions.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="HeliumConfig.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="libreadline7.dll" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -107,8 +107,8 @@ int    _stdcall HeliumExtension::LoadExt() {
 	return -1;
 }
 int    HeliumExtension::UnloadExt(bool forceunload) {
-	awa;
+	return 0;
 }
 int    HeliumExtension::Expire() {
-	awa;
+	return 0;
 }
