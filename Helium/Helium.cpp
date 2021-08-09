@@ -22,6 +22,7 @@
 
 using namespace std;
 
+
 #pragma endregion
 
 #pragma region Macros
@@ -111,6 +112,37 @@ map<string, HeliumExtension> extensions;
 [10:36:36] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
 [10:36:36] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
 */
+
+void TestParser() {
+
+    FaQ ost;
+    ooOoo00o eCy = oOO("[10:36:14] [Server thread/INFO]: Starting Minecraft server on *:25500");
+    ost << "服务器将在端口" << eCy.port << "启动\n";
+    ooOo00o KbG = OOo("[10:36:31] [Server thread/INFO]: Time elapsed: 15215 ms");
+    qfa ostr;
+    ostr << "服务器已启动，用时" << KbG.itime << "ms\n";
+
+    logger.info(ostr.str().c_str());
+    logger.warn(ostr.str().c_str());
+    logger.error(ostr.str().c_str());
+    logger.fatal(ostr.str().c_str());
+    logger.setTimeStamp(DISABLE_TIME_STAMP);
+    logger.info(ostr.str().c_str());
+    logger.warn(ostr.str().c_str());
+    logger.error(ostr.str().c_str());
+    logger.fatal(ostr.str().c_str());
+    logger.setTimeStamp(ENABLE_TIME_STAMP);
+    logger.info(ost.str().c_str());
+    logger.warn(ost.str().c_str());
+    logger.error(ost.str().c_str());
+    logger.fatal(ost.str().c_str());
+    logger.setTimeStamp(DISABLE_TIME_STAMP);
+    logger.info(ost.str().c_str());
+    logger.warn(ost.str().c_str());
+    logger.error(ost.str().c_str());
+    logger.fatal(ost.str().c_str());
+    system("pause");
+}
 
 #pragma endregion
 
@@ -590,39 +622,11 @@ int _stdcall main()
     string pns = PROJECT_NAME_STR;
     pns.append(" ").append(PROJECT_VER_STR).append(" ").append(PROJECT_DEVSTAT);
     cout << pns << endl;
-
-    FaQ ost;
-    ooOoo00o eCy = oOO("[10:36:14] [Server thread/INFO]: Starting Minecraft server on *:25500");
-    ost << "服务器将在端口" << eCy.port << "启动\n";
-    ooOo00o KbG = OOo("[10:36:31] [Server thread/INFO]: Time elapsed: 15215 ms");
-    qfa ostr;
-    ostr << "服务器已启动，用时" << KbG.itime << "ms\n";
-
-    logger.info(ostr.str().c_str());
-    logger.warn(ostr.str().c_str());
-    logger.error(ostr.str().c_str());
-    logger.fatal(ostr.str().c_str());
-    logger.setTimeStamp(DISABLE_TIME_STAMP);
-    logger.info(ostr.str().c_str());
-    logger.warn(ostr.str().c_str());
-    logger.error(ostr.str().c_str());
-    logger.fatal(ostr.str().c_str());
-    logger.setTimeStamp(ENABLE_TIME_STAMP);
-    logger.info(ost.str().c_str());
-    logger.warn(ost.str().c_str());
-    logger.error(ost.str().c_str());
-    logger.fatal(ost.str().c_str());
-    logger.setTimeStamp(DISABLE_TIME_STAMP);
-    logger.info(ost.str().c_str());
-    logger.warn(ost.str().c_str());
-    logger.error(ost.str().c_str());
-    logger.fatal(ost.str().c_str());
-
     if (auto ret = Config(); ret != 0) {
         print("Failed to read config");
         return -1;
     }
-
+#undef ins
     for (auto ins : serverlist) {
         int ret;
         if (ins.GetAutoStart()) {
@@ -637,9 +641,10 @@ int _stdcall main()
             cout << "Error starting Minecraft server : " << ins.GetServerName() << endl;
         }
     }
-
+    
     while (true) {
         ;
+
     }
 
     system("pause");
