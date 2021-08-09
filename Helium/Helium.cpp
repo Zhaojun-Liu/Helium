@@ -17,7 +17,7 @@
 #include"xmlutils.h"
 #include"xmlmacros.h"
 #include"minecraftserver.h"
-
+#include"extension.h"
 #define REPLXX_STATIC
 
 using namespace std;
@@ -45,6 +45,7 @@ START_CONFIG_NODES_REGISTER(ConfigNode);
 #pragma region Var
 Logger logger;
 vector<MinecraftServerInstance> serverlist;
+map<string, HeliumExtension> extensions;
 #pragma endregion
 
 #pragma region Callback

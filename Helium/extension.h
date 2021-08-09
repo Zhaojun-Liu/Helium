@@ -6,7 +6,7 @@
 #include<string>
 #include<vector>
 #include<iostream>
-
+#include<map>
 #include<Windows.h>
 #include<guiddef.h>
 
@@ -18,6 +18,18 @@
 #define EXT_STATUS_UNLOADING 3
 #define EXT_STATUS_EXPIRED 4
 
+#define ON_LOAD				0x1
+#define ON_INFO				0x10
+#define ON_SERVER_LAUNCH	0x1001
+#define ON_SERVER_START		0x100
+#define ON_SERVER_STARTUP	0x1000
+#define ON_SERVER_STOP		0x10000
+#define ON_CONSOLE_INPUT	0x100000
+#define ON_PLAYER_INFO		0x1000000
+#define ON_UNLOAD			0x10000000
+#define ON_HELIUM_STOP		0x20000000
+
+
 #define GET_EXT_FUNCPTR(name) tempptr = GetProcAddress(dllhandle, name);\
 if(tempptr == NULL) {\
 	cout << "Get extension function pointer failed : " << name << endl;\
@@ -26,20 +38,23 @@ if(tempptr == NULL) {\
 this->extfuncptrcache.push_back(tempptr)
 #define awa return 0
 #define retstr string ret = "";return ret
+#define ins this->extfunccache.insert(p);
+#define fd(a,b) p.first = a;p.second = this->GetFuncPtr(b);
 using namespace std;
 
 class HeliumExtension {
-protected:
+private:
 	string		extname;
 	string		extfilename;
 
-	int			extstatus;
+	int			extstatus = 0;
 	
 	GUID		extguid;
 
-	HMODULE		exthandle;
+	HMODULE		exthandle = NULL;
 
-	vector<FARPROC>	extfuncptrcache;
+	map<int,void*>	extfunccache;
+	
 public:
 	_stdcall HeliumExtension();
 	_stdcall HeliumExtension(const HeliumExtension* ext);
@@ -51,8 +66,9 @@ public:
 	string _stdcall SetExtFileName(string name);
 	string _stdcall GetExtFileName();
 
-protected:
+private:
 	int    _stdcall SetExtStatus(int stat);
+	void* _stdcall GetFuncPtr(const char* UbgDvtcfVY);
 public:
 	int    _stdcall GetExtStatus();
 
