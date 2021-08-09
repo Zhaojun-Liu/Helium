@@ -4,7 +4,7 @@ CRITICAL_SECTION cs;
 static bool isinit = false;
 
 MinecraftServerInstance::MinecraftServerInstance() {
-    this->serverproc = INVALID_HANDLE_VALUE;
+    this->hProc = INVALID_HANDLE_VALUE;
     this->serverstartuptype = STARTUP_TYPE_JAR;
     this->serverstatus = SERVER_STATUS_TERMINATED;
     this->servertype = SERVER_TYPE_VANILLA;
@@ -31,7 +31,7 @@ MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance* 
     this->serverstatus = ins->serverstatus;
 
     this->stdoutthread = const_cast<thread&&>(move(ins->stdoutthread));
-    this->serverproc = ins->serverproc;
+    this->hProc = ins->hProc;
 
     this->outputvisibility = ins->outputvisibility;
     this->autostart = ins->autostart;
@@ -53,10 +53,10 @@ MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance& 
 
     this->serverstartuptype = ins.serverstartuptype;
     this->servertype = ins.servertype;
-    this->serverstatus = ins.serverstatus;
+    this->serverstatus = ins.serverstatus; 
 
     this->stdoutthread = const_cast<thread&&>(move(ins.stdoutthread));
-    this->serverproc = ins.serverproc;
+    this->hProc = ins.hProc;
     
     this->outputvisibility = ins.outputvisibility;
     this->autostart = ins.autostart;
@@ -81,14 +81,14 @@ void MinecraftServerInstance::operator=(const MinecraftServerInstance&& ins) {
     this->serverstatus = ins.serverstatus;
 
     this->stdoutthread = const_cast<thread&&>(move(ins.stdoutthread));
-    this->serverproc = ins.serverproc;
+    this->hProc = ins.hProc;
 
     this->outputvisibility = ins.outputvisibility;
     this->autostart = ins.autostart;
 }
 
 MinecraftServerInstance::~MinecraftServerInstance() {
-    TerminateProcess(this->serverproc, 0);
+    TerminateProcess(this->hProc, 0);
     if (!isinit) { 
         DeleteCriticalSection(&cs); 
         isinit = false;
@@ -275,9 +275,9 @@ int    MinecraftServerInstance::StartServer() {
         this->redir.hStdInWrite = hStdInWrite;
         this->redir.hStdOutRead = hStdOutRead;
         this->redir.hStdOutWrite = hStdOutWrite;
-        this->serverpid = pi.dwProcessId;
+        this->dwPid = pi.dwProcessId;
 
-        thread tempthread(&MinecraftServerInstance::ProcessServerOutput, this, this->servername, hStdOutRead);
+        thread tempthread(ProcessServerOutput, this, this->servername, hStdOutRead);
         this->stdoutthread = std::move(tempthread);
         this->stdoutthread.detach();
         this_thread::yield();
@@ -373,9 +373,9 @@ int    MinecraftServerInstance::StartServer() {
             this->redir.hStdInWrite = hStdInWrite;
             this->redir.hStdOutRead = hStdOutRead;
             this->redir.hStdOutWrite = hStdOutWrite;
-            this->serverpid = pi.dwProcessId;
+            this->dwPid = pi.dwProcessId;
 
-            thread tempthread(&MinecraftServerInstance::ProcessServerOutput, (MinecraftServerInstance*)this, this->servername, hStdOutRead);
+            thread tempthread(ProcessServerOutput, (MinecraftServerInstance*)this, this->servername, hStdOutRead);
             this->stdoutthread = std::move(tempthread);
             this->stdoutthread.detach();
             this_thread::yield();
@@ -403,14 +403,14 @@ int    MinecraftServerInstance::RestartServer() {
     return 0;
 }
 
-int  _stdcall  MinecraftServerInstance::ProcessServerOutput(string servername, HANDLE stdread) {
-    cout << "Server started at PID : " << this->serverpid << endl;
+int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread) {
+    cout << "Server started at PID : " << ptr->dwPid << endl;
     char out_buffer[BUFSIZE];
     DWORD dwRead;
     bool ret = FALSE;
-    DWORD process_exit_code;
+    DWORD dwCode;
 
-    while (this->serverstatus != SERVER_STATUS_TERMINATED)
+    while (ptr->serverstatus != SERVER_STATUS_TERMINATED)
     {
         ZeroMemory(out_buffer, BUFSIZE);
         //用WriteFile，从hStdOutRead读出子进程stdout输出的数据，数据结果在out_buffer中，长度为dwRead  
@@ -420,7 +420,7 @@ int  _stdcall  MinecraftServerInstance::ProcessServerOutput(string servername, H
         if ((ret) && (dwRead != 0))  //如果成功了，且长度>0  
         {
             out_buffer[dwRead] = '\0';
-            if (this->outputvisibility) {
+            if (ptr->outputvisibility) {
                 string temp(out_buffer);
                 string pat("\r\n");
                 auto outputs = split(temp, pat);
@@ -438,15 +438,29 @@ int  _stdcall  MinecraftServerInstance::ProcessServerOutput(string servername, H
             }
         }
         //如果子进程结束，退出循环  
-        if (this->GetServerStatus() == SERVER_STATUS_TERMINATED)
+        if (ptr->GetServerStatus() == SERVER_STATUS_TERMINATED)
         {
             break;
         }
     }
-    GetExitCodeProcess(this->serverproc, &process_exit_code);
+    GetExitCodeProcess(ptr->hProc, &dwCode);
     cout << "Exiting ProcessServerOutput()" << endl;
-    return process_exit_code;
+    ptr->SetServerReturnValue(dwCode);
+    ptr->SetServerStatus(1);
+    return 114514;
 }
+
+int _stdcall MinecraftServerInstance::SetServerReturnValue(DWORD dwValue)
+{
+    return 0;
+}
+
+int _stdcall MinecraftServerInstance::GetServerReturnValue(LPDWORD lpValue)
+{
+
+    return 0;
+}
+
 
 void   MinecraftServerInstance::Print() {
     cout << endl << "Minecraft Server Instance Debug Print" << endl;
