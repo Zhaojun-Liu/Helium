@@ -34,12 +34,13 @@ int    _stdcall HeliumExtension::GetExtStatus() {
 	return this->extstatus;
 }
 
-GUID   _stdcall HeliumExtension::SetExtGUID(GUID guid) {
+int   _stdcall HeliumExtension::SetExtGUID(GUID guid) {
 	this->extguid = guid;
-	return guid;
+	return 0;
 }
-GUID   _stdcall HeliumExtension::GetExtGUID() {
-	return this->extguid;
+int   _stdcall HeliumExtension::GetExtGUID(LPGUID guid) {
+	*guid = this->extguid;
+	return 0;
 }
 
 int    _stdcall HeliumExtension::LoadExt() {
@@ -64,8 +65,8 @@ int    _stdcall HeliumExtension::LoadExt() {
 	return -1;
 }
 int    HeliumExtension::UnloadExt(bool forceunload) {
-	awa;
+	return 0;
 }
 int    HeliumExtension::Expire() {
-	awa;
+	return 0;
 }

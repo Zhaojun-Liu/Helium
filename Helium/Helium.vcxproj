@@ -142,17 +142,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="replxx\conversion.cxx" />
-    <ClCompile Include="replxx\ConvertUTF.cpp" />
-    <ClCompile Include="replxx\escape.cxx" />
-    <ClCompile Include="replxx\history.cxx" />
-    <ClCompile Include="replxx\io.cxx" />
-    <ClCompile Include="replxx\prompt.cxx" />
-    <ClCompile Include="replxx\replxx.cxx" />
-    <ClCompile Include="replxx\replxx_impl.cxx" />
-    <ClCompile Include="replxx\util.cxx" />
-    <ClCompile Include="replxx\wcwidth.cpp" />
-    <ClCompile Include="replxx\windows.cxx" />
     <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="commands.cpp" />
     <ClCompile Include="Helium.cpp" />
@@ -164,23 +153,10 @@
     <ClCompile Include="xmlmacros.cpp" />
     <ClCompile Include="minecraftserver.cpp" />
     <ClCompile Include="extension.cpp" />
+    <ClCompile Include="permissions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="confuses.h" />
-    <ClInclude Include="replxx\conversion.hxx" />
-    <ClInclude Include="replxx\ConvertUTF.h" />
-    <ClInclude Include="replxx\escape.hxx" />
-    <ClInclude Include="replxx\history.hxx" />
-    <ClInclude Include="replxx\io.hxx" />
-    <ClInclude Include="replxx\killring.hxx" />
-    <ClInclude Include="replxx\prompt.hxx" />
-    <ClInclude Include="replxx\replxx.h" />
-    <ClInclude Include="replxx\replxx.hxx" />
-    <ClInclude Include="replxx\replxx_impl.hxx" />
-    <ClInclude Include="replxx\unicodestring.hxx" />
-    <ClInclude Include="replxx\utf8string.hxx" />
-    <ClInclude Include="replxx\util.hxx" />
-    <ClInclude Include="replxx\windows.hxx" />
     <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="commands.h" />
     <ClInclude Include="parse.h" />
@@ -189,12 +165,13 @@
     <ClInclude Include="xmlmacros.h" />
     <ClInclude Include="minecraftserver.h" />
     <ClInclude Include="extension.h" />
+    <ClInclude Include="permissions.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="HeliumConfig.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="replxx\replxx-static-rd.lib" />
+    <None Include="libreadline7.dll" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

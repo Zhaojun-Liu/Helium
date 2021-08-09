@@ -20,10 +20,7 @@
 
 #define REPLXX_STATIC
 
-#include"replxx/replxx.hxx"
-
 using namespace std;
-using namespace replxx;
 
 #pragma endregion
 
@@ -585,74 +582,6 @@ int _stdcall Config() {
 }
 #pragma endregion
 
-#pragma region replxxfuncs
-int _stdcall utf8str_codepoint_len(char const* s, int utf8len) {
-    int codepointLen = 0;
-    unsigned char m4 = 128 + 64 + 32 + 16;
-    unsigned char m3 = 128 + 64 + 32;
-    unsigned char m2 = 128 + 64;
-    for (int i = 0; i < utf8len; ++i, ++codepointLen) {
-        char c = s[i];
-        if ((c & m4) == m4) {
-            i += 3;
-        }
-        else if ((c & m3) == m3) {
-            i += 2;
-        }
-        else if ((c & m2) == m2) {
-            i += 1;
-        }
-    }
-    return (codepointLen);
-}
-
-int _stdcall context_len(char const* prefix) {
-    char const wb[] = " \t\n\r\v\f-=+*&^%$#@!,./?<>;:`~'\"[]{}()\\|";
-    int i = (int)strlen(prefix) - 1;
-    int cl = 0;
-    while (i >= 0) {
-        if (strchr(wb, prefix[i]) != NULL) {
-            break;
-        }
-        ++cl;
-        --i;
-    }
-    return (cl);
-}
-
-Replxx::completions_t _stdcall ReplxxCompletionCallback(std::string const& context, int& contextLen, std::vector<std::string> const& comp) {
-    Replxx::completions_t completions;
-    int utf8ContextLen(context_len(context.c_str()));
-    int prefixLen(static_cast<int>(context.length()) - utf8ContextLen);
-    if ((prefixLen > 0) && (context[prefixLen - 1] == '\\')) {
-        --prefixLen;
-        ++utf8ContextLen;
-    }
-    contextLen = utf8str_codepoint_len(context.c_str() + prefixLen, utf8ContextLen);
-
-    std::string prefix{ context.substr(prefixLen) };
-    if (prefix == "\\pi") {
-        completions.push_back("π");
-    }
-    else {
-        for (auto const& e : comp) {
-            if (e.compare(0, prefix.size(), prefix) == 0) {
-                Replxx::Color c(Replxx::Color::DEFAULT);
-                if (e.find("brightred") != std::string::npos) {
-                    c = Replxx::Color::BRIGHTRED;
-                }
-                else if (e.find("red") != std::string::npos) {
-                    c = Replxx::Color::RED;
-                }
-                completions.emplace_back(e.c_str(), c);
-            }
-        }
-    }
-
-    return completions;
-}
-#pragma endregion
-
 #pragma region Main
 int _stdcall main()
 {
@@ -660,20 +589,6 @@ int _stdcall main()
     string pns = PROJECT_NAME_STR;
     pns.append(" ").append(PROJECT_VER_STR).append(" ").append(PROJECT_DEVSTAT);
     cout << pns << endl;
-
-    Replxx rx;
-    rx.install_window_change_handler();
-
-    vector<string> commands{
-        ".helium", "help"
-    };
-    string heliumhistory = ".\\helium_history.txt";
-    rx.history_load(heliumhistory);
-    rx.set_max_history_size(128);
-    rx.set_max_hint_rows(3);
-
-    using namespace placeholders;
-    rx.set_completion_callback(std::bind(&ReplxxCompletionCallback, _1, _2, cref(commands)));
 
     FaQ ost;
     ooOoo00o eCy = oOO("[10:36:14] [Server thread/INFO]: Starting Minecraft server on *:25500");
@@ -701,7 +616,7 @@ int _stdcall main()
     logger.warn(ost.str().c_str());
     logger.error(ost.str().c_str());
     logger.fatal(ost.str().c_str());
-    system("pause");
+
     if (auto ret = Config(); ret != 0) {
         print("Failed to read config");
         return -1;

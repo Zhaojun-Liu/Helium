@@ -56,8 +56,8 @@ protected:
 public:
 	int    _stdcall GetExtStatus();
 
-	int   SetExtGUID(GUID guid);
-	int   GetExtGUID(LPGUID lpGuid);
+	int    _stdcall SetExtGUID(GUID guid);
+	int    _stdcall GetExtGUID(LPGUID lpGuid);
 
 	int    _stdcall LoadExt();
 	int    _stdcall UnloadExt(bool forceunload = false);
