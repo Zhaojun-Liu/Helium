@@ -277,7 +277,7 @@ int    MinecraftServerInstance::StartServer() {
         this->redir.hStdOutWrite = hStdOutWrite;
         this->serverpid = pi.dwProcessId;
 
-        thread tempthread(ProcessServerOutput, this, this->servername, hStdOutRead);
+        thread tempthread(this->ProcessServerOutput, this, this->servername, hStdOutRead);
         this->stdoutthread = std::move(tempthread);
         this->stdoutthread.detach();
         this_thread::yield();
@@ -294,7 +294,6 @@ int    MinecraftServerInstance::StartServer() {
         c_scl = NULL;
     }
     else if (this->serverstartuptype == STARTUP_TYPE_BAT) {
-        if (this->serverstartuptype == STARTUP_TYPE_JAR) {
             char cwd[MAX_PATH];
             string startupcmdline, servercwd;
             stringstream sstr;
@@ -376,7 +375,7 @@ int    MinecraftServerInstance::StartServer() {
             this->redir.hStdOutWrite = hStdOutWrite;
             this->serverpid = pi.dwProcessId;
 
-            thread tempthread(ProcessServerOutput, (MinecraftServerInstance*)this, this->servername, hStdOutRead);
+            thread tempthread(this->ProcessServerOutput, (MinecraftServerInstance*)this, this->servername, hStdOutRead);
             this->stdoutthread = std::move(tempthread);
             this->stdoutthread.detach();
             this_thread::yield();
@@ -391,7 +390,7 @@ int    MinecraftServerInstance::StartServer() {
             cout << "Minecraft server process resumed successfully" << endl;
 
             c_scl = NULL;
-        }
+        
     }
     return 0;
 }
@@ -404,14 +403,14 @@ int    MinecraftServerInstance::RestartServer() {
     return 0;
 }
 
-int    ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread) {
-    cout << "Server started at PID : " << ptr->serverpid << endl;
+int  _stdcall  MinecraftServerInstance::ProcessServerOutput(string servername, HANDLE stdread) {
+    cout << "Server started at PID : " << this->serverpid << endl;
     char out_buffer[BUFSIZE];
     DWORD dwRead;
     bool ret = FALSE;
     DWORD process_exit_code;
 
-    while (ptr->serverstatus != SERVER_STATUS_TERMINATED)
+    while (this->serverstatus != SERVER_STATUS_TERMINATED)
     {
         ZeroMemory(out_buffer, BUFSIZE);
         //用WriteFile，从hStdOutRead读出子进程stdout输出的数据，数据结果在out_buffer中，长度为dwRead  
@@ -421,12 +420,14 @@ int    ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HAND
         if ((ret) && (dwRead != 0))  //如果成功了，且长度>0  
         {
             out_buffer[dwRead] = '\0';
-            if (ptr->outputvisibility) {
+            if (this->outputvisibility) {
                 string temp(out_buffer);
                 string pat("\r\n");
                 auto outputs = split(temp, pat);
                 for (auto it = outputs.begin(); it < outputs.end(); it++) {
                     string outputstr;
+                    //在这里写上parse服务器输出所用code
+                    
                     if (!it->empty() && *it != "\n")
                         outputstr.append(servername).append(">").append(*it).append("\r\n");
                     EnterCriticalSection(&cs);
@@ -437,8 +438,12 @@ int    ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HAND
             }
         }
         //如果子进程结束，退出循环  
+        if (this->GetServerStatus() == SERVER_STATUS_TERMINATED)
+        {
+            break;
+        }
     }
-    GetExitCodeProcess(ptr->serverproc, &process_exit_code);
+    GetExitCodeProcess(this->serverproc, &process_exit_code);
     cout << "Exiting ProcessServerOutput()" << endl;
     return process_exit_code;
 }

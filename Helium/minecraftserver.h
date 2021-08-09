@@ -64,7 +64,8 @@ struct RedirectInformation
 };
 
 class MinecraftServerInstance {
-	friend int _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread);
+private:
+	int _stdcall ProcessServerOutput(string servername, HANDLE stdread);
 protected:
 	string servername;
 	string jvmdirectory;
@@ -133,7 +134,6 @@ public:
 	int    _stdcall StartServer();
 	int    _stdcall StopServer();
 	int    _stdcall RestartServer();
-
 	void   _stdcall Print();
 };
 

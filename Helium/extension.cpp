@@ -53,6 +53,7 @@ int   _stdcall HeliumExtension::SetExtGUID(GUID guid) {
 
 int   _stdcall HeliumExtension::GetExtGUID(LPGUID lpGuid) {
 	*lpGuid = this->extguid;
+	return 0;
 }
 
 int    _stdcall HeliumExtension::LoadExt() {
