@@ -36,9 +36,9 @@ MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance* 
 
     this->outputvisibility = ins->outputvisibility;
     this->autostart = ins->autostart;
-    this->serverguid = ins.serverguid;
-    this->dwPid = ins.dwPid;
-    this->dwReturnValue = ins.dwReturnValue;
+    this->serverguid = ins->serverguid;
+    this->dwPid = ins->dwPid;
+    this->dwReturnValue = ins->dwReturnValue;
 
     if (!isinit) {
         InitializeCriticalSection(&cs);
@@ -279,7 +279,7 @@ int    MinecraftServerInstance::StartServer() {
 
         this->serverstatus = SERVER_STATUS_RUNNING;
         cout << "Minecraft server launched successfully" << endl;
-
+        this->hProc = pi.hProcess;
         this->redir.hStdErrWrite = hStdOutWrite;
         this->redir.hStdInRead = hStdInRead;
         this->redir.hStdInWrite = hStdInWrite;
@@ -298,7 +298,6 @@ int    MinecraftServerInstance::StartServer() {
             TerminateProcess(pi.hProcess, serverexitcode);
             return -1;
         }
-
         cout << "Minecraft server process resumed successfully" << endl;
 
         c_scl = NULL;
@@ -377,7 +376,7 @@ int    MinecraftServerInstance::StartServer() {
             
             this->serverstatus = SERVER_STATUS_RUNNING;
             cout << "Minecraft server launched successfully" << endl;
-
+            this->hProc = pi.hProcess;
             this->redir.hStdErrWrite = hStdOutWrite;
             this->redir.hStdInRead = hStdInRead;
             this->redir.hStdInWrite = hStdInWrite;
@@ -445,7 +444,7 @@ int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servernam
                     LeaveCriticalSection(&cs);
                 }
                 //如果子进程结束，退出循环
-                if (WaitForSingleObject(ptr->hProc, 20) == WAIT_TIMEOUT)
+                if (WaitForSingleObject(ptr->hProc, 20) != WAIT_TIMEOUT)
                 {
                     ptr->SetServerStatus(SERVER_STATUS_TERMINATED);
                     break;
@@ -453,7 +452,7 @@ int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servernam
             }
         }
         //如果子进程结束，退出循环
-        if (ptr->GetServerStatus() == SERVER_STATUS_TERMINATED)
+        if (ptr->GetServerStatus() != SERVER_STATUS_TERMINATED)
         {
             break;
         }
