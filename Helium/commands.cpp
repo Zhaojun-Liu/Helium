@@ -30,9 +30,10 @@ int _stdcall HeliumCommand::Execute() {
 	default:
 		break;
 	}
+	return 0;
 }
 int _stdcall HeliumCommand::AutoSetType() {
-
+	return 0;
 }
 
 int _stdcall HeliumCommand::GetCommandGUID(LPGUID guid) {
@@ -63,21 +64,45 @@ int _stdcall HeliumCommand::GetCommandType() {
 
 #pragma region commandqueue
 int _stdcall HeliumCommandQueue::ExecThreadFunc() {
-
+	return 0;
 }
 
 _stdcall HeliumCommandQueue::HeliumCommandQueue() {
-	
+	this->queuestatus = QUEUE_STAT_EMPTY;
+	this->restart = false;
+	this->immutable = false;
+	this->unstoppable = false;
+	CoCreateGuid(&this->queueguid);
 }
 _stdcall HeliumCommandQueue::HeliumCommandQueue(const HeliumCommandQueue* queue) {
-
+	this->commands = queue->commands;
+	this->immutable = queue->immutable;
+	this->unstoppable = queue->unstoppable;
+	this->restart = queue->restart;
+	CoCreateGuid(&this->queueguid);
+	this->server = queue->server;
+	this->queuename = queue->queuename;
+	if (queue->queuestatus != QUEUE_STAT_DUMPING && queue->queuestatus != QUEUE_STAT_LOADING && queue->queuestatus != QUEUE_STAT_EMPTY)
+		this->queuestatus = QUEUE_STAT_READY;
+	else
+		this->queuestatus = queue->queuestatus;
 }
 _stdcall HeliumCommandQueue::HeliumCommandQueue(const vector<HeliumCommand>* cmds) {
-
+	this->commands = *cmds;
+	CoCreateGuid(&this->queueguid);
+	this->restart = false;
+	this->immutable = false;
+	this->unstoppable = false;
+	this->queuestatus = QUEUE_STAT_READY;
 }
 
 _stdcall HeliumCommandQueue::HeliumCommandQueue(string name) {
-
+	this->queuestatus = QUEUE_STAT_EMPTY;
+	this->restart = false;
+	this->immutable = false;
+	this->unstoppable = false;
+	this->queuename = name;
+	CoCreateGuid(&this->queueguid);
 }
 
 string _stdcall HeliumCommandQueue::GetQueueName() {
@@ -188,8 +213,8 @@ int _stdcall HeliumCommandQueue::InsertCommand(const HeliumCommand* cmd, LPCGUID
 #pragma endregion
 
 int _stdcall StartShellThread() {
-
+	return 0;
 }
 int _stdcall ShellThread() {
-
+	return 0;
 }
