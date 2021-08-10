@@ -454,7 +454,7 @@ int _stdcall CreateConfigFile()
 
 [[nodiscard("Ignoring return value may cause invaild attribute value.")]]
 int _stdcall readCfg() {
-    cout << "Reading config file...";
+    spdlog::debug("Reading config file...");
 
     tinyxml2::XMLDocument config;
     tinyxml2::XMLElement* pRootEle;
@@ -468,7 +468,8 @@ int _stdcall readCfg() {
     auto ret = config.LoadFile(CFG_FILENAME);
 
     if (ret != 0) {
-        return CreateConfigFile();
+         CreateConfigFile();
+         return readCfg();
     }
     
     if (pRootEle = config.RootElement(); pRootEle == NULL) {
