@@ -434,10 +434,15 @@ int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servernam
                     cout << outputstr;
                     LeaveCriticalSection(&cs);
                 }
-                Sleep(20);
+                //如果子进程结束，退出循环
+                if (WaitForSingleObject(ptr->hProc, 20) == WAIT_TIMEOUT)
+                {
+                    ptr->SetServerStatus(SERVER_STATUS_TERMINATED);
+                    break;
+                }
             }
         }
-        //如果子进程结束，退出循环  
+        //如果子进程结束，退出循环
         if (ptr->GetServerStatus() == SERVER_STATUS_TERMINATED)
         {
             break;
@@ -452,12 +457,13 @@ int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servernam
 
 int _stdcall MinecraftServerInstance::SetServerReturnValue(DWORD dwValue)
 {
+    this->dwReturnValue = dwValue;
     return 0;
 }
 
 int _stdcall MinecraftServerInstance::GetServerReturnValue(LPDWORD lpValue)
 {
-
+    *lpValue = this->dwReturnValue;
     return 0;
 }
 
