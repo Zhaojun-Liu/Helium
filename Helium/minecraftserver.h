@@ -10,6 +10,7 @@
 #include<iostream>
 
 #include<Windows.h>
+#include<guiddef.h>
 
 #include"utils.h"
 #include"commands.h"
@@ -86,8 +87,9 @@ protected:
 	thread stdoutthread;
 	HANDLE hProc;
 	DWORD  dwPid;
-	DWORD dwReturnValue;
+	DWORD  dwReturnValue;
 
+	GUID   serverguid;
 
 	RedirectInformation redir;
 public:
@@ -136,6 +138,9 @@ public:
 
 	int    _stdcall SetServerReturnValue(DWORD wdnmd);
 	int    _stdcall GetServerReturnValue(LPDWORD wdnmd);
+
+	int    _stdcall SetServerGUID(LPCGUID guid);
+	int    _stdcall GetServerGUID(LPGUID guid);
 
 	int    _stdcall StartServer();
 	int    _stdcall StopServer();

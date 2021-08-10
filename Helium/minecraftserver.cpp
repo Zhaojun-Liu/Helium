@@ -10,6 +10,7 @@ MinecraftServerInstance::MinecraftServerInstance() {
     this->servertype = SERVER_TYPE_VANILLA;
     this->outputvisibility = true;
     this->autostart = false;
+    CoCreateGuid(&this->serverguid);
 
     if (!isinit) { 
         InitializeCriticalSection(&cs); 
@@ -35,6 +36,9 @@ MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance* 
 
     this->outputvisibility = ins->outputvisibility;
     this->autostart = ins->autostart;
+    this->serverguid = ins.serverguid;
+    this->dwPid = ins.dwPid;
+    this->dwReturnValue = ins.dwReturnValue;
 
     if (!isinit) {
         InitializeCriticalSection(&cs);
@@ -60,6 +64,9 @@ MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance& 
     
     this->outputvisibility = ins.outputvisibility;
     this->autostart = ins.autostart;
+    this->serverguid = ins.serverguid;
+    this->dwPid = ins.dwPid;
+    this->dwReturnValue = ins.dwReturnValue;
 
     if (!isinit) {
         InitializeCriticalSection(&cs);
@@ -85,6 +92,9 @@ void MinecraftServerInstance::operator=(const MinecraftServerInstance&& ins) {
 
     this->outputvisibility = ins.outputvisibility;
     this->autostart = ins.autostart;
+    this->serverguid = ins.serverguid;
+    this->dwPid = ins.dwPid;
+    this->dwReturnValue = ins.dwReturnValue;
 }
 
 MinecraftServerInstance::~MinecraftServerInstance() {
@@ -485,4 +495,13 @@ void   MinecraftServerInstance::Print() {
     cout << "Output Visibility : " << this->outputvisibility << endl;
     cout << "Auto Start : " << this->autostart << endl << endl;
     return;
+}
+
+int    _stdcall MinecraftServerInstance::SetServerGUID(LPCGUID guid) {
+    this->serverguid = *guid;
+    return 0;
+}
+int    _stdcall MinecraftServerInstance::GetServerGUID(LPGUID guid) {
+    *guid = this->serverguid;
+    return 0;
 }
