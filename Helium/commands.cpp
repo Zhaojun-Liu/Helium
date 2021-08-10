@@ -158,13 +158,17 @@ int _stdcall HeliumCommandQueue::StartExecute() {
 }
 
 int _stdcall HeliumCommandQueue::QueryCommand(string cmd) {
-	for (vector<HeliumCommand>::iterator it = this->commands.begin(), int i = 0; it < this->commands.end(); it++, i ++) {
+	int i = 0;
+	for (vector<HeliumCommand>::iterator it = this->commands.begin(); it != this->commands.end(); it++) {
+		i++;
 		if (it->command == cmd) return i;
 	}
 	return -1;
 }
 int _stdcall HeliumCommandQueue::QueryCommand(LPCGUID guid) {
-	for (vector<HeliumCommand>::iterator it = this->commands.begin(), int i = 0; it < this->commands.end(); it++, i++) {
+	int i = 0;
+	for (vector<HeliumCommand>::iterator it = this->commands.begin(); it < this->commands.end(); it++) {
+		i++;
 		if (it->commandguid == *guid) return i;
 	}
 	return -1;
