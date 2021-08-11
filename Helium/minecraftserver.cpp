@@ -438,7 +438,7 @@ int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servernam
                     //在这里写上parse服务器输出所用code
                     
                     if (!it->empty() && *it != "\n")
-                        outputstr.append(servername).append(">").append(*it).append("\r\n");
+                        spdlog::debug("{}>{}", servername, *it);
                     EnterCriticalSection(&cs);
                     cout << outputstr;
                     LeaveCriticalSection(&cs);

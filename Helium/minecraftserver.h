@@ -14,7 +14,7 @@
 
 #include"utils.h"
 #include"commands.h"
-
+#include<spdlog/spdlog.h>
 using namespace std;
 
 #define SERVER_STATUS_RUNNING		0
