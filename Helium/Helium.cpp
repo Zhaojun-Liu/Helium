@@ -21,7 +21,6 @@
 #include"extension.h"
 
 #include<spdlog/spdlog.h>
-#pragma comment(lib, "replxx-static-rd.lib")
 #define REPLXX_STATIC
 #include"replxx/replxx.hxx"
 
@@ -53,15 +52,9 @@ map<string, HeliumExtension> extensions;
 #pragma region Callback
 Replxx::completions_t hook_completion(std::string const& context, int& contextLen, std::vector<std::string> const& examples) {
     Replxx::completions_t completions;
-    int utf8ContextLen = context.length();
-    int prefixLen = context.length() - utf8ContextLen;
-    if ((prefixLen > 0) && (context[prefixLen - 1] == '\\')) {
-        --prefixLen;
-        ++utf8ContextLen;
-    }
-    contextLen = context.length() + prefixLen;
+    std::string prefix;
+    prefix = context.substr(context.length() - contextLen);
 
-    std::string prefix{ context.substr(prefixLen) };
     for (auto const& e : examples) {
         if (e.compare(0, prefix.size(), prefix) == 0) {
             Replxx::Color c = Replxx::Color::DEFAULT;
@@ -77,10 +70,8 @@ Replxx::hints_t hook_hint(std::string const& context, int& contextLen, Replxx::C
     // only show hint if prefix is at least 'n' chars long
     // or if prefix begins with a specific character
 
-    int utf8ContextLen = context.length();
-    int prefixLen = context.length() - utf8ContextLen;
-    contextLen = context.length();
-    std::string prefix{ context.substr(prefixLen) };
+    std::string prefix;
+    prefix = context.substr(context.length() - contextLen);
 
     if (prefix.size() >= 2 || (!prefix.empty() && prefix.at(0) == '.')) {
         for (auto const& e : examples) {
@@ -317,6 +308,15 @@ int _stdcall main()
     rx.set_completion_callback(bind(&hook_completion, placeholders::_1, placeholders::_2, cmdcompletions));
     rx.set_hint_callback(bind(&hook_hint, placeholders::_1, placeholders::_2, placeholders::_3, cmdcompletions));
     rx.set_highlighter_callback(bind(&hook_color, placeholders::_1, placeholders::_2, cmdcolors));
+    rx.set_completion_count_cutoff(128);
+    rx.set_max_hint_rows(4);
+    rx.set_complete_on_empty(true);
+    rx.set_double_tab_completion(false);
+    rx.set_no_color(false);
+    rx.set_immediate_completion(true);
+    
+    rx.history_load("heliumcommandhistory.txt");
+    rx.set_max_history_size(256);
 
     rx.bind_key_internal(Replxx::KEY::BACKSPACE, "delete_character_left_of_cursor");
     rx.bind_key_internal(Replxx::KEY::DELETE, "delete_character_under_cursor");
@@ -343,15 +343,20 @@ int _stdcall main()
     rx.bind_key_internal(Replxx::KEY::control('D'), "send_eof");
     rx.bind_key_internal(Replxx::KEY::control('C'), "abort_line");
     rx.bind_key_internal(Replxx::KEY::control('T'), "transpose_characters");
+
     TCHAR  infoBuf[32767];
     DWORD  bufCharCount = 32767;
     GetComputerNameA(infoBuf, &bufCharCount);
     ostringstream str;
     str << "[Helium@" << infoBuf << "] #";
+
     while (true) {
         string inputcmd = rx.input(str.str().c_str());
         cout << inputcmd << endl;
+        rx.history_add(inputcmd);
     }
+
+    rx.history_sync("heliumcommandhistory.txt");
 
     system("pause");
 }
