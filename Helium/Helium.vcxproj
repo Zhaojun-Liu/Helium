@@ -168,8 +168,8 @@
     <ClCompile Include="logger.h" />
     <ClCompile Include="parse.cpp" />
     <ClCompile Include="utils.cpp" />
+    <ClCompile Include="config.cpp" />
     <ClCompile Include="xmlutils.cpp" />
-    <ClCompile Include="xmlmacros.cpp" />
     <ClCompile Include="minecraftserver.cpp" />
     <ClCompile Include="extension.cpp" />
     <ClCompile Include="permissions.cpp" />
@@ -194,8 +194,8 @@
     <ClInclude Include="commands.h" />
     <ClInclude Include="parse.h" />
     <ClInclude Include="utils.h" />
+    <ClInclude Include="config.h" />
     <ClInclude Include="xmlutils.h" />
-    <ClInclude Include="xmlmacros.h" />
     <ClInclude Include="minecraftserver.h" />
     <ClInclude Include="extension.h" />
     <ClInclude Include="permissions.h" />
@@ -205,9 +205,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="replxx-static-rd.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
