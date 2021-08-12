@@ -712,9 +712,13 @@ int _stdcall main()
     rx.install_window_change_handler();
     rx.set_completion_callback(bind(&hook_completion, placeholders::_1, placeholders::_2, cmdcompletions));
     rx.set_hint_callback(bind(&hook_hint, placeholders::_1, placeholders::_2, placeholders::_3, cmdcompletions));
-
+    TCHAR  infoBuf[32767];
+    DWORD  bufCharCount = 32767;
+    GetComputerNameA(infoBuf, &bufCharCount);
+    ostringstream str;
+    str << "[Helium@" << infoBuf << "] #";
     while (true) {
-        string inputcmd = rx.input("Helium $");
+        string inputcmd = rx.input(str.str().c_str());
         cout << inputcmd << endl;
     }
 
