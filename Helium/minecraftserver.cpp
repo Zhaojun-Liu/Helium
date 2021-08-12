@@ -405,15 +405,15 @@ int    MinecraftServerInstance::RestartServer() {
     return 0;
 }
 
-int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread) {
+int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread,HANDLE hProc) {
     //cout << "Server started at PID : " << ptr->dwPid << endl;
-    spdlog::debug("server started at PID:{}", ptr->dwPid);
+    spdlog::debug("server started at PID:{}", ptr->GerServerPid());
     char out_buffer[BUFSIZE];
     DWORD dwRead;
     bool ret = FALSE;
     DWORD dwCode;
 
-    while (GetExitCodeProcess(hproc, &dwCode))
+    while (GetExitCodeProcess(ptr->GetThreadHandle(), &dwCode))
     {
         ZeroMemory(out_buffer, BUFSIZE);
         //用WriteFile，从hStdOutRead读出子进程stdout输出的数据，数据结果在out_buffer中，长度为dwRead  
@@ -421,7 +421,7 @@ int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servernam
         if ((ret) && (dwRead != 0))  //如果成功了，且长度>0  
         {
             out_buffer[dwRead] = '\0';
-            if (ptr->outputvisibility) {
+            if (ptr->GetOutputVis()) {
                 string temp(out_buffer);
                 string pat("\r\n");
                 auto outputs = split(temp, pat);
@@ -455,7 +455,7 @@ int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servernam
         //int i = 0;
         //i = ++i + i++ + i++ + i;
     }
-    GetExitCodeProcess(ptr->hProc, &dwCode);
+    GetExitCodeProcess(ptr->GetThreadHandle(), &dwCode);
     cout << "Exiting ProcessServerOutput()" << dwCode << endl;
     ptr->SetServerReturnValue(dwCode);
     ptr->SetServerStatus(1);
@@ -499,4 +499,19 @@ int    _stdcall MinecraftServerInstance::SetServerGUID(LPCGUID guid) {
 int    _stdcall MinecraftServerInstance::GetServerGUID(LPGUID guid) {
     *guid = this->serverguid;
     return 0;
+}
+
+DWORD _stdcall MinecraftServerInstance::GerServerPid()
+{
+    return this->dwPid;
+}
+
+bool _stdcall MinecraftServerInstance::GetOutputVis()
+{
+    return this->outputvisibility;
+}
+
+HANDLE _stdcall MinecraftServerInstance::GetThreadHandle()
+{
+    return this->hProc;
 }

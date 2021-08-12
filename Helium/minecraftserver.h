@@ -141,7 +141,9 @@ public:
 
 	int    _stdcall SetServerGUID(LPCGUID guid);
 	int    _stdcall GetServerGUID(LPGUID guid);
-
+	DWORD  _stdcall GerServerPid();
+	bool   _stdcall GetOutputVis();
+	HANDLE _stdcall GetThreadHandle();
 	int    _stdcall StartServer();
 	int    _stdcall StopServer();
 	int    _stdcall RestartServer();
