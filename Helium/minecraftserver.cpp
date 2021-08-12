@@ -271,7 +271,7 @@ int    MinecraftServerInstance::StartServer() {
             , servercwd.c_str()
             , &si
             , &pi);
-
+        spdlog::debug("bSuc:{}", bSuc);
         if (bSuc == FALSE) {
             cout << "CreateProcess() failed!" << endl;
             return -1;
@@ -293,11 +293,13 @@ int    MinecraftServerInstance::StartServer() {
         this_thread::yield();
 
         cout << "Output processing thread create successfully" << endl;
-
-        if (ResumeThread(pi.hThread) == -1) {
+        DWORD dwRet = ResumeThread(pi.hThread);
+        spdlog::debug("dwRet:{}", dwRet);
+        if (dwRet == -1) {
             TerminateProcess(pi.hProcess, serverexitcode);
             return -1;
         }
+
         cout << "Minecraft server process resumed successfully" << endl;
 
         c_scl = NULL;
@@ -413,7 +415,8 @@ int    MinecraftServerInstance::RestartServer() {
 }
 
 int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread) {
-    cout << "Server started at PID : " << ptr->dwPid << endl;
+    //cout << "Server started at PID : " << ptr->dwPid << endl;
+    spdlog::debug("server started at PID:{}", ptr->dwPid);
     char out_buffer[BUFSIZE];
     DWORD dwRead;
     bool ret = FALSE;
@@ -423,9 +426,10 @@ int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servernam
     {
         ZeroMemory(out_buffer, BUFSIZE);
         //用WriteFile，从hStdOutRead读出子进程stdout输出的数据，数据结果在out_buffer中，长度为dwRead  
-        EnterCriticalSection(&cs);
+        //EnterCriticalSection(&cs);
         ret = ReadFile(stdread, out_buffer, BUFSIZE - 1, &dwRead, NULL);
-        LeaveCriticalSection(&cs);
+        spdlog::debug("{},{}", ret, dwRead);
+        //LeaveCriticalSection(&cs);
         if ((ret) && (dwRead != 0))  //如果成功了，且长度>0  
         {
             out_buffer[dwRead] = '\0';
@@ -439,23 +443,27 @@ int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servernam
                     
                     if (!it->empty() && *it != "\n")
                         spdlog::debug("{}>{}", servername, *it);
-                    EnterCriticalSection(&cs);
+                    //EnterCriticalSection(&cs);
                     cout << outputstr;
-                    LeaveCriticalSection(&cs);
+                    //LeaveCriticalSection(&cs);
                 }
                 //如果子进程结束，退出循环
+                /*
                 if (WaitForSingleObject(ptr->hProc, 20) != WAIT_TIMEOUT)
                 {
                     ptr->SetServerStatus(SERVER_STATUS_TERMINATED);
                     break;
                 }
+                */
             }
         }
         //如果子进程结束，退出循环
+        /*
         if (ptr->GetServerStatus() != SERVER_STATUS_TERMINATED)
         {
             break;
         }
+        */
         //int i = 0;
         //i = ++i + i++ + i++ + i;
     }
