@@ -40,7 +40,6 @@ public:
 	_stdcall HeliumCommand(const HeliumCommand* cmd);
 	_stdcall HeliumCommand(string cmd);
 
-	int _stdcall Execute();
 	int _stdcall AutoSetType();
 	
 	string _stdcall GetCommand();
@@ -57,23 +56,26 @@ public:
 };
 
 class HeliumCommandQueue {
+	friend int _stdcall InitShellQueue();
 protected:
 	vector<HeliumCommand> commands;
 	thread execthread;
 	string queuename;
 
 	int queuestatus;
+	int ip;
 	GUID queueguid;
 	GUID server;
 	
 	bool restart;
 	bool unstoppable;
 	bool immutable;
+	bool isshell;
 
 	int _stdcall ExecThreadFunc();
 public:
 	_stdcall HeliumCommandQueue();
-	_stdcall HeliumCommandQueue(const HeliumCommandQueue* queue);
+	_stdcall HeliumCommandQueue(const HeliumCommandQueue& queue);
 	_stdcall HeliumCommandQueue(const vector<HeliumCommand>* cmds);
 	_stdcall HeliumCommandQueue(string name);
 
@@ -107,7 +109,9 @@ public:
 	int _stdcall InsertCommand(const HeliumCommand* cmd, LPCGUID guid);
 };
 
-int _stdcall StartShellThread();
-int _stdcall ShellThread();
+int _stdcall InitShellQueue();
+int _stdcall NewShellCommand(string cmd);
+
+extern vector<HeliumCommandQueue> cmdqueuelist;
 
 #endif // !_H_COMMANDS

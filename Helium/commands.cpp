@@ -1,4 +1,7 @@
 #include"commands.h"
+
+vector<HeliumCommandQueue> cmdqueuelist;
+
 #pragma region command
 _stdcall HeliumCommand::HeliumCommand() {
 	CoCreateGuid(&this->commandguid);
@@ -18,21 +21,10 @@ _stdcall HeliumCommand::HeliumCommand(string cmd) {
 	this->AutoSetType();
 }
 
-int _stdcall HeliumCommand::Execute() {
-	switch (this->commandtype)
-	{
-	case CMD_TYPE_EMPTY:
-		return 0;
-	case CMD_TYPE_HELIUM:
-		break;
-	case CMD_TYPE_MINECRAFT:
-		break;
-	default:
-		break;
-	}
-	return 0;
-}
 int _stdcall HeliumCommand::AutoSetType() {
+	if (this->command.empty()) this->commandtype = CMD_TYPE_EMPTY;
+	if (this->command.find_first_of("!!He") == 0) this->commandtype = CMD_TYPE_HELIUM;
+	else this->commandtype = CMD_TYPE_MINECRAFT;
 	return 0;
 }
 
@@ -64,6 +56,29 @@ int _stdcall HeliumCommand::GetCommandType() {
 
 #pragma region commandqueue
 int _stdcall HeliumCommandQueue::ExecThreadFunc() {
+	while(this->queuestatus == QUEUE_STAT_EXECUTING) {
+		if (this->commands.size() > 0) {
+			auto cmdstr = this->commands.at(this->ip).command;
+			switch (this->commands.at(this->ip).commandtype)
+			{
+			case CMD_TYPE_EMPTY:
+				this->commands.at(this->ip).IncExecCounter();
+				this->ip++;
+				break;
+			case CMD_TYPE_HELIUM:
+				this->commands.at(this->ip).IncExecCounter();
+				this->ip++;
+				break;
+			case CMD_TYPE_MINECRAFT:
+				this->commands.at(this->ip).IncExecCounter();
+				this->ip++;
+				break;
+			default:
+				return -1;
+				break;
+			}
+		}
+	}
 	return 0;
 }
 
@@ -72,20 +87,22 @@ _stdcall HeliumCommandQueue::HeliumCommandQueue() {
 	this->restart = false;
 	this->immutable = false;
 	this->unstoppable = false;
+	this->isshell = false;
 	CoCreateGuid(&this->queueguid);
 }
-_stdcall HeliumCommandQueue::HeliumCommandQueue(const HeliumCommandQueue* queue) {
-	this->commands = queue->commands;
-	this->immutable = queue->immutable;
-	this->unstoppable = queue->unstoppable;
-	this->restart = queue->restart;
+_stdcall HeliumCommandQueue::HeliumCommandQueue(const HeliumCommandQueue& queue) {
+	this->commands = queue.commands;
+	this->immutable = queue.immutable;
+	this->unstoppable = queue.unstoppable;
+	this->restart = queue.restart;
 	CoCreateGuid(&this->queueguid);
-	this->server = queue->server;
-	this->queuename = queue->queuename;
-	if (queue->queuestatus != QUEUE_STAT_DUMPING && queue->queuestatus != QUEUE_STAT_LOADING && queue->queuestatus != QUEUE_STAT_EMPTY)
+	this->server = queue.server;
+	this->queuename = queue.queuename;
+	this->isshell = false;
+	if (queue.queuestatus != QUEUE_STAT_DUMPING && queue.queuestatus != QUEUE_STAT_LOADING && queue.queuestatus != QUEUE_STAT_EMPTY)
 		this->queuestatus = QUEUE_STAT_READY;
 	else
-		this->queuestatus = queue->queuestatus;
+		this->queuestatus = queue.queuestatus;
 }
 _stdcall HeliumCommandQueue::HeliumCommandQueue(const vector<HeliumCommand>* cmds) {
 	this->commands = *cmds;
@@ -93,6 +110,7 @@ _stdcall HeliumCommandQueue::HeliumCommandQueue(const vector<HeliumCommand>* cmd
 	this->restart = false;
 	this->immutable = false;
 	this->unstoppable = false;
+	this->isshell = false;
 	this->queuestatus = QUEUE_STAT_READY;
 }
 
@@ -102,6 +120,7 @@ _stdcall HeliumCommandQueue::HeliumCommandQueue(string name) {
 	this->immutable = false;
 	this->unstoppable = false;
 	this->queuename = name;
+	this->isshell = false;
 	CoCreateGuid(&this->queueguid);
 }
 
@@ -152,7 +171,9 @@ bool HeliumCommandQueue::SetImmutable(bool i) {
 
 int _stdcall HeliumCommandQueue::StartExecute() {
 	if (this->queuestatus == QUEUE_STAT_READY) {
-
+		this->queuestatus = QUEUE_STAT_EXECUTING;
+		thread exec(&HeliumCommandQueue::ExecThreadFunc, this);
+		this->execthread = move(exec);
 	}
 	return 0;
 }
@@ -216,9 +237,21 @@ int _stdcall HeliumCommandQueue::InsertCommand(const HeliumCommand* cmd, LPCGUID
 }
 #pragma endregion
 
-int _stdcall StartShellThread() {
+int _stdcall InitShellQueue() {
+	HeliumCommandQueue shellqueue;
+	shellqueue.queuename = "HeliumShell";
+	shellqueue.queuestatus = QUEUE_STAT_READY;
+	shellqueue.unstoppable = true;
+	shellqueue.restart = false;
+	shellqueue.isshell = true;
+	shellqueue.immutable = true;
+	cmdqueuelist.push_back(shellqueue);
+	cmdqueuelist.begin()->StartExecute();
 	return 0;
 }
-int _stdcall ShellThread() {
+
+int _stdcall NewShellCommand(string cmd) {
+	HeliumCommand newcmd(cmd);
+	cmdqueuelist.begin()->InsertCommand(&newcmd);
 	return 0;
 }

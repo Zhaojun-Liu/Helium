@@ -8,6 +8,7 @@
 #include<Windows.h>
 #include<thread>
 #include<strstream>
+#include<regex>
 #include<functional>
 
 #include"confuses.h"
@@ -49,7 +50,6 @@ START_CONFIG_NODES_REGISTER(ConfigNode);
 
 #pragma region Var
 Logger logger;
-vector<MinecraftServerInstance> serverlist;
 map<string, HeliumExtension> extensions;
 #pragma endregion
 
@@ -77,13 +77,12 @@ Replxx::completions_t hook_completion(std::string const& context, int& contextLe
 
 Replxx::hints_t hook_hint(std::string const& context, int& contextLen, Replxx::Color& color, std::vector<std::string> const& examples) {
     Replxx::hints_t hints;
-
     // only show hint if prefix is at least 'n' chars long
     // or if prefix begins with a specific character
 
-    int utf8ContextLen = context.length();;
+    int utf8ContextLen = context.length();
     int prefixLen = context.length() - utf8ContextLen;
-    contextLen = context.length() + prefixLen;
+    contextLen = context.length();
     std::string prefix{ context.substr(prefixLen) };
 
     if (prefix.size() >= 2 || (!prefix.empty() && prefix.at(0) == '.')) {
@@ -100,6 +99,28 @@ Replxx::hints_t hook_hint(std::string const& context, int& contextLen, Replxx::C
     }
 
     return hints;
+}
+void hook_color(std::string const& context, Replxx::colors_t& colors, std::vector<std::pair<std::string, Replxx::Color>> const& regex_color) {
+    // highlight matching regex sequences
+    for (auto const& e : regex_color) {
+        size_t pos{ 0 };
+        std::string str = context;
+        std::smatch match;
+
+        while (std::regex_search(str, match, std::regex(e.first))) {
+            std::string c{ match[0] };
+            std::string prefix(match.prefix().str());
+            pos += prefix.length();
+            int len = c.length();
+
+            for (int i = 0; i < len; ++i) {
+                colors.at(pos + i) = e.second;
+            }
+
+            pos += len;
+            str = match.suffix();
+        }
+    }
 }
 #pragma endregion
 
@@ -707,15 +728,98 @@ int _stdcall main()
         }
     }
     
-    vector<string> cmdcompletions{"help", "cmdqueue", "config", "permission", "extensions", "server", "load"};
+    vector<string> cmdcompletions{
+        "help", 
+
+        "cmdqueue", 
+        "add", "remove", "start", "stop", "pause", "rename", "status", "list", "reload", "load", "query", "delete", "insert",// "setattr"
+
+
+        "config", 
+        "save", "setattr",//"reload"
+
+        "permission", 
+        "set",//"reload", "save", "query", "list", "remove"
+
+        "extensions", 
+        "unload", "enable", "disable",//, "list", "reload", "load"
+
+        "server", 
+        "setdefault", "restart", "stop", "rcon"//, "setattr", "status", "start"
+    };
+
+    vector<pair<string, Replxx::Color>> cmdcolors{
+        {"help", Replxx::Color::BRIGHTMAGENTA},
+        {"cmdqueue", Replxx::Color::BRIGHTMAGENTA},
+        {"permission", Replxx::Color::BRIGHTMAGENTA},
+        {"extensions", Replxx::Color::BRIGHTMAGENTA},
+        {"server", Replxx::Color::BRIGHTMAGENTA},
+        {"config", Replxx::Color::BRIGHTMAGENTA},
+
+        {"add", Replxx::Color::YELLOW},
+        {"remove", Replxx::Color::YELLOW},
+        {"start", Replxx::Color::YELLOW},
+        {"stop", Replxx::Color::YELLOW},
+        {"pause", Replxx::Color::YELLOW},
+        {"rename", Replxx::Color::YELLOW},
+        {"status", Replxx::Color::YELLOW},
+        {"list", Replxx::Color::YELLOW},
+        {"reload", Replxx::Color::YELLOW},
+        {"load", Replxx::Color::YELLOW},
+        {"query", Replxx::Color::YELLOW},
+        {"delete", Replxx::Color::YELLOW},
+        {"insert", Replxx::Color::YELLOW},
+        {"save", Replxx::Color::YELLOW},
+        {"setattr", Replxx::Color::YELLOW},
+        {"set", Replxx::Color::YELLOW},
+        {"unload", Replxx::Color::YELLOW},
+        {"enable", Replxx::Color::YELLOW},
+        {"disable", Replxx::Color::YELLOW},
+        {"setdefault", Replxx::Color::YELLOW},
+        {"restart", Replxx::Color::YELLOW},
+        {"stop", Replxx::Color::YELLOW},
+        {"rcon", Replxx::Color::YELLOW},
+
+        {"[\\-|+]{0,1}[0-9]+", Replxx::Color::BRIGHTGREEN},
+        {"[\\-|+]{0,1}[0-9]*\\.[0-9]+", Replxx::Color::BRIGHTGREEN},
+        {"[\\-|+]{0,1}[0-9]+e[\\-|+]{0,1}[0-9]+", Replxx::Color::BRIGHTGREEN}
+    };
     Replxx rx;
     rx.install_window_change_handler();
+    rx.set_word_break_characters(" \t.,-%!;:=*~^'\"/?<>|[](){}");
     rx.set_completion_callback(bind(&hook_completion, placeholders::_1, placeholders::_2, cmdcompletions));
     rx.set_hint_callback(bind(&hook_hint, placeholders::_1, placeholders::_2, placeholders::_3, cmdcompletions));
+    rx.set_highlighter_callback(bind(&hook_color, placeholders::_1, placeholders::_2, cmdcolors));
+
+    rx.bind_key_internal(Replxx::KEY::BACKSPACE, "delete_character_left_of_cursor");
+    rx.bind_key_internal(Replxx::KEY::DELETE, "delete_character_under_cursor");
+    rx.bind_key_internal(Replxx::KEY::LEFT, "move_cursor_left");
+    rx.bind_key_internal(Replxx::KEY::RIGHT, "move_cursor_right");
+    rx.bind_key_internal(Replxx::KEY::UP, "history_previous");
+    rx.bind_key_internal(Replxx::KEY::DOWN, "history_next");
+    rx.bind_key_internal(Replxx::KEY::PAGE_UP, "history_first");
+    rx.bind_key_internal(Replxx::KEY::PAGE_DOWN, "history_last");
+    rx.bind_key_internal(Replxx::KEY::HOME, "move_cursor_to_begining_of_line");
+    rx.bind_key_internal(Replxx::KEY::END, "move_cursor_to_end_of_line");
+    rx.bind_key_internal(Replxx::KEY::TAB, "complete_line");
+    rx.bind_key_internal(Replxx::KEY::control(Replxx::KEY::LEFT), "move_cursor_one_word_left");
+    rx.bind_key_internal(Replxx::KEY::control(Replxx::KEY::RIGHT), "move_cursor_one_word_right");
+    rx.bind_key_internal(Replxx::KEY::control(Replxx::KEY::UP), "hint_previous");
+    rx.bind_key_internal(Replxx::KEY::control(Replxx::KEY::DOWN), "hint_next");
+    rx.bind_key_internal(Replxx::KEY::control(Replxx::KEY::ENTER), "commit_line");
+    rx.bind_key_internal(Replxx::KEY::control('R'), "history_incremental_search");
+    rx.bind_key_internal(Replxx::KEY::control('W'), "kill_to_begining_of_word");
+    rx.bind_key_internal(Replxx::KEY::control('U'), "kill_to_begining_of_line");
+    rx.bind_key_internal(Replxx::KEY::control('K'), "kill_to_end_of_line");
+    rx.bind_key_internal(Replxx::KEY::control('Y'), "yank");
+    rx.bind_key_internal(Replxx::KEY::control('L'), "clear_screen");
+    rx.bind_key_internal(Replxx::KEY::control('D'), "send_eof");
+    rx.bind_key_internal(Replxx::KEY::control('C'), "abort_line");
+    rx.bind_key_internal(Replxx::KEY::control('T'), "transpose_characters");
 
     while (true) {
         string inputcmd = rx.input("Helium $");
-        cout << inputcmd << endl;
+        NewShellCommand(inputcmd);
     }
 
     system("pause");
