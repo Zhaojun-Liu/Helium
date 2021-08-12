@@ -31,7 +31,7 @@ using namespace replxx;
 
 #pragma region Macros
 #define PROJECT_NAME_STR "Helium"
-#define PROJECT_VER_STR "0.4.2.05"
+#define PROJECT_VER_STR "0.4.2.06"
 #define PROJECT_DEVSTAT "Pre-Alpha"
 
 #pragma endregion
@@ -231,18 +231,18 @@ int _stdcall main()
         return -1;
     }
 #undef ins
-    for (auto ins : serverlist) {
+    for (auto ins = serverlist.begin(); ins < serverlist.end(); ins++) {
         int ret;
-        if (ins.GetAutoStart()) {
-            cout << "Starting Minecraft Server : " << ins.GetServerName() << endl;
-            ret = ins.StartServer();
+        if (ins->GetAutoStart()) {
+            cout << "Starting Minecraft Server : " << ins->GetServerName() << endl;
+            ret = ins->StartServer();
             cout << "Started with return code : " << ret << endl;
         }
         else {
             continue;
         }
         if (ret != 0) {
-            cout << "Error starting Minecraft server : " << ins.GetServerName() << endl;
+            cout << "Error starting Minecraft server : " << ins->GetServerName() << endl;
         }
     }
     
@@ -357,6 +357,7 @@ int _stdcall main()
     }
 
     rx.history_sync("heliumcommandhistory.txt");
+    rx.history_save("heliumcommandhistory.txt");
 
     system("pause");
 }
