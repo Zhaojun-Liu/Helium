@@ -18,9 +18,14 @@
 #include"xmlmacros.h"
 #include"minecraftserver.h"
 #include"extension.h"
-#include<spdlog/spdlog.h>
-using namespace std;
 
+#include<spdlog/spdlog.h>
+#pragma comment(lib, "replxx-static-rd.lib")
+#define REPLXX_STATIC
+#include"replxx/replxx.hxx"
+
+using namespace std;
+using namespace replxx;
 
 #pragma endregion
 
@@ -49,7 +54,53 @@ map<string, HeliumExtension> extensions;
 #pragma endregion
 
 #pragma region Callback
+Replxx::completions_t hook_completion(std::string const& context, int& contextLen, std::vector<std::string> const& examples) {
+    Replxx::completions_t completions;
+    int utf8ContextLen = context.length();
+    int prefixLen = context.length() - utf8ContextLen;
+    if ((prefixLen > 0) && (context[prefixLen - 1] == '\\')) {
+        --prefixLen;
+        ++utf8ContextLen;
+    }
+    contextLen = context.length() + prefixLen;
 
+    std::string prefix{ context.substr(prefixLen) };
+    for (auto const& e : examples) {
+        if (e.compare(0, prefix.size(), prefix) == 0) {
+            Replxx::Color c = Replxx::Color::DEFAULT;
+            completions.emplace_back(e.c_str(), c);
+        }
+    }
+
+    return completions;
+}
+
+Replxx::hints_t hook_hint(std::string const& context, int& contextLen, Replxx::Color& color, std::vector<std::string> const& examples) {
+    Replxx::hints_t hints;
+
+    // only show hint if prefix is at least 'n' chars long
+    // or if prefix begins with a specific character
+
+    int utf8ContextLen = context.length();;
+    int prefixLen = context.length() - utf8ContextLen;
+    contextLen = context.length() + prefixLen;
+    std::string prefix{ context.substr(prefixLen) };
+
+    if (prefix.size() >= 2 || (!prefix.empty() && prefix.at(0) == '.')) {
+        for (auto const& e : examples) {
+            if (e.compare(0, prefix.size(), prefix) == 0) {
+                hints.emplace_back(e.c_str());
+            }
+        }
+    }
+
+    // set hint color to green if single match found
+    if (hints.size() == 1) {
+        color = Replxx::Color::GREEN;
+    }
+
+    return hints;
+}
 #pragma endregion
 
 #pragma region Parser
@@ -468,7 +519,7 @@ int _stdcall readCfg() {
     auto ret = config.LoadFile(CFG_FILENAME);
 
     if (ret != 0) {
-         CreateConfigFile();
+         int iret = CreateConfigFile();
          return readCfg();
     }
     
@@ -619,6 +670,7 @@ int _stdcall Config() {
 int _stdcall main()
 {
     SetConsoleTitleA(PROJECT_NAME_STR);
+
     string pns = PROJECT_NAME_STR;
     pns.append(" ").append(PROJECT_VER_STR).append(" ").append(PROJECT_DEVSTAT);
     cout << pns << endl;
@@ -655,9 +707,15 @@ int _stdcall main()
         }
     }
     
-    while (true) {
-        ;
+    vector<string> cmdcompletions{"help", "cmdqueue", "config", "permission", "extensions", "server", "load"};
+    Replxx rx;
+    rx.install_window_change_handler();
+    rx.set_completion_callback(bind(&hook_completion, placeholders::_1, placeholders::_2, cmdcompletions));
+    rx.set_hint_callback(bind(&hook_hint, placeholders::_1, placeholders::_2, placeholders::_3, cmdcompletions));
 
+    while (true) {
+        string inputcmd = rx.input("Helium $");
+        cout << inputcmd << endl;
     }
 
     system("pause");

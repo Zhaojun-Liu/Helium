@@ -80,7 +80,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);${ProjectDir}\spdlog\</IncludePath>
-    <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);${ProjectDir}\spdlog\</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -121,11 +120,17 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(ProjectDir)readline\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)readline\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -145,6 +150,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="replxx\conversion.cxx" />
+    <ClCompile Include="replxx\ConvertUTF.cpp" />
+    <ClCompile Include="replxx\escape.cxx" />
+    <ClCompile Include="replxx\history.cxx" />
+    <ClCompile Include="replxx\io.cxx" />
+    <ClCompile Include="replxx\prompt.cxx" />
+    <ClCompile Include="replxx\replxx.cxx" />
+    <ClCompile Include="replxx\replxx_impl.cxx" />
+    <ClCompile Include="replxx\util.cxx" />
+    <ClCompile Include="replxx\wcwidth.cpp" />
+    <ClCompile Include="replxx\windows.cxx" />
     <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="commands.cpp" />
     <ClCompile Include="Helium.cpp" />
@@ -160,6 +176,20 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="confuses.h" />
+    <ClInclude Include="replxx\conversion.hxx" />
+    <ClInclude Include="replxx\ConvertUTF.h" />
+    <ClInclude Include="replxx\escape.hxx" />
+    <ClInclude Include="replxx\history.hxx" />
+    <ClInclude Include="replxx\io.hxx" />
+    <ClInclude Include="replxx\killring.hxx" />
+    <ClInclude Include="replxx\prompt.hxx" />
+    <ClInclude Include="replxx\replxx.h" />
+    <ClInclude Include="replxx\replxx.hxx" />
+    <ClInclude Include="replxx\replxx_impl.hxx" />
+    <ClInclude Include="replxx\unicodestring.hxx" />
+    <ClInclude Include="replxx\utf8string.hxx" />
+    <ClInclude Include="replxx\util.hxx" />
+    <ClInclude Include="replxx\windows.hxx" />
     <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="commands.h" />
     <ClInclude Include="parse.h" />
@@ -175,6 +205,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="E:\Internet Download Manager下载\Compressed\replxx-release-0.0.3\replxx-release-0.0.3\out\build\x64-Release\replxx-static-rd.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

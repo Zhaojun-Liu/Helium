@@ -11,11 +11,6 @@ MinecraftServerInstance::MinecraftServerInstance() {
     this->outputvisibility = true;
     this->autostart = false;
     CoCreateGuid(&this->serverguid);
-
-    if (!isinit) { 
-        InitializeCriticalSection(&cs); 
-        isinit = true;
-    }
 }
 
 MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance* ins) {
@@ -39,11 +34,6 @@ MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance* 
     this->serverguid = ins->serverguid;
     this->dwPid = ins->dwPid;
     this->dwReturnValue = ins->dwReturnValue;
-
-    if (!isinit) {
-        InitializeCriticalSection(&cs);
-        isinit = true;
-    }
 }
 
 MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance& ins) {
@@ -67,11 +57,6 @@ MinecraftServerInstance::MinecraftServerInstance(const MinecraftServerInstance& 
     this->serverguid = ins.serverguid;
     this->dwPid = ins.dwPid;
     this->dwReturnValue = ins.dwReturnValue;
-
-    if (!isinit) {
-        InitializeCriticalSection(&cs);
-        isinit = true;
-    }
 }
 
 void MinecraftServerInstance::operator=(const MinecraftServerInstance&& ins) {
@@ -209,7 +194,7 @@ int    MinecraftServerInstance::StartServer() {
 
         GetCurrentDirectoryA(sizeof(cwd), cwd);
 
-        startupcmdline.append(this->jvmdirectory).append(" ").append("-jar").append(" ").append(this->jvmoption);
+        startupcmdline.append(this->jvmdirectory).append(" ").append(this->jvmoption).append(" ").append("-jar");
         startupcmdline.append(" ").append("-Xmx").append(this->maxmem).append(" ").append("-Xms").append(this->minmem);
         if (this->serverdirectory.find(':') == string::npos) {
             startupcmdline.append(" ").append(cwd).append("\\").append(this->serverdirectory).append("\\").append(this->serverfilename);
@@ -261,6 +246,7 @@ int    MinecraftServerInstance::StartServer() {
 
         char* c_scl = const_cast<char*>(startupcmdline.c_str());
         cout << c_scl << endl;
+
         BOOL bSuc = CreateProcessA(NULL
             , c_scl
             , NULL
@@ -287,7 +273,7 @@ int    MinecraftServerInstance::StartServer() {
         this->redir.hStdOutWrite = hStdOutWrite;
         this->dwPid = pi.dwProcessId;
 
-        thread tempthread(ProcessServerOutput, this, this->servername, hStdOutRead);
+        thread tempthread(ProcessServerOutput, this, this->servername, hStdOutRead, pi.hProcess);
         this->stdoutthread = std::move(tempthread);
         this->stdoutthread.detach();
         this_thread::yield();
@@ -386,7 +372,12 @@ int    MinecraftServerInstance::StartServer() {
             this->redir.hStdOutWrite = hStdOutWrite;
             this->dwPid = pi.dwProcessId;
 
-            thread tempthread(ProcessServerOutput, (MinecraftServerInstance*)this, this->servername, hStdOutRead);
+            if (!isinit) {
+                InitializeCriticalSection(&cs);
+                isinit = true;
+            }
+
+            thread tempthread(ProcessServerOutput, (MinecraftServerInstance*)this, this->servername, hStdOutRead, pi.hProcess);
             this->stdoutthread = std::move(tempthread);
             this->stdoutthread.detach();
             this_thread::yield();
@@ -422,14 +413,11 @@ int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servernam
     bool ret = FALSE;
     DWORD dwCode;
 
-    while (ptr->serverstatus != SERVER_STATUS_TERMINATED)
+    while (GetExitCodeProcess(hproc, &dwCode))
     {
         ZeroMemory(out_buffer, BUFSIZE);
         //用WriteFile，从hStdOutRead读出子进程stdout输出的数据，数据结果在out_buffer中，长度为dwRead  
-        //EnterCriticalSection(&cs);
         ret = ReadFile(stdread, out_buffer, BUFSIZE - 1, &dwRead, NULL);
-        spdlog::debug("{},{}", ret, dwRead);
-        //LeaveCriticalSection(&cs);
         if ((ret) && (dwRead != 0))  //如果成功了，且长度>0  
         {
             out_buffer[dwRead] = '\0';
