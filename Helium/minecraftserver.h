@@ -14,7 +14,7 @@
 
 #include"utils.h"
 #include"commands.h"
-
+#include<spdlog/spdlog.h>
 using namespace std;
 
 #define SERVER_STATUS_RUNNING		0
@@ -141,7 +141,9 @@ public:
 
 	int    _stdcall SetServerGUID(LPCGUID guid);
 	int    _stdcall GetServerGUID(LPGUID guid);
-
+	DWORD  _stdcall GerServerPid();
+	bool   _stdcall GetOutputVis();
+	HANDLE _stdcall GetThreadHandle();
 	int    _stdcall StartServer();
 	int    _stdcall StopServer();
 	int    _stdcall RestartServer();

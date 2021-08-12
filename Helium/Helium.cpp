@@ -816,10 +816,14 @@ int _stdcall main()
     rx.bind_key_internal(Replxx::KEY::control('D'), "send_eof");
     rx.bind_key_internal(Replxx::KEY::control('C'), "abort_line");
     rx.bind_key_internal(Replxx::KEY::control('T'), "transpose_characters");
-
+    TCHAR  infoBuf[32767];
+    DWORD  bufCharCount = 32767;
+    GetComputerNameA(infoBuf, &bufCharCount);
+    ostringstream str;
+    str << "[Helium@" << infoBuf << "] #";
     while (true) {
-        string inputcmd = rx.input("Helium $");
-        NewShellCommand(inputcmd);
+        string inputcmd = rx.input(str.str().c_str());
+        cout << inputcmd << endl;
     }
 
     system("pause");

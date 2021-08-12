@@ -258,7 +258,7 @@ int    MinecraftServerInstance::StartServer() {
             , servercwd.c_str()
             , &si
             , &pi);
-
+        spdlog::debug("bSuc:{}", bSuc);
         if (bSuc == FALSE) {
             cout << "CreateProcess() failed!" << endl;
             return -1;
@@ -280,11 +280,13 @@ int    MinecraftServerInstance::StartServer() {
         this_thread::yield();
 
         cout << "Output processing thread create successfully" << endl;
-
-        if (ResumeThread(pi.hThread) == -1) {
+        DWORD dwRet = ResumeThread(pi.hThread);
+        spdlog::debug("dwRet:{}", dwRet);
+        if (dwRet == -1) {
             TerminateProcess(pi.hProcess, serverexitcode);
             return -1;
         }
+
         cout << "Minecraft server process resumed successfully" << endl;
 
         c_scl = NULL;
@@ -404,14 +406,15 @@ int    MinecraftServerInstance::RestartServer() {
     return 0;
 }
 
-int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread, HANDLE hproc) {
-    cout << "Server started at PID : " << ptr->dwPid << endl;
+int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread,HANDLE hProc) {
+    //cout << "Server started at PID : " << ptr->dwPid << endl;
+    spdlog::debug("server started at PID:{}", ptr->GerServerPid());
     char out_buffer[BUFSIZE];
     DWORD dwRead;
     bool ret = FALSE;
     DWORD dwCode;
 
-    while (GetExitCodeProcess(hproc, &dwCode))
+    while (GetExitCodeProcess(ptr->GetThreadHandle(), &dwCode))
     {
         ZeroMemory(out_buffer, BUFSIZE);
         //用WriteFile，从hStdOutRead读出子进程stdout输出的数据，数据结果在out_buffer中，长度为dwRead  
@@ -419,7 +422,7 @@ int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servernam
         if ((ret) && (dwRead != 0))  //如果成功了，且长度>0  
         {
             out_buffer[dwRead] = '\0';
-            if (ptr->outputvisibility) {
+            if (ptr->GetOutputVis()) {
                 string temp(out_buffer);
                 string pat("\r\n");
                 auto outputs = split(temp, pat);
@@ -428,23 +431,32 @@ int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servernam
                     //在这里写上parse服务器输出所用code
                     
                     if (!it->empty() && *it != "\n")
-                        outputstr.append(servername).append(">").append(*it).append("\r\n");
-                    EnterCriticalSection(&cs);
+                        spdlog::debug("{}>{}", servername, *it);
+                    //EnterCriticalSection(&cs);
                     cout << outputstr;
-                    LeaveCriticalSection(&cs);
+                    //LeaveCriticalSection(&cs);
                 }
                 //如果子进程结束，退出循环
+                /*
+                if (WaitForSingleObject(ptr->hProc, 20) != WAIT_TIMEOUT)
+                {
+                    ptr->SetServerStatus(SERVER_STATUS_TERMINATED);
+                    break;
+                }
+                */
             }
         }
         //如果子进程结束，退出循环
-        if (dwCode != STILL_ACTIVE)
+        /*
+        if (ptr->GetServerStatus() != SERVER_STATUS_TERMINATED)
         {
             break;
         }
+        */
         //int i = 0;
         //i = ++i + i++ + i++ + i;
     }
-    GetExitCodeProcess(ptr->hProc, &dwCode);
+    GetExitCodeProcess(ptr->GetThreadHandle(), &dwCode);
     cout << "Exiting ProcessServerOutput()" << dwCode << endl;
     ptr->SetServerReturnValue(dwCode);
     ptr->SetServerStatus(1);
@@ -488,4 +500,19 @@ int    _stdcall MinecraftServerInstance::SetServerGUID(LPCGUID guid) {
 int    _stdcall MinecraftServerInstance::GetServerGUID(LPGUID guid) {
     *guid = this->serverguid;
     return 0;
+}
+
+DWORD _stdcall MinecraftServerInstance::GerServerPid()
+{
+    return this->dwPid;
+}
+
+bool _stdcall MinecraftServerInstance::GetOutputVis()
+{
+    return this->outputvisibility;
+}
+
+HANDLE _stdcall MinecraftServerInstance::GetThreadHandle()
+{
+    return this->hProc;
 }

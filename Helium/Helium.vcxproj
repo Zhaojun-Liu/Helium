@@ -207,7 +207,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="E:\Internet Download Manager下载\Compressed\replxx-release-0.0.3\replxx-release-0.0.3\out\build\x64-Release\replxx-static-rd.lib" />
+    <Library Include="replxx-static-rd.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
