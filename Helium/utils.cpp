@@ -51,20 +51,28 @@ bool stdfuncallconv _stdcall have(string a, string b)
 
 vector<string> _stdcall split(const string& str, const string& pattern)
 {
-    //const char* convert to char*
-    char* strc = new char[strlen(str.c_str()) + 1];
-    strcpy(strc, str.c_str());
-    vector<string> resultVec;
-    char* tmpStr = strtok(strc, pattern.c_str());
-    while (tmpStr != NULL)
+    std::vector<std::string> resVec;
+    if ("" == str)
     {
-        resultVec.push_back(string(tmpStr));
-        tmpStr = strtok(NULL, pattern.c_str());
+        return resVec;
+    }
+    //方便截取最后一段数据
+    std::string strs;
+    strs.append(pattern);
+
+    size_t pos = strs.find(pattern);
+    size_t size = strs.size();
+
+    while (pos != std::string::npos)
+    {
+        std::string x = strs.substr(0, pos);
+        if (!x.empty())
+            resVec.push_back(x);
+        strs = strs.substr(pos + 1, size);
+        pos = strs.find(pattern);
     }
 
-    delete[] strc;
-
-    return resultVec;
+    return resVec;
 }
 
 vector<string> _stdcall split(string str, const char* pattern)

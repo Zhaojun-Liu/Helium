@@ -73,7 +73,7 @@ Replxx::hints_t hook_hint(std::string const& context, int& contextLen, Replxx::C
     std::string prefix;
     prefix = context.substr(context.length() - contextLen);
 
-    if (prefix.size() >= 2 || (!prefix.empty() && prefix.at(0) == '.')) {
+    if (prefix.size() >= 1 && !prefix.empty()) {
         for (auto const& e : examples) {
             if (e.compare(0, prefix.size(), prefix) == 0) {
                 hints.emplace_back(e.c_str());
@@ -90,23 +90,29 @@ Replxx::hints_t hook_hint(std::string const& context, int& contextLen, Replxx::C
 }
 void hook_color(std::string const& context, Replxx::colors_t& colors, std::vector<std::pair<std::string, Replxx::Color>> const& regex_color) {
     // highlight matching regex sequences
+    string origstr = context;
+    auto words = split(origstr, " ");
+    for (auto str : words) {
+        cout << endl << str << endl;
+    }
     for (auto const& e : regex_color) {
-        size_t pos{ 0 };
-        std::string str = context;
+        size_t pos = 0;
         std::smatch match;
 
-        while (std::regex_search(str, match, std::regex(e.first))) {
-            std::string c{ match[0] };
-            std::string prefix(match.prefix().str());
-            pos += prefix.length();
-            int len = c.length();
+        for (auto str : words) {
+            while (std::regex_match(str, match, std::regex(e.first))) {
+                std::string c = match[0];
+                std::string prefix = match.prefix().str();
+                pos += prefix.length();
+                int len = c.length();
 
-            for (int i = 0; i < len; ++i) {
-                colors.at(pos + i) = e.second;
+                for (int i = 0; i < len; ++i) {
+                    colors.at(pos + i) = e.second;
+                }
+
+                pos += len;
+                str = match.suffix();
             }
-
-            pos += len;
-            str = match.suffix();
         }
     }
 }
@@ -247,6 +253,8 @@ int _stdcall main()
     }
     
     vector<string> cmdcompletions{
+        "!!He",
+
         "help", 
 
         "cmdqueue", 
@@ -267,6 +275,8 @@ int _stdcall main()
     };
 
     vector<pair<string, Replxx::Color>> cmdcolors{
+        {"!!He", Replxx::Color::BRIGHTBLUE},
+
         {"help", Replxx::Color::BRIGHTMAGENTA},
         {"cmdqueue", Replxx::Color::BRIGHTMAGENTA},
         {"permission", Replxx::Color::BRIGHTMAGENTA},
@@ -304,7 +314,7 @@ int _stdcall main()
     };
     Replxx rx;
     rx.install_window_change_handler();
-    rx.set_word_break_characters(" \t.,-%!;:=*~^'\"/?<>|[](){}");
+    rx.set_word_break_characters(" \t.,-%;:=*~^'\"/?<>|[](){}");
     rx.set_completion_callback(bind(&hook_completion, placeholders::_1, placeholders::_2, cmdcompletions));
     rx.set_hint_callback(bind(&hook_hint, placeholders::_1, placeholders::_2, placeholders::_3, cmdcompletions));
     rx.set_highlighter_callback(bind(&hook_color, placeholders::_1, placeholders::_2, cmdcolors));
