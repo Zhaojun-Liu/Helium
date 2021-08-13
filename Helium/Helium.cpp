@@ -49,75 +49,6 @@ Logger logger;
 map<string, HeliumExtension> extensions;
 #pragma endregion
 
-#pragma region Callback
-Replxx::completions_t hook_completion(std::string const& context, int& contextLen, std::vector<std::string> const& examples) {
-    Replxx::completions_t completions;
-    std::string prefix;
-    prefix = context.substr(context.length() - contextLen);
-
-    for (auto const& e : examples) {
-        if (e.compare(0, prefix.size(), prefix) == 0) {
-            Replxx::Color c = Replxx::Color::DEFAULT;
-            completions.emplace_back(e.c_str(), c);
-        }
-    }
-
-    return completions;
-}
-
-Replxx::hints_t hook_hint(std::string const& context, int& contextLen, Replxx::Color& color, std::vector<std::string> const& examples) {
-    Replxx::hints_t hints;
-    // only show hint if prefix is at least 'n' chars long
-    // or if prefix begins with a specific character
-
-    std::string prefix;
-    prefix = context.substr(context.length() - contextLen);
-
-    if (prefix.size() >= 1 && !prefix.empty()) {
-        for (auto const& e : examples) {
-            if (e.compare(0, prefix.size(), prefix) == 0) {
-                hints.emplace_back(e.c_str());
-            }
-        }
-    }
-
-    // set hint color to green if single match found
-    if (hints.size() == 1) {
-        color = Replxx::Color::GREEN;
-    }
-
-    return hints;
-}
-void hook_color(std::string const& context, Replxx::colors_t& colors, std::vector<std::pair<std::string, Replxx::Color>> const& regex_color) {
-    // highlight matching regex sequences
-    string origstr = context;
-    auto words = split(origstr, " ");
-    for (auto str : words) {
-        cout << endl << str << endl;
-    }
-    for (auto const& e : regex_color) {
-        size_t pos = 0;
-        std::smatch match;
-
-        for (auto str : words) {
-            while (std::regex_match(str, match, std::regex(e.first))) {
-                std::string c = match[0];
-                std::string prefix = match.prefix().str();
-                pos += prefix.length();
-                int len = c.length();
-
-                for (int i = 0; i < len; ++i) {
-                    colors.at(pos + i) = e.second;
-                }
-
-                pos += len;
-                str = match.suffix();
-            }
-        }
-    }
-}
-#pragma endregion
-
 #pragma region Parser
 /*
 香草
@@ -252,72 +183,12 @@ int _stdcall main()
         }
     }
     
-    vector<string> cmdcompletions{
-        "!!He",
-
-        "help", 
-
-        "cmdqueue", 
-        "add", "remove", "start", "stop", "pause", "rename", "status", "list", "reload", "load", "query", "delete", "insert",// "setattr"
-
-
-        "config", 
-        "save", "setattr",//"reload"
-
-        "permission", 
-        "set",//"reload", "save", "query", "list", "remove"
-
-        "extensions", 
-        "unload", "enable", "disable",//, "list", "reload", "load"
-
-        "server", 
-        "setdefault", "restart", "stop", "rcon"//, "setattr", "status", "start"
-    };
-
-    vector<pair<string, Replxx::Color>> cmdcolors{
-        {"!!He", Replxx::Color::BRIGHTBLUE},
-
-        {"help", Replxx::Color::BRIGHTMAGENTA},
-        {"cmdqueue", Replxx::Color::BRIGHTMAGENTA},
-        {"permission", Replxx::Color::BRIGHTMAGENTA},
-        {"extensions", Replxx::Color::BRIGHTMAGENTA},
-        {"server", Replxx::Color::BRIGHTMAGENTA},
-        {"config", Replxx::Color::BRIGHTMAGENTA},
-
-        {"add", Replxx::Color::YELLOW},
-        {"remove", Replxx::Color::YELLOW},
-        {"start", Replxx::Color::YELLOW},
-        {"stop", Replxx::Color::YELLOW},
-        {"pause", Replxx::Color::YELLOW},
-        {"rename", Replxx::Color::YELLOW},
-        {"status", Replxx::Color::YELLOW},
-        {"list", Replxx::Color::YELLOW},
-        {"reload", Replxx::Color::YELLOW},
-        {"load", Replxx::Color::YELLOW},
-        {"query", Replxx::Color::YELLOW},
-        {"delete", Replxx::Color::YELLOW},
-        {"insert", Replxx::Color::YELLOW},
-        {"save", Replxx::Color::YELLOW},
-        {"setattr", Replxx::Color::YELLOW},
-        {"set", Replxx::Color::YELLOW},
-        {"unload", Replxx::Color::YELLOW},
-        {"enable", Replxx::Color::YELLOW},
-        {"disable", Replxx::Color::YELLOW},
-        {"setdefault", Replxx::Color::YELLOW},
-        {"restart", Replxx::Color::YELLOW},
-        {"stop", Replxx::Color::YELLOW},
-        {"rcon", Replxx::Color::YELLOW},
-
-        {"[\\-|+]{0,1}[0-9]+", Replxx::Color::BRIGHTGREEN},
-        {"[\\-|+]{0,1}[0-9]*\\.[0-9]+", Replxx::Color::BRIGHTGREEN},
-        {"[\\-|+]{0,1}[0-9]+e[\\-|+]{0,1}[0-9]+", Replxx::Color::BRIGHTGREEN}
-    };
     Replxx rx;
     rx.install_window_change_handler();
     rx.set_word_break_characters(" \t.,-%;:=*~^'\"/?<>|[](){}");
-    rx.set_completion_callback(bind(&hook_completion, placeholders::_1, placeholders::_2, cmdcompletions));
-    rx.set_hint_callback(bind(&hook_hint, placeholders::_1, placeholders::_2, placeholders::_3, cmdcompletions));
-    rx.set_highlighter_callback(bind(&hook_color, placeholders::_1, placeholders::_2, cmdcolors));
+    rx.set_completion_callback(hook_completion);
+    rx.set_hint_callback(hook_hint);
+    rx.set_highlighter_callback(hook_color);
     rx.set_completion_count_cutoff(128);
     rx.set_max_hint_rows(4);
     rx.set_complete_on_empty(true);

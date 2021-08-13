@@ -1,6 +1,8 @@
 #include"commands.h"
 
 vector<HeliumCommandQueue> cmdqueuelist;
+vector<vector<string>> cmdcompletions;
+vector<pair<string, Replxx::Color>> cmdcolor;
 
 #pragma region command
 _stdcall HeliumCommand::HeliumCommand() {
@@ -253,5 +255,168 @@ int _stdcall InitShellQueue() {
 int _stdcall NewShellCommand(string cmd) {
 	HeliumCommand newcmd(cmd);
 	cmdqueuelist.begin()->InsertCommand(&newcmd);
+	return 0;
+}
+/*
+vector<string> cmdcompletions{
+	"!!He",
+
+	"help",
+
+	"cmdqueue",
+	"add", "remove", "start", "stop", "pause", "rename", "status", "list", "reload", "load", "query", "delete", "insert",// "setattr"
+
+
+	"config",
+	"save", "setattr",//"reload"
+
+	"permission",
+	"set",//"reload", "save", "query", "list", "remove"
+
+	"extensions",
+	"unload", "enable", "disable",//, "list", "reload", "load"
+
+	"server",
+	"setdefault", "restart", "stop", "rcon"//, "setattr", "status", "start"
+};
+
+vector<pair<string, Replxx::Color>> cmdcolors{
+	{"!!He", Replxx::Color::BRIGHTBLUE},
+
+	{"help", Replxx::Color::BRIGHTMAGENTA},
+	{"cmdqueue", Replxx::Color::BRIGHTMAGENTA},
+	{"permission", Replxx::Color::BRIGHTMAGENTA},
+	{"extensions", Replxx::Color::BRIGHTMAGENTA},
+	{"server", Replxx::Color::BRIGHTMAGENTA},
+	{"config", Replxx::Color::BRIGHTMAGENTA},
+
+	{"add", Replxx::Color::YELLOW},
+	{"remove", Replxx::Color::YELLOW},
+	{"start", Replxx::Color::YELLOW},
+	{"stop", Replxx::Color::YELLOW},
+	{"pause", Replxx::Color::YELLOW},
+	{"rename", Replxx::Color::YELLOW},
+	{"status", Replxx::Color::YELLOW},
+	{"list", Replxx::Color::YELLOW},
+	{"reload", Replxx::Color::YELLOW},
+	{"load", Replxx::Color::YELLOW},
+	{"query", Replxx::Color::YELLOW},
+	{"delete", Replxx::Color::YELLOW},
+	{"insert", Replxx::Color::YELLOW},
+	{"save", Replxx::Color::YELLOW},
+	{"setattr", Replxx::Color::YELLOW},
+	{"set", Replxx::Color::YELLOW},
+	{"unload", Replxx::Color::YELLOW},
+	{"enable", Replxx::Color::YELLOW},
+	{"disable", Replxx::Color::YELLOW},
+	{"setdefault", Replxx::Color::YELLOW},
+	{"restart", Replxx::Color::YELLOW},
+	{"stop", Replxx::Color::YELLOW},
+	{"rcon", Replxx::Color::YELLOW},
+
+	{"[\\-|+]{0,1}[0-9]+", Replxx::Color::BRIGHTGREEN},
+	{"[\\-|+]{0,1}[0-9]*\\.[0-9]+", Replxx::Color::BRIGHTGREEN},
+	{"[\\-|+]{0,1}[0-9]+e[\\-|+]{0,1}[0-9]+", Replxx::Color::BRIGHTGREEN}
+};
+*/
+#pragma region Callback
+Replxx::completions_t hook_completion(std::string const& context, int& contextLen) {
+	Replxx::completions_t completions;
+	string prefix, temp;
+	prefix = context.substr(context.length() - contextLen);
+	cout << endl << prefix << endl;
+	temp = context.substr(0, context.length() - contextLen);
+	cout << temp << endl;
+	int cmdlevel = 0;
+	while (true) {
+		if (temp.find(' ') != string::npos) {
+			temp.erase(0, temp.find(' '));
+			cmdlevel++;
+		}
+	}
+
+	for (auto const& e : cmdcompletions[cmdlevel]) {
+		if (e.compare(0, prefix.size(), prefix) == 0) {
+			Replxx::Color c = Replxx::Color::DEFAULT;
+			completions.emplace_back(e.c_str(), c);
+		}
+	}
+
+	return completions;
+}
+
+Replxx::hints_t hook_hint(std::string const& context, int& contextLen, Replxx::Color& color) {
+	Replxx::hints_t hints;
+	// only show hint if prefix is at least 'n' chars long
+	// or if prefix begins with a specific character
+
+	string prefix, temp;
+	prefix = context.substr(context.length() - contextLen);
+	cout << endl << prefix << endl;
+	temp = context.substr(0, context.length() - contextLen);
+	cout << temp << endl;
+	int cmdlevel = 0;
+	while (true) {
+		if (temp.find(' ') != string::npos) {
+			temp.erase(0, temp.find(' '));
+			cmdlevel++;
+		}
+	}
+
+	if (prefix.size() >= 1 && !prefix.empty()) {
+		for (auto const& e : cmdcompletions[cmdlevel]) {
+			if (e.compare(0, prefix.size(), prefix) == 0) {
+				hints.emplace_back(e.c_str());
+			}
+		}
+	}
+
+	// set hint color to green if single match found
+	if (hints.size() == 1) {
+		color = Replxx::Color::GREEN;
+	}
+
+	return hints;
+}
+void hook_color(std::string const& context, Replxx::colors_t& colors) {
+	int blankpos = 0, cmdlevel = 0;
+	for (int i = 0; i < context.length(); i++) {
+		if (context[i] == ' ') {
+			auto word = context.substr(blankpos, i - blankpos);
+				for (auto const& e : cmdcolor) {
+					std::smatch match;
+
+					while (regex_match(word, match, std::regex(e.first))) {
+						if (match[0] == word) {
+							for (int i = 0; i < word.length(); i++) {
+								colors.at(blankpos + i) = e.second;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+#pragma endregion
+
+void _stdcall AddCompletion(int level, string cmd) {
+	if (level < cmdcompletions.size()) {
+		cmdcompletions[level].push_back(cmd);
+	}
+	else {
+		cmdcompletions.resize(level - 1);
+		cmdcompletions[level].push_back(cmd);
+	}
+}
+int _stdcall DeleteCompletion(int level, string cmd) {
+	if (level < cmdcompletions.size()) {
+		for (auto it = cmdcompletions[level].begin(); it < cmdcompletions[level].end(); it++) {
+			if (*it == cmd) cmdcompletions[level].erase(it);
+		}
+	}
+	else {
+		return -1;
+	}
 	return 0;
 }
