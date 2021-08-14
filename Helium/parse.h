@@ -15,37 +15,48 @@
 
 using namespace std;
 
-typedef struct ServerStartEvent {
+typedef struct ServerStart {
 	LONG port = NULL;
-	ServerStartEvent(int port_) {
-		this->port = port_;
+	ServerStart() {
+		this->port = 0;
 	}
 } ServerStartEvent;
 
-typedef struct ServerStartedEvent {
+typedef struct ServerStarted {
 	long itime;
-	ServerStartedEvent(long itime) {
-		this->itime = itime;
+	ServerStarted() {
+		this->itime = 0;
 	}
-}ServerStartedEvent;
-
-typedef struct ServerStopEvent {
-	int exitcode = 0;
-	ServerStopEvent(int code) {
-		this->exitcode = code;
-	}
-} ServerStopEvent;
-
-typedef struct ServerInfoEvent {
-	char* lpRawOutput = NULL;
-} ServerInfoEvent;
-
-typedef struct PlayerInfoEvent {
+}ServerStarted;
+class Info {
+private:
+	bool IsPlayer = false;
 	char* lpRawOutput = NULL;
 	char* lpPlayer = NULL;
-} PlayerInfoEvent;
+	char* lpContent = NULL;
+public:
+	Info() {/*do something*/ }
+	bool isPlayer() {
+		return IsPlayer;
+	}
+	bool isServer() {
+		return !IsPlayer;
+	}
+};
 
 //[10:36:31] [Server thread/INFO]: Time elapsed: 15215 ms
-ServerStartedEvent _stdcall ParseServerStarted(const char* content);
-ServerStartEvent _stdcall ParseServerStart(const char* content);
+
+class VanillaParser {
+public:
+	WINAPI VanillaParser();
+	WINAPI ~VanillaParser();
+	void* WINAPI parse(const char*);
+private:
+	ServerStarted _stdcall parseServerStarted(const char*);
+	ServerStart _stdcall parseServerStart(const char*);
+	Info WINAPI parsePlayerInfo(const char*);
+};
+
+
+
 #endif // !_H_PARSE

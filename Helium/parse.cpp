@@ -1,7 +1,20 @@
 #include"parse.h"
 
-ServerStartedEvent _stdcall ParseServerStarted(const char* content) {
-	ServerStartedEvent e(0);
+VanillaParser::VanillaParser()
+{
+}
+
+VanillaParser::~VanillaParser()
+{
+}
+
+void* __stdcall VanillaParser::parse(const char* content)
+{
+	return nullptr;
+}
+
+ServerStarted _stdcall VanillaParser::parseServerStarted(const char* content) {
+	ServerStarted e;
 	string c = content;
 	map<size_t, string> m;
 	Split(c, m, " ");
@@ -9,8 +22,8 @@ ServerStartedEvent _stdcall ParseServerStarted(const char* content) {
 	e.itime = strtol(m.at(6).c_str(), &str, 10);
 	return e;
 }
-ServerStartEvent _stdcall ParseServerStart(const char* content) {
-	ServerStartEvent e(0);
+ServerStart _stdcall VanillaParser::parseServerStart(const char* content) {
+	ServerStart e;
 	string c = content;
 	map<size_t, string> m;
 	Split(c, m, ":");
