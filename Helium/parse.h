@@ -28,6 +28,7 @@ typedef struct ServerStarted {
 		this->itime = 0;
 	}
 }ServerStarted;
+
 class Info {
 private:
 	bool IsPlayer = false;
