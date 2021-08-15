@@ -226,5 +226,4 @@ int _stdcall main(int argc,char** argv)
 
     system("pause");
 }
-
 #pragma endregion

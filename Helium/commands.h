@@ -15,6 +15,7 @@
 #include<guiddef.h>
 #include<regex>
 
+#define REPLXX_STATIC
 #include"replxx/replxx.hxx"
 
 using namespace replxx;

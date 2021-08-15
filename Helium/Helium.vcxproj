@@ -201,6 +201,8 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="HeliumConfig.xml" />
+    <Xml Include="permission.xml" />
+    <Xml Include="server.xml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
