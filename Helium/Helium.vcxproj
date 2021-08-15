@@ -175,7 +175,6 @@
     <ClCompile Include="permissions.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="confuses.h" />
     <ClInclude Include="replxx\conversion.hxx" />
     <ClInclude Include="replxx\ConvertUTF.h" />
     <ClInclude Include="replxx\escape.hxx" />
