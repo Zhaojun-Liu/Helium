@@ -173,6 +173,7 @@
     <ClCompile Include="minecraftserver.cpp" />
     <ClCompile Include="extension.cpp" />
     <ClCompile Include="permissions.cpp" />
+    <ClCompile Include="commandtree.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="replxx\conversion.hxx" />
@@ -198,6 +199,7 @@
     <ClInclude Include="minecraftserver.h" />
     <ClInclude Include="extension.h" />
     <ClInclude Include="permissions.h" />
+    <ClInclude Include="commandtree.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="HeliumConfig.xml" />
