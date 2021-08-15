@@ -394,7 +394,7 @@ void hook_color(std::string const& context, Replxx::colors_t& colors) {
 						}
 					}
 				}
-			}
+			
 		}
 	}
 }

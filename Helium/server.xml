@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<HeliumServerConfig>
+	<MinecraftServer type="vanilla" startuptype="jar" autostart="true" outputvisibility="true">
+		<ServerName>test1</ServerName>
+		<ServerDirectory>test1</ServerDirectory>
+		<JVMDirectory>C:\Program Files\Eclipse Foundation\jdk-16.0.2.7-hotspot\bin\java.exe</JVMDirectory>
+		<JVMOption></JVMOption>
+		<ServerFileName>server.jar nogui</ServerFileName>
+		<MaxMemory>1024M</MaxMemory>
+		<MinMemory>1024M</MinMemory>
+	</MinecraftServer>
+	<MinecraftServer type="vanilla" startuptype="jar" autostart="true" outputvisibility="true">
+		<ServerName>test2</ServerName>
+		<ServerDirectory>test2</ServerDirectory>
+		<JVMDirectory>C:\Program Files\Eclipse Foundation\jdk-16.0.2.7-hotspot\bin\java.exe</JVMDirectory>
+		<JVMOption></JVMOption>
+		<ServerFileName>server.jar nogui</ServerFileName>
+		<MaxMemory>1024M</MaxMemory>
+		<MinMemory>1024M</MinMemory>
+	</MinecraftServer>
+</HeliumServerConfig>
