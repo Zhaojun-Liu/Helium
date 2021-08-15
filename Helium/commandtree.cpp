@@ -1,5 +1,7 @@
 #include"commandtree.h"
 
+Tree commandtree;
+
 TreeNode::TreeNode(int type = 0, TreeNode* Parent = 0) {
     _data = type;
     _parent = Parent;
@@ -12,7 +14,6 @@ void TreeNode::InsertChildren(TreeNode& node) {
     _children.push_back(p);
 }
 
-//***** 下面是对于Tree类的定义实现*****///
 Tree::Tree() {
 
 }

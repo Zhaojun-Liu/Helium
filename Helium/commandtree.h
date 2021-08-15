@@ -3,6 +3,8 @@
 #ifndef _H_CMDTREE
 #define _H_CMDTREE
 
+#define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
+
 #include<list>  
 #include<algorithm>  
 #include<string>
@@ -79,6 +81,8 @@ class Iterator{
     typedef list<TreeNode*>::iterator List;
     friend class Tree;
 };
+
+extern Tree commandtree;
 
 //此处树的实现来源于 https://blog.csdn.net/xieyunc/article/details/4140698 同时感谢原作者
 

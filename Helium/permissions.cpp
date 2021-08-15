@@ -29,7 +29,7 @@ int _stdcall ReadPermissionFile() {
 		ZeroMemory(&tempns, sizeof(tempns));
 		string tempstr;
 
-		auto attr = permns->FindAttribute("server");
+		tinyxml2::XMLAttribute* attr = const_cast<tinyxml2::XMLAttribute*>(permns->FindAttribute("server"));
 		if (attr->Value()) {
 			string tempstr = attr->Value();
 			for (auto& server : serverlist) {
@@ -44,7 +44,7 @@ int _stdcall ReadPermissionFile() {
 			spdlog::error("Error reading the \"server\" attribute,  using default permission level");
 		}
 
-		auto attr = permns->FindAttribute("default");
+		attr = const_cast<tinyxml2::XMLAttribute*>(permns->FindAttribute("default"));
 		if (attr->Value()) {
 			tempns.defaultpermission = PERMISSION_LEVEL_GUEST;
 			string tempstr = attr->Value();
@@ -58,13 +58,13 @@ int _stdcall ReadPermissionFile() {
 			spdlog::error("Error reading the \"server\" attribute,  using default permission level");
 		}
 		
-		auto permlevel = permns->FirstChildElement("ServerOwner");
+		tinyxml2::XMLElement* permlevel = permns->FirstChildElement("ServerOwner");
 		if (permlevel != NULL) {
 			auto player = permlevel->FirstChildElement("Player");
 			if (player != NULL) {
 				while (true) {
 					if (player->GetText()) {
-						tempns.permissions.push_back(make_pair(player->GetText(), PERMISSION_LEVEL_SERVEROWNER));
+						tempns.permissions.push_back(make_pair<string, int>(player->GetText(), PERMISSION_LEVEL_SERVEROWNER));
 					}
 
 					player = permlevel->NextSiblingElement("Player");
@@ -74,13 +74,13 @@ int _stdcall ReadPermissionFile() {
 			}
 		}
 
-		auto permlevel = permns->FirstChildElement("Admin");
+		permlevel = permns->FirstChildElement("Admin");
 		if (permlevel != NULL) {
 			auto player = permlevel->FirstChildElement("Player");
 			if (player != NULL) {
 				while (true) {
 					if (player->GetText()) {
-						tempns.permissions.push_back(make_pair(player->GetText(), PERMISSION_LEVEL_ADMIN));
+						tempns.permissions.push_back(make_pair<string, int>(player->GetText(), PERMISSION_LEVEL_ADMIN));
 					}
 
 					player = permlevel->NextSiblingElement("Player");
@@ -90,13 +90,13 @@ int _stdcall ReadPermissionFile() {
 			}
 		}
 
-		auto permlevel = permns->FirstChildElement("User");
+		permlevel = permns->FirstChildElement("User");
 		if (permlevel != NULL) {
 			auto player = permlevel->FirstChildElement("Player");
 			if (player != NULL) {
 				while (true) {
 					if (player->GetText()) {
-						tempns.permissions.push_back(make_pair(player->GetText(), PERMISSION_LEVEL_USER));
+						tempns.permissions.push_back(make_pair<string, int>(player->GetText(), PERMISSION_LEVEL_USER));
 					}
 
 					player = permlevel->NextSiblingElement("Player");
@@ -106,13 +106,13 @@ int _stdcall ReadPermissionFile() {
 			}
 		}
 
-		auto permlevel = permns->FirstChildElement("GUEST");
+		permlevel = permns->FirstChildElement("GUEST");
 		if (permlevel != NULL) {
 			auto player = permlevel->FirstChildElement("Player");
 			if (player != NULL) {
 				while (true) {
 					if (player->GetText()) {
-						tempns.permissions.push_back(make_pair(player->GetText(), PERMISSION_LEVEL_GUEST));
+						tempns.permissions.push_back(make_pair<string, int>(player->GetText(), PERMISSION_LEVEL_GUEST));
 					}
 
 					player = permlevel->NextSiblingElement("Player");

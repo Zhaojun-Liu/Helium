@@ -2,6 +2,8 @@
 
 #ifndef _H_PERMISSIONS
 
+#define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
+
 #include<vector>
 #include<guiddef.h>
 #include<string>
