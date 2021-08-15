@@ -25,14 +25,14 @@
 
 using namespace std;
 using namespace replxx;
-
+int  _stdcall ProcessServerOutput(MinecraftServerInstance*, string, HANDLE, HANDLE);
 #pragma endregion
 
 #pragma region Macros
 #define PROJECT_NAME_STR "Helium"
 #define PROJECT_VER_STR "0.4.2.06"
 #define PROJECT_DEVSTAT "Pre-Alpha"
-
+#define pass continue;
 #pragma endregion
 
 #pragma region Constants
@@ -46,14 +46,91 @@ using namespace replxx;
 #pragma region Var
 Logger logger;
 map<string, HeliumExtension> extensions;
+string pns = PROJECT_NAME_STR;
+Replxx rx;
 #pragma endregion
 
+#pragma region ServerFunc
+int StartInfoThread(MinecraftServerInstance *lpIns) {
+    thread tempthread(ProcessServerOutput, lpIns, lpIns->GetServerName(), lpIns->GetRDInfo().hStdOutRead, lpIns->GetThreadHandle());
+    tempthread.detach();
+    this_thread::yield();
+
+    spdlog::debug("Output processing thread create successfully at 0x{}","awa");
+    return lpIns->GerServerPid();
+}
+
+
+int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread, HANDLE hProc) {
+    //cout << "Server started at PID : " << ptr->dwPid << endl;
+    spdlog::debug("server started at PID:{}", ptr->GerServerPid());
+    char out_buffer[BUFSIZE];
+    DWORD dwRead;
+    bool ret = FALSE;
+    DWORD dwCode;
+    string read;
+    while (true)
+    {
+        ZeroMemory(out_buffer, BUFSIZE);
+        //用WriteFile，从hStdOutRead读出子进程stdout输出的数据，数据结果在out_buffer中，长度为dwRead
+
+        //ret = ReadFile(stdread, out_buffer, BUFSIZE - 1, &dwRead, NULL);
+        char ch;
+        //spdlog::critical(stdread);
+        if (stdread == INVALID_HANDLE_VALUE || stdread == NULL)
+            break;
+        if (ReadFile(stdread, &ch, 1, &dwRead, NULL) == false)
+            break;
+        if (dwRead == 0)
+        {
+            pass;
+        }
+        if (ch != '\n') {
+            read += ch;
+            pass;
+        }
+        else
+        {
+            if (ptr->GetVisibility())
+            {
+                spdlog::info("{}->{}", servername, read);
+            }
+            read = "";
+        }
+
+        MSG msg;
+        DWORD dwRet = MsgWaitForMultipleObjects(1, ptr->GetThreadPHandle(), FALSE, 20, QS_ALLINPUT);
+        switch (dwRet) {
+        case WAIT_OBJECT_0:
+            break;
+            break;
+        case WAIT_OBJECT_0 + 1:
+            PeekMessage(&msg, NULL, 0, 0, PM_REMOVE);
+            DispatchMessage(&msg);
+            continue;
+        default:
+            break;
+        }
+    }
+
+    GetExitCodeProcess(ptr->GetThreadHandle(), &dwCode);
+    spdlog::info("服务器{0}已退出，返回值{1:d}(0x{1:x})",servername, dwCode);
+    cout << "Exiting ProcessServerOutput()" << dwCode << endl;
+    ptr->SetServerReturnValue(dwCode);
+    ptr->SetServerStatus(1);
+    return 114514;
+}
+
+#pragma endregion
+
+
+
 #pragma region Main
-int _stdcall main()
+
+int _stdcall main(int argc,char** argv)
 {
     SetConsoleTitleA(PROJECT_NAME_STR);
 
-    string pns = PROJECT_NAME_STR;
     pns.append(" ").append(PROJECT_VER_STR).append(" ").append(PROJECT_DEVSTAT);
     cout << pns << endl;
     spdlog::info("Welcome to spdlog!");
@@ -80,6 +157,7 @@ int _stdcall main()
             cout << "Starting Minecraft Server : " << ins->GetServerName() << endl;
             ret = ins->StartServer();
             cout << "Started with return code : " << ret << endl;
+            StartInfoThread(&(*ins));
         }
         else {
             continue;
@@ -89,7 +167,7 @@ int _stdcall main()
         }
     }
     
-    Replxx rx;
+
     rx.install_window_change_handler();
     rx.set_word_break_characters(" \t.,-%;:=*~^'\"/?<>|[](){}");
     rx.set_completion_callback(hook_completion);
@@ -131,8 +209,8 @@ int _stdcall main()
     rx.bind_key_internal(Replxx::KEY::control('C'), "abort_line");
     rx.bind_key_internal(Replxx::KEY::control('T'), "transpose_characters");
 
-    TCHAR  infoBuf[32767];
-    DWORD  bufCharCount = 32767;
+    TCHAR  infoBuf[64];
+    DWORD  bufCharCount = 64;
     GetComputerNameA(infoBuf, &bufCharCount);
     ostringstream str;
     str << "[Helium@" << infoBuf << "] #";
@@ -148,4 +226,5 @@ int _stdcall main()
 
     system("pause");
 }
+
 #pragma endregion
