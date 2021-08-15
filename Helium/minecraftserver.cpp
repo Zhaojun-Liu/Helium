@@ -274,12 +274,6 @@ int    MinecraftServerInstance::StartServer() {
         this->redir.hStdOutWrite = hStdOutWrite;
         this->dwPid = pi.dwProcessId;
 
-        thread tempthread(ProcessServerOutput, this, this->servername, hStdOutRead, pi.hProcess);
-        this->stdoutthread = std::move(tempthread);
-        this->stdoutthread.detach();
-        this_thread::yield();
-
-        cout << "Output processing thread create successfully" << endl;
         DWORD dwRet = ResumeThread(pi.hThread);
         spdlog::debug("dwRet:{}", dwRet);
         if (dwRet == -1) {
@@ -378,12 +372,7 @@ int    MinecraftServerInstance::StartServer() {
                 isinit = true;
             }
 
-            thread tempthread(ProcessServerOutput, (MinecraftServerInstance*)this, this->servername, hStdOutRead, pi.hProcess);
-            this->stdoutthread = std::move(tempthread);
-            this->stdoutthread.detach();
-            this_thread::yield();
-
-            cout << "Output processing thread create successfully" << endl;
+           
 
             if (ResumeThread(pi.hThread) == -1) {
                 TerminateProcess(pi.hProcess, serverexitcode);
@@ -404,63 +393,6 @@ int    MinecraftServerInstance::StopServer() {
 [[nodiscard("")]]
 int    MinecraftServerInstance::RestartServer() {
     return 0;
-}
-
-int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread,HANDLE hProc) {
-    //cout << "Server started at PID : " << ptr->dwPid << endl;
-    spdlog::debug("server started at PID:{}", ptr->GerServerPid());
-    char out_buffer[BUFSIZE];
-    DWORD dwRead;
-    bool ret = FALSE;
-    DWORD dwCode;
-
-    while (GetExitCodeProcess(ptr->GetThreadHandle(), &dwCode))
-    {
-        ZeroMemory(out_buffer, BUFSIZE);
-        //用WriteFile，从hStdOutRead读出子进程stdout输出的数据，数据结果在out_buffer中，长度为dwRead  
-        ret = ReadFile(stdread, out_buffer, BUFSIZE - 1, &dwRead, NULL);
-        if ((ret) && (dwRead != 0))  //如果成功了，且长度>0  
-        {
-            out_buffer[dwRead] = '\0';
-            if (ptr->GetOutputVis()) {
-                string temp(out_buffer);
-                string pat("\r\n");
-                auto outputs = split(temp, pat);
-                for (auto it = outputs.begin(); it < outputs.end(); it++) {
-                    string outputstr;
-                    //在这里写上parse服务器输出所用code
-                    
-                    if (!it->empty() && *it != "\n")
-                        spdlog::debug("{}>{}", servername, *it);
-                    //EnterCriticalSection(&cs);
-                    cout << outputstr;
-                    //LeaveCriticalSection(&cs);
-                }
-                //如果子进程结束，退出循环
-                /*
-                if (WaitForSingleObject(ptr->hProc, 20) != WAIT_TIMEOUT)
-                {
-                    ptr->SetServerStatus(SERVER_STATUS_TERMINATED);
-                    break;
-                }
-                */
-            }
-        }
-        //如果子进程结束，退出循环
-        /*
-        if (ptr->GetServerStatus() != SERVER_STATUS_TERMINATED)
-        {
-            break;
-        }
-        */
-        //int i = 0;
-        //i = ++i + i++ + i++ + i;
-    }
-    GetExitCodeProcess(ptr->GetThreadHandle(), &dwCode);
-    cout << "Exiting ProcessServerOutput()" << dwCode << endl;
-    ptr->SetServerReturnValue(dwCode);
-    ptr->SetServerStatus(1);
-    return 114514;
 }
 
 int _stdcall MinecraftServerInstance::SetServerReturnValue(DWORD dwValue)

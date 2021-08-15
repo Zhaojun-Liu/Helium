@@ -148,10 +148,12 @@ public:
 	DWORD  _stdcall GerServerPid();
 	bool   _stdcall GetOutputVis();
 	HANDLE _stdcall GetThreadHandle();
+	PHANDLE WINAPI GetThreadPHandle() { return &(this->hProc); }
 	int    _stdcall StartServer();
 	int    _stdcall StopServer();
 	int    _stdcall RestartServer();
 	void   _stdcall Print();
+	RedirectInformation _stdcall GetRDInfo() { return this->redir; }
 };
 
 int _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread, HANDLE hproc);
