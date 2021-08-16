@@ -20,5 +20,5 @@ int _stdcall DeleteCommand(tree<HeliumCommandRegisterInstance>::iterator root) {
 	return 0;
 }
 int _stdcall SetupBuiltinCommand() {
-
+	return 0;
 }

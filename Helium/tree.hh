@@ -2208,8 +2208,9 @@ template <class T, class tree_node_allocator>
 int tree<T, tree_node_allocator>::max_depth() const
 	{
 	int maxd=-1;
+	using namespace std;
 	for(tree_node *it = head->next_sibling; it!=feet; it=it->next_sibling)
-		maxd=std::max(maxd, max_depth(it));
+		maxd = max(maxd, max_depth(it));
 
 	return maxd;
 	}
@@ -2240,7 +2241,8 @@ int tree<T, tree_node_allocator>::max_depth(const iterator_base& pos) const
 			}
 		tmp=tmp->first_child;
 		++curdepth;
-		maxdepth=std::max(curdepth, maxdepth);
+		using namespace std;
+		maxdepth=max(curdepth, maxdepth);
 		} 
 	}
 
