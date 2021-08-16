@@ -17,6 +17,7 @@
 
 #define REPLXX_STATIC
 #include"replxx/replxx.hxx"
+#include"commandtree.h"
 
 using namespace replxx;
 using namespace std;
@@ -124,9 +125,6 @@ extern vector<pair<string, Replxx::Color>> cmdcolor;
 Replxx::completions_t hook_completion(std::string const& context, int& contextLen);
 Replxx::hints_t hook_hint(std::string const& context, int& contextLen, Replxx::Color& color);
 void hook_color(std::string const& context, Replxx::colors_t& colors);
-
-void _stdcall AddCompletion(int level, string cmd);
-int _stdcall DeleteCompletion(int level, string cmd);
 
 extern vector<HeliumCommandQueue> cmdqueuelist;
 
