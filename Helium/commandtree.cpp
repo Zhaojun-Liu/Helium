@@ -15,9 +15,11 @@ int _stdcall RegisterCommand(tree<HeliumCommandRegisterInstance>::iterator root,
 	return 0;
 }
 int _stdcall DeleteCommand(tree<HeliumCommandRegisterInstance>::iterator root) {
-	commandtree.erase_children(root);
-	commandtree.erase(root);
-	return 0;
+	if (commandtree.is_valid(root)) {
+		commandtree.erase(root);
+		return 0;
+	}
+	return -1;
 }
 int _stdcall SetupBuiltinCommand() {
 	return 0;
