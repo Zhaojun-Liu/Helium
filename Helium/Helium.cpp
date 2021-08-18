@@ -18,6 +18,7 @@
 #include"config.h"
 #include"minecraftserver.h"
 #include"extension.h"
+#include"permissions.h"
 
 #include<spdlog/spdlog.h>
 #define REPLXX_STATIC
@@ -41,7 +42,7 @@ int  _stdcall ProcessServerOutput(MinecraftServerInstance*, string, HANDLE, HAND
 */
 
 #define PROJECT_NAME_STR "Helium"
-#define PROJECT_VER_STR "0.4.7"
+#define PROJECT_VER_STR "0.4.8"
 #define PROJECT_DEVSTAT "Pre-Alpha"
 #define pass continue;
 #pragma endregion
@@ -161,6 +162,17 @@ int _stdcall main(int argc,char** argv)
         print("Failed to read config");
         return -1;
     }
+
+    if (auto ret = ReadServerFile(); ret != 0) {
+        print("Failed to read config");
+        return -1;
+    }
+
+    if (auto ret = ReadPermissionFile(); ret != 0) {
+        print("Failed to read config");
+        return -1;
+    }
+
 #undef ins
     for (auto ins = serverlist.begin(); ins < serverlist.end(); ins++) {
         int ret;
