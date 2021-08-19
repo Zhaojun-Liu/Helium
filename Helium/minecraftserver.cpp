@@ -564,7 +564,7 @@ int _stdcall SaveServerFile() {
     auto root = doc.NewElement("HeliumServerConfig");
 
     if (root == NULL) {
-        spdlog::error("Cannot create root element for server.xml.");
+        spdlog::error("Failed to create root element for server.xml.");
         return -1;
     }
 
@@ -642,7 +642,7 @@ int _stdcall SaveServerFile() {
 
     auto error = doc.SaveFile(SERVER_FILENAME);
     if (error != tinyxml2::XMLError::XML_SUCCESS) {
-        spdlog::error("Cannot save server.xml.");
+        spdlog::error("Failed to save server.xml.");
         return -1;
     }
 
@@ -656,85 +656,30 @@ int _stdcall CreateServerFile() {
     auto root = doc.NewElement("HeliumServerConfig");
 
     if (root == NULL) {
-        spdlog::error("Cannot create root element for server.xml.");
+        spdlog::error("Failed to create root element for server.xml.");
         return -1;
     }
 
-    for (vector<MinecraftServerInstance>::iterator it = serverlist.begin(); it < serverlist.end(); it++) {
-        tinyxml2::XMLElement* newelem = doc.NewElement("MinecraftServer");
-        string temp;
-        switch (it->GetServerType())
-        {
-        [[likely]] case SERVER_TYPE_VANILLA:
-            temp = "vanilla";
-            break;
-        [[likely]] case SERVER_TYPE_FORGE:
-            temp = "forge";
-            break;
-        [[likely]] case SERVER_TYPE_BUKKIT:
-            temp = "bukkit";
-            break;
-        [[likely]] case SERVER_TYPE_BUKKIT14:
-            temp = "bukkit14";
-            break;
-        [[likely]] case SERVER_TYPE_BUNGEECORD:
-            temp = "bungeecord";
-            break;
-        [[likely]] case SERVER_TYPE_WATERFALL:
-            temp = "waterfall";
-            break;
-        [[likely]] case SERVER_TYPE_CAT:
-            temp = "cat";
-            break;
-        [[likely]] case SERVER_TYPE_BETA18:
-            temp = "beta18";
-            break;
-        [[unlikely]] default:
-            temp = "undef";
-            break;
-        }
-        newelem->SetAttribute("type", temp.c_str());
+    tinyxml2::XMLElement* newelem = doc.NewElement("MinecraftServer");
+    
+    newelem->SetAttribute("type", "vanilla");
+    newelem->SetAttribute("startuptype", "jar");
+    newelem->SetAttribute("autostart", "false");
+    newelem->SetAttribute("outputvisibility", "false");
 
-        temp.clear();
-        if (it->GetStartupType() == STARTUP_TYPE_JAR) temp = "jar";
-        else temp = "bat";
-        newelem->SetAttribute("startuptype", temp.c_str());
+    tinyxml2::XMLElement* newchild = newelem->InsertNewChildElement("ServerName");
+    newchild = newelem->InsertNewChildElement("ServerDirectory");
+    newchild = newelem->InsertNewChildElement("JVMDirectory");
+    newchild = newelem->InsertNewChildElement("JVMOption");
+    newchild = newelem->InsertNewChildElement("ServerFileName");
+    newchild = newelem->InsertNewChildElement("MaxMemory");
+    newchild = newelem->InsertNewChildElement("MinMemory");
 
-        temp.clear();
-        if (it->GetAutoStart()) temp = "true";
-        else temp = "false";
-        newelem->SetAttribute("autostart", temp.c_str());
-
-        temp.clear();
-        if (it->GetVisibility()) temp = "true";
-        else temp = "false";
-        newelem->SetAttribute("outputvisibility", temp.c_str());
-
-        tinyxml2::XMLElement* newchild = newelem->InsertNewChildElement("ServerName");
-        newchild->SetText(it->GetServerName().c_str());
-
-        newchild = newelem->InsertNewChildElement("ServerDirectory");
-        newchild->SetText(it->GetServerDirectory().c_str());
-
-        newchild = newelem->InsertNewChildElement("JVMDirectory");
-        newchild->SetText(it->GetJVMDirectory().c_str());
-
-        newchild = newelem->InsertNewChildElement("JVMOption");
-        newchild->SetText(it->GetJVMOption().c_str());
-
-        newchild = newelem->InsertNewChildElement("ServerFileName");
-        newchild->SetText(it->GetServerFileName().c_str());
-
-        newchild = newelem->InsertNewChildElement("MaxMemory");
-        newchild->SetText(it->GetMaxmem().c_str());
-
-        newchild = newelem->InsertNewChildElement("MinMemory");
-        newchild->SetText(it->GetMinmem().c_str());
-    }
+    root->InsertEndChild(newelem);
 
     auto error = doc.SaveFile(SERVER_FILENAME);
     if (error != tinyxml2::XMLError::XML_SUCCESS) {
-        spdlog::error("Cannot save server.xml.");
+        spdlog::error("Failed to save server.xml.");
         return -1;
     }
 

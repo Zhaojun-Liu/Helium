@@ -10,19 +10,19 @@ int _stdcall ReadPermissionFile() {
 	PermissionNamespace tempns;
 	auto lastxmlerr = permdoc.LoadFile(PERMISSION_FILENAME);
 	if (lastxmlerr != tinyxml2::XMLError::XML_SUCCESS) {
-		spdlog::error("Cannot read permission file, using default permission level.");
+		spdlog::error("Failed to read permission file, using default permission level.");
 		return -1;
 	}
 
 	auto root = permdoc.RootElement();
 	if (root == NULL) {
-		spdlog::error("Cannot get the root element of the permission file, using default permission level");
+		spdlog::error("Failed to get the root element of the permission file, using default permission level");
 		return -1;
 	}
 
 	auto permns = root->FirstChildElement("PermissionNamespace");
 	if(permns == NULL) {
-		spdlog::error("Error reading the permission namespace element, using default permission level");
+		spdlog::error("Failed to read the permission namespace element, using default permission level");
 		return -1;
 	}
 
@@ -42,7 +42,7 @@ int _stdcall ReadPermissionFile() {
 			}
 		}
 		else {
-			spdlog::error("Error reading the \"server\" attribute,  using default permission level");
+			spdlog::error("Failed to read the \"server\" attribute,  using default permission level");
 		}
 
 		attr = const_cast<tinyxml2::XMLAttribute*>(permns->FindAttribute("default"));
@@ -57,7 +57,7 @@ int _stdcall ReadPermissionFile() {
 			if (tempstr == permdescstr[PERMISSION_LEVEL_HELIUMOWNER]) tempns.defaultpermission = PERMISSION_LEVEL_HELIUMOWNER;
 		}
 		else {
-			spdlog::error("Error reading the \"server\" attribute,  using default permission level");
+			spdlog::error("Failed to read the \"server\" attribute,  using default permission level");
 		}
 		
 		tinyxml2::XMLElement* permlevel = permns->FirstChildElement("HeliumOwner");
@@ -262,17 +262,14 @@ int _stdcall CreatePermissionFile() {
 	auto root = doc.NewElement("HeliumPermission");
 	doc.InsertEndChild(root);
 
-	for (auto perm : permissions) {
-		tinyxml2::XMLElement* ns;
+	tinyxml2::XMLElement* ns;
+	ns = doc.NewElement("PermissionNamespace");
+	ns->SetAttribute("server", "");
+	root->InsertEndChild(ns);
 
-		for (auto& server : serverlist) {
-			GUID guid;
-			server.GetServerGUID(&guid);
-			if (perm.serverguid == guid) {
-				ns = doc.NewElement(server.GetServerName().c_str());
-				
-			}
-		}
+	if (doc.SaveFile(PERMISSION_FILENAME) != tinyxml2::XMLError::XML_SUCCESS) {
+		spdlog::error("Failed to create permission.xml.");
+		return -1;
 	}
 
 	return 0;

@@ -63,7 +63,7 @@ Replxx rx;
 #pragma endregion
 
 #pragma region ServerFunc
-int StartInfoThread(MinecraftServerInstance *lpIns) {
+int _stdcall StartInfoThread(MinecraftServerInstance *lpIns) {
     thread tempthread(ProcessServerOutput, lpIns, lpIns->GetServerName(), lpIns->GetRDInfo().hStdOutRead, lpIns->GetThreadHandle());
     tempthread.detach();
     this_thread::yield();
@@ -141,35 +141,33 @@ int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servernam
 
 int _stdcall main(int argc,char** argv)
 {
+    ostringstream str;
+
     SetConsoleTitleA(PROJECT_NAME_STR);
 
     pns.append(" ").append(PROJECT_VER_STR).append(" ").append(PROJECT_DEVSTAT);
-    cout << pns << endl;
-    spdlog::info("Welcome to spdlog!");
-    spdlog::error("Some error message with arg: {}", 1);
-
-    spdlog::warn("Easy padding in numbers like {:08d}", 12);
-    spdlog::critical("Support for int: {0:d};  hex: {0:x};  oct: {0:o}; bin: {0:b}", 42);
-    spdlog::info("Support for floats {:03.2f}", 1.23456);
-    spdlog::info("Positional args are {1} {0}..", "too", "supported");
-    spdlog::info("{:<30}", "left aligned");
+    spdlog::info(pns);
 
     spdlog::set_level(spdlog::level::debug); // Set global log level to debug
-    spdlog::debug("This message should be displayed..");
     
 
     if (auto ret = Config(); ret != 0) {
-        print("Failed to read config");
+        spdlog::critical("Failed to read config,exiting...");
+        system("pause");
         return -1;
     }
 
     if (auto ret = ReadServerFile(); ret != 0) {
-        print("Failed to read config");
+        CreateServerFile();
+        spdlog::critical("Failed to read global server config,exiting...");
+        system("pause");
         return -1;
     }
 
     if (auto ret = ReadPermissionFile(); ret != 0) {
-        print("Failed to read config");
+        CreatePermissionFile();
+        spdlog::critical("Failed to read permission file,exiting...");
+        system("pause");
         return -1;
     }
 
@@ -177,16 +175,22 @@ int _stdcall main(int argc,char** argv)
     for (auto ins = serverlist.begin(); ins < serverlist.end(); ins++) {
         int ret;
         if (ins->GetAutoStart()) {
-            cout << "Starting Minecraft Server : " << ins->GetServerName() << endl;
+            str << "Starting Minecraft server : " << ins->GetServerName();
+            spdlog::info(str.str());
+            str.clear();
             ret = ins->StartServer();
-            cout << "Started with return code : " << ret << endl;
+            str << "Started with return code : " << ret << endl;
+            spdlog::info(str.str());
+            str.clear();
             StartInfoThread(&(*ins));
         }
         else {
             continue;
         }
         if (ret != 0) {
-            cout << "Error starting Minecraft server : " << ins->GetServerName() << endl;
+            str << "Error starting Minecraft server : " << ins->GetServerName() << endl;
+            spdlog::error(str.str());
+            str.clear();
         }
     }
     
@@ -235,7 +239,6 @@ int _stdcall main(int argc,char** argv)
     TCHAR  infoBuf[64];
     DWORD  bufCharCount = 64;
     GetComputerNameA(infoBuf, &bufCharCount);
-    ostringstream str;
     str << "[Helium@" << infoBuf << "] #";
 
     while (true) {
@@ -246,6 +249,18 @@ int _stdcall main(int argc,char** argv)
 
     rx.history_sync("heliumcommandhistory.txt");
     rx.history_save("heliumcommandhistory.txt");
+
+    if (auto ret = SaveConfigFile(); ret != 0) {
+        spdlog::error("Failed to save the config file, your changes may not be saved.");
+    }
+
+    if (auto ret = SaveServerFile(); ret != 0) {
+        spdlog::error("Failed to save the global server config file, your changes may not be saved.");
+    }
+
+    if (auto ret = SavePermissionFile(); ret != 0) {
+        spdlog::error("Failed to save the permission file, your changes may not be saved.");
+    }
 
     system("pause");
 }
