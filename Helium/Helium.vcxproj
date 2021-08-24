@@ -173,6 +173,7 @@
     <ClCompile Include="extension.cpp" />
     <ClCompile Include="permissions.cpp" />
     <ClCompile Include="commandtree.cpp" />
+    <ClCompile Include="commandcallback.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="logger.h" />
@@ -193,6 +194,7 @@
     <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="commands.h" />
     <ClInclude Include="parse.h" />
+    <ClInclude Include="tree.hh" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="xmlutils.h" />
@@ -200,6 +202,7 @@
     <ClInclude Include="extension.h" />
     <ClInclude Include="permissions.h" />
     <ClInclude Include="commandtree.h" />
+    <ClInclude Include="commandcallback.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="HeliumConfig.xml" />

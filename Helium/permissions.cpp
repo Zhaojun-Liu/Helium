@@ -5,23 +5,24 @@ const char* permdescstr[] = {"Guest", "User", "Admin", "ServerOwner", "HeliumOwn
 
 [[nodiscard("Ignoring return value of ReadPermissionFile()")]]
 int _stdcall ReadPermissionFile() {
+	spdlog::debug("Enter ReadPermissionFile().");
 	tinyxml2::XMLDocument permdoc;
 	PermissionNamespace tempns;
 	auto lastxmlerr = permdoc.LoadFile(PERMISSION_FILENAME);
 	if (lastxmlerr != tinyxml2::XMLError::XML_SUCCESS) {
-		spdlog::error("Cannot read permission file, using default permission level.");
+		spdlog::error("Failed to read permission file, using default permission level.");
 		return -1;
 	}
 
 	auto root = permdoc.RootElement();
 	if (root == NULL) {
-		spdlog::error("Cannot get the root element of the permission file, using default permission level");
+		spdlog::error("Failed to get the root element of the permission file, using default permission level");
 		return -1;
 	}
 
 	auto permns = root->FirstChildElement("PermissionNamespace");
 	if(permns == NULL) {
-		spdlog::error("Error reading the permission namespace element, using default permission level");
+		spdlog::error("Failed to read the permission namespace element, using default permission level");
 		return -1;
 	}
 
@@ -41,13 +42,14 @@ int _stdcall ReadPermissionFile() {
 			}
 		}
 		else {
-			spdlog::error("Error reading the \"server\" attribute,  using default permission level");
+			spdlog::error("Failed to read the \"server\" attribute,  using default permission level");
 		}
 
 		attr = const_cast<tinyxml2::XMLAttribute*>(permns->FindAttribute("default"));
 		if (attr->Value()) {
 			tempns.defaultpermission = PERMISSION_LEVEL_GUEST;
 			string tempstr = attr->Value();
+			spdlog::debug(attr->Value());
 			if (tempstr == permdescstr[PERMISSION_LEVEL_GUEST]) tempns.defaultpermission = PERMISSION_LEVEL_GUEST;
 			if (tempstr == permdescstr[PERMISSION_LEVEL_USER]) tempns.defaultpermission = PERMISSION_LEVEL_USER;
 			if (tempstr == permdescstr[PERMISSION_LEVEL_ADMIN]) tempns.defaultpermission = PERMISSION_LEVEL_ADMIN;
@@ -55,16 +57,34 @@ int _stdcall ReadPermissionFile() {
 			if (tempstr == permdescstr[PERMISSION_LEVEL_HELIUMOWNER]) tempns.defaultpermission = PERMISSION_LEVEL_HELIUMOWNER;
 		}
 		else {
-			spdlog::error("Error reading the \"server\" attribute,  using default permission level");
+			spdlog::error("Failed to read the \"server\" attribute,  using default permission level");
 		}
 		
-		tinyxml2::XMLElement* permlevel = permns->FirstChildElement("ServerOwner");
+		tinyxml2::XMLElement* permlevel = permns->FirstChildElement("HeliumOwner");
 		if (permlevel != NULL) {
 			auto player = permlevel->FirstChildElement("Player");
 			if (player != NULL) {
 				while (true) {
 					if (player->GetText()) {
 						tempns.permissions.push_back(make_pair<string, int>(player->GetText(), PERMISSION_LEVEL_SERVEROWNER));
+						spdlog::debug(player->GetText());
+					}
+
+					player = permlevel->NextSiblingElement("Player");
+
+					if (player == NULL) break;
+				}
+			}
+		}
+
+		permlevel = permns->FirstChildElement("ServerOwner");
+		if (permlevel != NULL) {
+			auto player = permlevel->FirstChildElement("Player");
+			if (player != NULL) {
+				while (true) {
+					if (player->GetText()) {
+						tempns.permissions.push_back(make_pair<string, int>(player->GetText(), PERMISSION_LEVEL_SERVEROWNER));
+						spdlog::debug(player->GetText());
 					}
 
 					player = permlevel->NextSiblingElement("Player");
@@ -81,6 +101,7 @@ int _stdcall ReadPermissionFile() {
 				while (true) {
 					if (player->GetText()) {
 						tempns.permissions.push_back(make_pair<string, int>(player->GetText(), PERMISSION_LEVEL_ADMIN));
+						spdlog::debug(player->GetText());
 					}
 
 					player = permlevel->NextSiblingElement("Player");
@@ -97,6 +118,7 @@ int _stdcall ReadPermissionFile() {
 				while (true) {
 					if (player->GetText()) {
 						tempns.permissions.push_back(make_pair<string, int>(player->GetText(), PERMISSION_LEVEL_USER));
+						spdlog::debug(player->GetText());
 					}
 
 					player = permlevel->NextSiblingElement("Player");
@@ -106,13 +128,14 @@ int _stdcall ReadPermissionFile() {
 			}
 		}
 
-		permlevel = permns->FirstChildElement("GUEST");
+		permlevel = permns->FirstChildElement("Guest");
 		if (permlevel != NULL) {
 			auto player = permlevel->FirstChildElement("Player");
 			if (player != NULL) {
 				while (true) {
 					if (player->GetText()) {
 						tempns.permissions.push_back(make_pair<string, int>(player->GetText(), PERMISSION_LEVEL_GUEST));
+						spdlog::debug(player->GetText());
 					}
 
 					player = permlevel->NextSiblingElement("Player");
@@ -124,7 +147,7 @@ int _stdcall ReadPermissionFile() {
 
 		permissions.push_back(tempns);
 
-		permns = root->NextSiblingElement("PermissionNamespace");
+		permns = permns->NextSiblingElement("PermissionNamespace");
 		if (permns == NULL) {
 			break;
 		}
@@ -239,17 +262,14 @@ int _stdcall CreatePermissionFile() {
 	auto root = doc.NewElement("HeliumPermission");
 	doc.InsertEndChild(root);
 
-	for (auto perm : permissions) {
-		tinyxml2::XMLElement* ns;
+	tinyxml2::XMLElement* ns;
+	ns = doc.NewElement("PermissionNamespace");
+	ns->SetAttribute("server", "");
+	root->InsertEndChild(ns);
 
-		for (auto& server : serverlist) {
-			GUID guid;
-			server.GetServerGUID(&guid);
-			if (perm.serverguid == guid) {
-				ns = doc.NewElement(server.GetServerName().c_str());
-				
-			}
-		}
+	if (doc.SaveFile(PERMISSION_FILENAME) != tinyxml2::XMLError::XML_SUCCESS) {
+		spdlog::error("Failed to create permission.xml.");
+		return -1;
 	}
 
 	return 0;
