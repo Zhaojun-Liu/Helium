@@ -59,9 +59,303 @@ Logger logger;
 map<string, HeliumExtension> extensions;
 string pns = PROJECT_NAME_STR;
 Replxx rx;
+vector<MinecraftServerInstance> serverlist;
+
 #pragma endregion
 
 #pragma region ServerFunc
+
+int _stdcall ReadServerFile() {
+    tinyxml2::XMLDocument doc;
+    auto error = doc.LoadFile(SERVER_FILENAME);
+    if (error != tinyxml2::XMLError::XML_SUCCESS) {
+        spdlog::critical("Cannot read server.xml");
+        return -1;
+    }
+
+    tinyxml2::XMLElement* root = doc.RootElement();
+    tinyxml2::XMLElement* servernode;
+    tinyxml2::XMLElement* servernodechild;
+    tinyxml2::XMLAttribute* attr;
+
+    string str;
+    bool tempbool;
+
+    servernode = root->FirstChildElement("MinecraftServer");
+    servernodechild = servernode->FirstChildElement("ServerName");
+
+    if (servernode == NULL) {
+        spdlog::critical("Failed to get the root element of the server.xml.");
+        return -1;
+    }
+
+    while (servernode) {
+        MinecraftServerInstance tempins;
+        ZeroMemory(&tempins, sizeof(tempins));
+
+        attr = const_cast<tinyxml2::XMLAttribute*>(servernode->FindAttribute("type"));
+        if (attr)
+            if (attr->Value()) {
+                str = attr->Value();
+                if (str == "vanilla")       tempins.SetServerType(SERVER_TYPE_VANILLA);
+                if (str == "forge")         tempins.SetServerType(SERVER_TYPE_FORGE);
+                if (str == "bukkit")        tempins.SetServerType(SERVER_TYPE_BUKKIT);
+                if (str == "bukkit14")      tempins.SetServerType(SERVER_TYPE_BUKKIT14);
+                if (str == "bungeecord")    tempins.SetServerType(SERVER_TYPE_BUNGEECORD);
+                if (str == "waterfall")     tempins.SetServerType(SERVER_TYPE_WATERFALL);
+                if (str == "cat")           tempins.SetServerType(SERVER_TYPE_CAT);
+                if (str == "beta18")        tempins.SetServerType(SERVER_TYPE_BETA18);
+            }
+
+        attr = const_cast<tinyxml2::XMLAttribute*>(servernode->FindAttribute("startuptype"));
+        if (attr)
+            if (attr->Value()) {
+                str = attr->Value();
+                if (str == "jar")           tempins.SetStartupType(STARTUP_TYPE_JAR);
+                if (str == "bat")           tempins.SetStartupType(STARTUP_TYPE_BAT);
+            }
+
+        attr = const_cast<tinyxml2::XMLAttribute*>(servernode->FindAttribute("autostart"));
+        istringstream(attr->Value()) >> boolalpha >> tempbool;
+        tempins.SetAutoStart(tempbool);
+
+        attr = const_cast<tinyxml2::XMLAttribute*>(servernode->FindAttribute("outputvisibility"));
+        istringstream(attr->Value()) >> boolalpha >> tempbool;
+        tempins.SetVisibility(tempbool);
+
+        servernodechild = servernode->FirstChildElement("ServerName");
+        if (servernodechild)
+            if (servernodechild->GetText()) {
+                tempins.SetServerName(servernodechild->GetText());
+            }
+
+        servernodechild = servernode->FirstChildElement("ServerDirectory");
+        if (servernodechild)
+            if (servernodechild->GetText()) {
+                tempins.SetServerDirectory(servernodechild->GetText());
+            }
+
+        servernodechild = servernode->FirstChildElement("JVMDirectory");
+        if (servernodechild)
+            if (servernodechild->GetText()) {
+                tempins.SetJVMDirectory(servernodechild->GetText());
+            }
+
+        servernodechild = servernode->FirstChildElement("JVMOption");
+        if (servernodechild)
+            if (servernodechild->GetText()) {
+                tempins.SetJVMOption(servernodechild->GetText());
+            }
+
+        servernodechild = servernode->FirstChildElement("ServerFileName");
+        if (servernodechild)
+            if (servernodechild->GetText()) {
+                tempins.SetServerFileName(servernodechild->GetText());
+            }
+
+        servernodechild = servernode->FirstChildElement("MaxMemory");
+        if (servernodechild)
+            if (servernodechild->GetText()) {
+                tempins.SetMaxmem(servernodechild->GetText());
+            }
+
+        servernodechild = servernode->FirstChildElement("MinMemory");
+        if (servernodechild)
+            if (servernodechild->GetText()) {
+                tempins.SetMinmem(servernodechild->GetText());
+            }
+
+
+        serverlist.push_back(move(tempins));
+        servernode = servernode->NextSiblingElement("MinecraftServer");
+    }
+
+    return 0;
+}
+int _stdcall SaveServerFile() {
+    tinyxml2::XMLDocument doc;
+    auto dec = doc.NewDeclaration("<?xml version=\"1.0\"?>");
+    doc.InsertEndChild(dec);
+
+    auto root = doc.NewElement("HeliumServerConfig");
+
+    if (root == NULL) {
+        spdlog::error("Cannot create root element for server.xml.");
+        return -1;
+    }
+
+    for (vector<MinecraftServerInstance>::iterator it = serverlist.begin(); it < serverlist.end(); it++) {
+        tinyxml2::XMLElement* newelem = doc.NewElement("MinecraftServer");
+        string temp;
+        switch (it->GetServerType())
+        {
+        [[likely]] case SERVER_TYPE_VANILLA:
+            temp = "vanilla";
+            break;
+        [[likely]] case SERVER_TYPE_FORGE:
+            temp = "forge";
+            break;
+        [[likely]] case SERVER_TYPE_BUKKIT:
+            temp = "bukkit";
+            break;
+        [[likely]] case SERVER_TYPE_BUKKIT14:
+            temp = "bukkit14";
+            break;
+        [[likely]] case SERVER_TYPE_BUNGEECORD:
+            temp = "bungeecord";
+            break;
+        [[likely]] case SERVER_TYPE_WATERFALL:
+            temp = "waterfall";
+            break;
+        [[likely]] case SERVER_TYPE_CAT:
+            temp = "cat";
+            break;
+        [[likely]] case SERVER_TYPE_BETA18:
+            temp = "beta18";
+            break;
+        [[unlikely]] default:
+            temp = "undef";
+            break;
+        }
+        newelem->SetAttribute("type", temp.c_str());
+
+        temp.clear();
+        if (it->GetStartupType() == STARTUP_TYPE_JAR) temp = "jar";
+        else temp = "bat";
+        newelem->SetAttribute("startuptype", temp.c_str());
+
+        temp.clear();
+        if (it->GetAutoStart()) temp = "true";
+        else temp = "false";
+        newelem->SetAttribute("autostart", temp.c_str());
+
+        temp.clear();
+        if (it->GetVisibility()) temp = "true";
+        else temp = "false";
+        newelem->SetAttribute("outputvisibility", temp.c_str());
+
+        tinyxml2::XMLElement* newchild = newelem->InsertNewChildElement("ServerName");
+        newchild->SetText(it->GetServerName().c_str());
+
+        newchild = newelem->InsertNewChildElement("ServerDirectory");
+        newchild->SetText(it->GetServerDirectory().c_str());
+
+        newchild = newelem->InsertNewChildElement("JVMDirectory");
+        newchild->SetText(it->GetJVMDirectory().c_str());
+
+        newchild = newelem->InsertNewChildElement("JVMOption");
+        newchild->SetText(it->GetJVMOption().c_str());
+
+        newchild = newelem->InsertNewChildElement("ServerFileName");
+        newchild->SetText(it->GetServerFileName().c_str());
+
+        newchild = newelem->InsertNewChildElement("MaxMemory");
+        newchild->SetText(it->GetMaxmem().c_str());
+
+        newchild = newelem->InsertNewChildElement("MinMemory");
+        newchild->SetText(it->GetMinmem().c_str());
+    }
+
+    auto error = doc.SaveFile(SERVER_FILENAME);
+    if (error != tinyxml2::XMLError::XML_SUCCESS) {
+        spdlog::error("Cannot save server.xml.");
+        return -1;
+    }
+
+    return 0;
+}
+int _stdcall CreateServerFile() {
+    tinyxml2::XMLDocument doc;
+    auto dec = doc.NewDeclaration("<?xml version=\"1.0\"?>");
+    doc.InsertEndChild(dec);
+
+    auto root = doc.NewElement("HeliumServerConfig");
+
+    if (root == NULL) {
+        spdlog::error("Cannot create root element for server.xml.");
+        return -1;
+    }
+
+    for (vector<MinecraftServerInstance>::iterator it = serverlist.begin(); it < serverlist.end(); it++) {
+        tinyxml2::XMLElement* newelem = doc.NewElement("MinecraftServer");
+        string temp;
+        switch (it->GetServerType())
+        {
+        [[likely]] case SERVER_TYPE_VANILLA:
+            temp = "vanilla";
+            break;
+        [[likely]] case SERVER_TYPE_FORGE:
+            temp = "forge";
+            break;
+        [[likely]] case SERVER_TYPE_BUKKIT:
+            temp = "bukkit";
+            break;
+        [[likely]] case SERVER_TYPE_BUKKIT14:
+            temp = "bukkit14";
+            break;
+        [[likely]] case SERVER_TYPE_BUNGEECORD:
+            temp = "bungeecord";
+            break;
+        [[likely]] case SERVER_TYPE_WATERFALL:
+            temp = "waterfall";
+            break;
+        [[likely]] case SERVER_TYPE_CAT:
+            temp = "cat";
+            break;
+        [[likely]] case SERVER_TYPE_BETA18:
+            temp = "beta18";
+            break;
+        [[unlikely]] default:
+            temp = "undef";
+            break;
+        }
+        newelem->SetAttribute("type", temp.c_str());
+
+        temp.clear();
+        if (it->GetStartupType() == STARTUP_TYPE_JAR) temp = "jar";
+        else temp = "bat";
+        newelem->SetAttribute("startuptype", temp.c_str());
+
+        temp.clear();
+        if (it->GetAutoStart()) temp = "true";
+        else temp = "false";
+        newelem->SetAttribute("autostart", temp.c_str());
+
+        temp.clear();
+        if (it->GetVisibility()) temp = "true";
+        else temp = "false";
+        newelem->SetAttribute("outputvisibility", temp.c_str());
+
+        tinyxml2::XMLElement* newchild = newelem->InsertNewChildElement("ServerName");
+        newchild->SetText(it->GetServerName().c_str());
+
+        newchild = newelem->InsertNewChildElement("ServerDirectory");
+        newchild->SetText(it->GetServerDirectory().c_str());
+
+        newchild = newelem->InsertNewChildElement("JVMDirectory");
+        newchild->SetText(it->GetJVMDirectory().c_str());
+
+        newchild = newelem->InsertNewChildElement("JVMOption");
+        newchild->SetText(it->GetJVMOption().c_str());
+
+        newchild = newelem->InsertNewChildElement("ServerFileName");
+        newchild->SetText(it->GetServerFileName().c_str());
+
+        newchild = newelem->InsertNewChildElement("MaxMemory");
+        newchild->SetText(it->GetMaxmem().c_str());
+
+        newchild = newelem->InsertNewChildElement("MinMemory");
+        newchild->SetText(it->GetMinmem().c_str());
+    }
+
+    auto error = doc.SaveFile(SERVER_FILENAME);
+    if (error != tinyxml2::XMLError::XML_SUCCESS) {
+        spdlog::error("Cannot save server.xml.");
+        return -1;
+    }
+
+    return 0;
+}
 int StartInfoThread(MinecraftServerInstance *lpIns) {
     thread tempthread(ProcessServerOutput, lpIns, lpIns->GetServerName(), lpIns->GetRDInfo().hStdOutRead, lpIns->GetThreadHandle());
     tempthread.detach();
@@ -70,8 +364,6 @@ int StartInfoThread(MinecraftServerInstance *lpIns) {
     spdlog::debug("Output processing thread create successfully at 0x{}","awa");
     return lpIns->GerServerPid();
 }
-
-
 int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread, HANDLE hProc) {
     //cout << "Server started at PID : " << ptr->dwPid << endl;
     spdlog::debug("server started at PID:{}", ptr->GerServerPid());
@@ -124,7 +416,7 @@ int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servernam
         }
     }
 
-    GetExitCodeProcess(ptr->GetThreadHandle(), &dwCode);
+    
     spdlog::info("服务器{0}已退出，返回值{1:d}(0x{1:x})",servername, dwCode);
     cout << "Exiting ProcessServerOutput()" << dwCode << endl;
     ptr->SetServerReturnValue(dwCode);
@@ -144,18 +436,7 @@ int _stdcall main(int argc,char** argv)
 
     pns.append(" ").append(PROJECT_VER_STR).append(" ").append(PROJECT_DEVSTAT);
     cout << pns << endl;
-    spdlog::info("Welcome to spdlog!");
-    spdlog::error("Some error message with arg: {}", 1);
-
-    spdlog::warn("Easy padding in numbers like {:08d}", 12);
-    spdlog::critical("Support for int: {0:d};  hex: {0:x};  oct: {0:o}; bin: {0:b}", 42);
-    spdlog::info("Support for floats {:03.2f}", 1.23456);
-    spdlog::info("Positional args are {1} {0}..", "too", "supported");
-    spdlog::info("{:<30}", "left aligned");
-
-    spdlog::set_level(spdlog::level::debug); // Set global log level to debug
-    spdlog::debug("This message should be displayed..");
-    
+    spdlog::set_level(spdlog::level::debug); // Set global log level to debug   
 
     if (auto ret = Config(); ret != 0) {
         print("Failed to read config");
@@ -238,3 +519,5 @@ int _stdcall main(int argc,char** argv)
     system("pause");
 }
 #pragma endregion
+
+
