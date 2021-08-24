@@ -2,7 +2,6 @@
 
 CRITICAL_SECTION cs;
 static bool isinit = false;
-vector<MinecraftServerInstance> serverlist;
 
 MinecraftServerInstance::MinecraftServerInstance() {
     this->hProc = INVALID_HANDLE_VALUE;

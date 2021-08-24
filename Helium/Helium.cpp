@@ -61,6 +61,8 @@ Logger logger;
 map<string, HeliumExtension> extensions;
 string pns = PROJECT_NAME_STR;
 Replxx rx;
+vector<MinecraftServerInstance> serverlist;
+
 #pragma endregion
 
 #pragma region ServerFunc
@@ -72,8 +74,6 @@ int _stdcall StartInfoThread(MinecraftServerInstance *lpIns) {
     spdlog::debug("Output processing thread create successfully at 0x{}","awa");
     return lpIns->GerServerPid();
 }
-
-
 int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread, HANDLE hProc) {
     //cout << "Server started at PID : " << ptr->dwPid << endl;
     spdlog::debug("server started at PID:{}", ptr->GerServerPid());
@@ -126,7 +126,7 @@ int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servernam
         }
     }
 
-    GetExitCodeProcess(ptr->GetThreadHandle(), &dwCode);
+    
     spdlog::info("服务器{0}已退出，返回值{1:d}(0x{1:x})",servername, dwCode);
     cout << "Exiting ProcessServerOutput()" << dwCode << endl;
     ptr->SetServerReturnValue(dwCode);
@@ -271,3 +271,5 @@ int _stdcall main(int argc,char** argv)
     system("pause");
 }
 #pragma endregion
+
+

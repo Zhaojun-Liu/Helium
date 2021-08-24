@@ -157,10 +157,10 @@ public:
 };
 
 int _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread, HANDLE hproc);
-
+/*
 int _stdcall ReadServerFile();
 int _stdcall SaveServerFile();
 int _stdcall CreateServerFile();
-
-extern vector<MinecraftServerInstance> serverlist;
+*/
+//extern vector<MinecraftServerInstance> serverlist;
 #endif // !_H_MINECRAFTSERVER
