@@ -44,6 +44,7 @@ int  _stdcall ProcessServerOutput(MinecraftServerInstance*, string, HANDLE, HAND
 #define PROJECT_NAME_STR "Helium"
 #define PROJECT_VER_STR "0.4.8"
 #define PROJECT_DEVSTAT "Pre-Alpha"
+#define NOT_STABLE
 #define pass continue;
 #pragma endregion
 
@@ -147,6 +148,11 @@ int _stdcall main(int argc,char** argv)
 
     pns.append(" ").append(PROJECT_VER_STR).append(" ").append(PROJECT_DEVSTAT);
     spdlog::info(pns);
+
+#ifdef NOT_STABLE
+    spdlog::warn("This is a early version of Helium, don't use this in a productive environment.");
+#endif
+
 
     spdlog::set_level(spdlog::level::debug); // Set global log level to debug
     
