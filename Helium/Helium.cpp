@@ -42,7 +42,7 @@ int  _stdcall ProcessServerOutput(MinecraftServerInstance*, string, HANDLE, HAND
 */
 
 #define PROJECT_NAME_STR "Helium"
-#define PROJECT_VER_STR "0.4.8"
+#define PROJECT_VER_STR "0.5.0"
 #define PROJECT_DEVSTAT "Pre-Alpha"
 #define NOT_STABLE
 #define pass continue;

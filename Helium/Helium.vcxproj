@@ -150,6 +150,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="events.cpp" />
     <ClCompile Include="logger.cpp" />
     <ClCompile Include="replxx\conversion.cxx" />
     <ClCompile Include="replxx\ConvertUTF.cpp" />
@@ -203,6 +204,7 @@
     <ClInclude Include="permissions.h" />
     <ClInclude Include="commandtree.h" />
     <ClInclude Include="commandcallback.h" />
+    <ClInclude Include="events.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="HeliumConfig.xml" />

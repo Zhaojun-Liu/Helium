@@ -649,7 +649,7 @@ int _stdcall SaveServerFile() {
 }
 int _stdcall CreateServerFile() {
     tinyxml2::XMLDocument doc;
-    auto dec = doc.NewDeclaration("<?xml version=\"1.0\"?>");
+    auto dec = doc.NewDeclaration("xml version=\"1.0\"");
     doc.InsertEndChild(dec);
 
     auto root = doc.NewElement("HeliumServerConfig");
