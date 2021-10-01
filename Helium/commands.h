@@ -8,14 +8,18 @@
 using namespace std;
 //fully rewrited command module during the 72th national day xd
 class _BasicHeliumCommand;
-class ConstantString;
+class _CommandArgument;
+class _CommandEntry;
+class _CommandRoot;
+class CommandConstantString;
+class CommandPlaceHolder;
 class RequiredArgument;
 class OptionalArgument;
 class RequiredEntry;
 class OptionalEntry;
 
 class _BasicHeliumCommand {
-private:
+protected:
 	string commanddesc;
 	string commandstr;
 
@@ -26,16 +30,25 @@ private:
 	bool autocompenabled;
 };
 
-class _CommandArgument : _BasicHeliumCommand {
+class _CommandRoot : _BasicHeliumCommand {
 
+};
+
+class _CommandArgument : _BasicHeliumCommand {
+protected:
+	int argutype;
 };
 
 class _CommandEntry : _BasicHeliumCommand {
-private:
+protected:
 	bool hasargument;
 };
 
-class ConstantString : _BasicHeliumCommand {
+class CommandConstantString : _BasicHeliumCommand {
+
+};
+
+class CommandPlaceHolder : _BasicHeliumCommand {
 
 };
 
