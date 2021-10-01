@@ -164,7 +164,6 @@
     <ClCompile Include="replxx\wcwidth.cpp" />
     <ClCompile Include="replxx\windows.cxx" />
     <ClCompile Include="tinyxml2.cpp" />
-    <ClCompile Include="commands.cpp" />
     <ClCompile Include="Helium.cpp" />
     <ClCompile Include="parse.cpp" />
     <ClCompile Include="utils.cpp" />
@@ -173,8 +172,7 @@
     <ClCompile Include="minecraftserver.cpp" />
     <ClCompile Include="extension.cpp" />
     <ClCompile Include="permissions.cpp" />
-    <ClCompile Include="commandtree.cpp" />
-    <ClCompile Include="commandcallback.cpp" />
+    <ClCompile Include="commands.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="logger.h" />
@@ -193,7 +191,6 @@
     <ClInclude Include="replxx\util.hxx" />
     <ClInclude Include="replxx\windows.hxx" />
     <ClInclude Include="tinyxml2.h" />
-    <ClInclude Include="commands.h" />
     <ClInclude Include="parse.h" />
     <ClInclude Include="tree.hh" />
     <ClInclude Include="utils.h" />
@@ -202,9 +199,8 @@
     <ClInclude Include="minecraftserver.h" />
     <ClInclude Include="extension.h" />
     <ClInclude Include="permissions.h" />
-    <ClInclude Include="commandtree.h" />
-    <ClInclude Include="commandcallback.h" />
     <ClInclude Include="events.h" />
+    <ClInclude Include="commands.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="HeliumConfig.xml" />
