@@ -4,6 +4,7 @@
 #include<string>
 
 #include"tree.hh"
+#include"replxx/replxx.hxx"
 
 using namespace std;
 //fully rewrited command module during the 72th national day xd
@@ -15,8 +16,14 @@ class CommandConstantString;
 class CommandPlaceHolder;
 class RequiredArgument;
 class OptionalArgument;
-class RequiredEntry;
-class OptionalEntry;
+class CommandEntry;
+
+class _BasicHeliumCommandQueue;
+class ShellCommandQueue;
+class RuntimeCommandQueue;
+class SaveableCommandQueue;
+
+extern tree<_BasicHeliumCommand> HeliumCommandTree;
 
 class _BasicHeliumCommand {
 protected:
@@ -29,41 +36,44 @@ protected:
 	bool hintenabled;
 	bool autocompenabled;
 };
-
-class _CommandRoot : _BasicHeliumCommand {
+class _CommandRoot : virtual public _BasicHeliumCommand {
 
 };
-
-class _CommandArgument : _BasicHeliumCommand {
+class _CommandArgument : virtual public _BasicHeliumCommand {
 protected:
 	int argutype;
 };
-
-class _CommandEntry : _BasicHeliumCommand {
+class _CommandEntry : virtual public _BasicHeliumCommand {
 protected:
 	bool hasargument;
 };
 
-class CommandConstantString : _BasicHeliumCommand {
+class CommandConstantString : public _BasicHeliumCommand {
+
+};
+class CommandPlaceHolder : public _BasicHeliumCommand {
+
+};
+class RequiredArgument : public _CommandArgument {
+
+};
+class OptionalArgument : public _CommandArgument {
+
+};
+class CommandEntry : public _CommandEntry {
 
 };
 
-class CommandPlaceHolder : _BasicHeliumCommand {
+
+class _BasicHeliumCommandQueue {
 
 };
-
-class RequiredArgument : _CommandArgument {
-
-};
-
-class OptionalArgument : _CommandArgument {
+class ShellCommandQueue : public _BasicHeliumCommandQueue {
 
 };
-
-class RequiredEntry : _CommandEntry {
+class RuntimeCommandQueue : public _BasicHeliumCommandQueue {
 
 };
-
-class OptionalEntry : _CommandEntry {
+class SaveableCommandQueue : public _BasicHeliumCommandQueue {
 
 };
