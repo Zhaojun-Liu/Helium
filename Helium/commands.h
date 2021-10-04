@@ -1,14 +1,19 @@
 #pragma once
 
+#ifndef _H_COMMANDS
+#define _H_COMMANDS
+
 #include<map>
 #include<string>
 
 #include"tree.hh"
+#define REPLXX_STATIC
 #include"replxx/replxx.hxx"
 
 using namespace std;
+using namespace replxx;
 //fully rewrited command module during the 72th national day xd
-class _BasicHeliumCommand;	//纯抽象类
+class _BasicHeliumCommand;
 
 class _CommandArgument;
 class _CommandEntry;
@@ -27,7 +32,7 @@ class MultiFixedCommandBind;
 class MultiVariableCommandBind;
 
 
-class _BasicHeliumCommandQueue;	//纯抽象类
+class _BasicHeliumCommandQueue;
 
 class ShellCommandQueue;
 class RuntimeCommandQueue;
@@ -45,7 +50,7 @@ protected:
 	bool hintenabled;
 	bool autocompenabled;
 public:
-	virtual _BasicHeliumCommand* GetCommandClassType() = 0;
+	virtual _BasicHeliumCommand* GetCommandClassType();
 };
 class _CommandRoot : virtual public _BasicHeliumCommand {
 public:
@@ -123,7 +128,7 @@ protected:
 
 	vector<string> originalcommands;
 public:
-	virtual _BasicHeliumCommandQueue* GetCommandQueueClassType() = 0;
+	virtual _BasicHeliumCommandQueue* GetCommandQueueClassType();
 };
 class ShellCommandQueue : virtual public _BasicHeliumCommandQueue {
 public:
@@ -137,3 +142,8 @@ class SaveableCommandQueue : virtual public _BasicHeliumCommandQueue {
 public:
 	virtual SaveableCommandQueue* GetCommandQueueClassType();
 };
+
+Replxx::completions_t hook_completion(std::string const& context, int& contextLen);
+Replxx::hints_t hook_hint(std::string const& context, int& contextLen, Replxx::Color& color);
+void hook_color(std::string const& context, Replxx::colors_t& colors);
+#endif // !_H_COMMANDS

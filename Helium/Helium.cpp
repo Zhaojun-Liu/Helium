@@ -2,7 +2,6 @@
 //不要随意调换include顺序 awa
 
 #define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
-#define _CRT_SECURE_NO_WARNINGS
 
 #include<iostream>
 #include<Windows.h>

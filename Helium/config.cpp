@@ -222,7 +222,6 @@ int _stdcall ReadConfigFile() {
     tinyxml2::XMLDocument config;
     tinyxml2::XMLElement* pRootEle;
     
-    bool tempbool;
     stringstream sstr;
     string str;
 
