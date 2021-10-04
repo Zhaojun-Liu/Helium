@@ -16,8 +16,15 @@ typedef int (_stdcall* HeliumEventCallbackType)(int events);
 class HeliumEvent;
 class HeliumEventInstance;
 
-deque<HeliumEventInstance> eventsqueue;
-map<int, HeliumEvent> eventmap;
+extern deque<HeliumEventInstance> eventsqueue;
+extern map<int, HeliumEvent> eventmap;
+
+int RegisterEvent(HeliumEvent* event, int eventnum);
+int DeleteEvent(int eventnum);
+int GetEvent(int eventnum, HeliumEvent* event);
+int GetEventIterator(int eventnum, map<int, HeliumEvent>::iterator* outit);
+
+int CreateEvent(int eventnum, int quantity = 1);
 
 class HeliumEvent {
 public:
