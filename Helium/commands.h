@@ -9,16 +9,26 @@
 using namespace std;
 //fully rewrited command module during the 72th national day xd
 class _BasicHeliumCommand;	//纯抽象类
+
 class _CommandArgument;
 class _CommandEntry;
 class _CommandRoot;
+class _CommandBinding;
+
 class CommandConstantString;
 class CommandPlaceHolder;
 class RequiredArgument;
 class OptionalArgument;
 class CommandEntry;
 
+class SingleFixedCommandBind;
+class SingleVariableCommandBind;
+class MultiFixedCommandBind;
+class MultiVariableCommandBind;
+
+
 class _BasicHeliumCommandQueue;	//纯抽象类
+
 class ShellCommandQueue;
 class RuntimeCommandQueue;
 class SaveableCommandQueue;
@@ -53,30 +63,55 @@ public:
 };
 class _CommandEntry : virtual public _BasicHeliumCommand {
 protected:
+	int exectype;
+	union execinfo {
+
+	};
+
 	bool hasargument;
 public:
 	virtual _CommandEntry* GetCommandClassType();
 };
+class _CommandBinding : virtual public _BasicHeliumCommand {
+public:
+	virtual _CommandBinding* GetCommandClassType();
+};
 
-class CommandConstantString : public _BasicHeliumCommand {
+class CommandConstantString : virtual public _BasicHeliumCommand {
 public:
 	virtual CommandConstantString* GetCommandClassType();
 };
-class CommandPlaceHolder : public _BasicHeliumCommand {
+class CommandPlaceHolder : virtual public _BasicHeliumCommand {
 public:
 	virtual CommandPlaceHolder* GetCommandClassType();
 };
-class RequiredArgument : public _CommandArgument {
+class RequiredArgument : virtual public _CommandArgument {
 public:
 	virtual RequiredArgument* GetCommandClassType();
 };
-class OptionalArgument : public _CommandArgument {
+class OptionalArgument : virtual public _CommandArgument {
 public:
 	virtual OptionalArgument* GetCommandClassType();
 };
-class CommandEntry : public _CommandEntry {
+class CommandEntry : virtual public _CommandEntry {
 public:
 	virtual CommandEntry* GetCommandClassType();
+};
+class SingleFixedCommandBind : virtual public _CommandBinding{
+public:
+	virtual SingleFixedCommandBind* GetCommandClassType();
+};
+class SingleVariableCommandBind : virtual public _CommandBinding {
+public:
+	virtual SingleVariableCommandBind* GetCommandClassType();
+};
+class MultiFixedCommandBind : virtual public _CommandBinding {
+public:
+	virtual MultiFixedCommandBind* GetCommandClassType();
+};
+class MultiVariableCommandBind : virtual public _CommandBinding {
+public:
+	virtual MultiVariableCommandBind* GetCommandClassType();
 };
 
 
@@ -90,15 +125,15 @@ protected:
 public:
 	virtual _BasicHeliumCommandQueue* GetCommandQueueClassType() = 0;
 };
-class ShellCommandQueue : public _BasicHeliumCommandQueue {
+class ShellCommandQueue : virtual public _BasicHeliumCommandQueue {
 public:
 	virtual ShellCommandQueue* GetCommandQueueClassType();
 };
-class RuntimeCommandQueue : public _BasicHeliumCommandQueue {
+class RuntimeCommandQueue : virtual public _BasicHeliumCommandQueue {
 public:
 	virtual RuntimeCommandQueue* GetCommandQueueClassType();
 };
-class SaveableCommandQueue : public _BasicHeliumCommandQueue {
+class SaveableCommandQueue : virtual public _BasicHeliumCommandQueue {
 public:
 	virtual SaveableCommandQueue* GetCommandQueueClassType();
 };
