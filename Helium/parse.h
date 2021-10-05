@@ -6,13 +6,32 @@
 #define NULL 0
 #define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
 
+#include<regex>
+#include<vector>
 #include<string>
 #include<map>
 #include<algorithm>
 #include<thread>
+
+#include"events.h"
 #include"utils.h"
 
 using namespace std;
+
+class ParseEvent {
+public:
+	ParseEvent();
+
+	int SetParseRegex(regex* preg);
+	int AddResultStringRegex(regex* preg);
+	int AddResultStringRegex(vector<regex> pregvec);
+
+protected:
+	regex parseregex;
+	vector<regex> resultstringsregex;
+	vector<int> eventnum;
+	bool parseenable;
+};
 
 typedef struct ServerStart {
 	LONG port = NULL;
