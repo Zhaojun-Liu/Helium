@@ -1,6 +1,6 @@
 #include"commands.h"
 
-tree<_BasicHeliumCommand> HeliumCommandTree;
+tree<_BasicHeliumCommand*> HeliumCommandTree;
 
 #pragma region GetCommandClassType
 _BasicHeliumCommand* _BasicHeliumCommand::GetCommandClassType()
@@ -31,14 +31,6 @@ CommandConstantString* CommandConstantString::GetCommandClassType()
 	return this;
 }
 CommandPlaceHolder* CommandPlaceHolder::GetCommandClassType()
-{
-	return this;
-}
-RequiredArgument* RequiredArgument::GetCommandClassType()
-{
-	return this;
-}
-OptionalArgument* OptionalArgument::GetCommandClassType()
 {
 	return this;
 }

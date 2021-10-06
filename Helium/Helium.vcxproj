@@ -170,6 +170,7 @@
     <ClCompile Include="parse.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="config.cpp" />
+    <ClCompile Include="watchdog.cpp" />
     <ClCompile Include="xmlutils.cpp" />
     <ClCompile Include="minecraftserver.cpp" />
     <ClCompile Include="extension.cpp" />
@@ -198,6 +199,7 @@
     <ClInclude Include="tree.hh" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="config.h" />
+    <ClInclude Include="watchdog.h" />
     <ClInclude Include="xmlutils.h" />
     <ClInclude Include="minecraftserver.h" />
     <ClInclude Include="extension.h" />
