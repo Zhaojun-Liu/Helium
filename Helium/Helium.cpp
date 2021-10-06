@@ -177,28 +177,6 @@ int _stdcall main(int argc,char** argv)
     }
 
 #undef ins
-    for (auto ins = serverlist.begin(); ins < serverlist.end(); ins++) {
-        int ret;
-        if (ins->GetAutoStart()) {
-            str << "Starting Minecraft server : " << ins->GetServerName();
-            spdlog::info(str.str());
-            str.clear();
-            ret = ins->StartServer();
-            str << "Started with return code : " << ret << endl;
-            spdlog::info(str.str());
-            str.clear();
-            StartInfoThread(&(*ins));
-        }
-        else {
-            continue;
-        }
-        if (ret != 0) {
-            str << "Error starting Minecraft server : " << ins->GetServerName() << endl;
-            spdlog::error(str.str());
-            str.clear();
-        }
-    }
-    
 
     rx.install_window_change_handler();
     rx.set_word_break_characters(" \t.,-%;:=*~^'\"/?<>|[](){}");
@@ -211,7 +189,7 @@ int _stdcall main(int argc,char** argv)
     rx.set_double_tab_completion(false);
     rx.set_no_color(false);
     rx.set_immediate_completion(true);
-    
+
     rx.history_load("heliumcommandhistory.txt");
     rx.set_max_history_size(256);
 
@@ -240,6 +218,28 @@ int _stdcall main(int argc,char** argv)
     rx.bind_key_internal(Replxx::KEY::control('D'), "send_eof");
     rx.bind_key_internal(Replxx::KEY::control('C'), "abort_line");
     rx.bind_key_internal(Replxx::KEY::control('T'), "transpose_characters");
+
+    for (auto ins = serverlist.begin(); ins < serverlist.end(); ins++) {
+        int ret;
+        if (ins->GetAutoStart()) {
+            str << "Starting Minecraft server : " << ins->GetServerName();
+            spdlog::info(str.str());
+            str.clear();
+            ret = ins->StartServer();
+            str << "Started with return code : " << ret << endl;
+            spdlog::info(str.str());
+            str.clear();
+            StartInfoThread(&(*ins));
+        }
+        else {
+            continue;
+        }
+        if (ret != 0) {
+            str << "Error starting Minecraft server : " << ins->GetServerName() << endl;
+            spdlog::error(str.str());
+            str.clear();
+        }
+    }
 
     TCHAR  infoBuf[64];
     DWORD  bufCharCount = 64;

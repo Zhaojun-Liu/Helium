@@ -19,11 +19,11 @@ class _CommandArgument;
 class _CommandEntry;
 class _CommandRoot;
 class _CommandBinding;
+class _ArgumentNumber;
+class _ArgumentString;
 
 class CommandConstantString;
 class CommandPlaceHolder;
-class RequiredArgument;
-class OptionalArgument;
 class CommandEntry;
 
 class SingleFixedCommandBind;
@@ -39,7 +39,7 @@ class RuntimeCommandQueue;
 class SaveableCommandQueue;
 
 extern tree<_BasicHeliumCommand> HeliumCommandTree;
-
+#pragma region CommandClassBase
 class _BasicHeliumCommand {
 protected:
 	string commanddesc;
@@ -58,8 +58,7 @@ public:
 };
 class _CommandArgument : virtual public _BasicHeliumCommand {
 protected:
-	int argutype;
-
+	bool optional;
 	bool preprocenable;
 public:
 	virtual _CommandArgument* GetCommandClassType();
@@ -81,7 +80,7 @@ class _CommandBinding : virtual public _BasicHeliumCommand {
 public:
 	virtual _CommandBinding* GetCommandClassType();
 };
-
+#pragma endregion
 class CommandConstantString : virtual public _BasicHeliumCommand {
 public:
 	virtual CommandConstantString* GetCommandClassType();
@@ -89,14 +88,6 @@ public:
 class CommandPlaceHolder : virtual public _BasicHeliumCommand {
 public:
 	virtual CommandPlaceHolder* GetCommandClassType();
-};
-class RequiredArgument : virtual public _CommandArgument {
-public:
-	virtual RequiredArgument* GetCommandClassType();
-};
-class OptionalArgument : virtual public _CommandArgument {
-public:
-	virtual OptionalArgument* GetCommandClassType();
 };
 class CommandEntry : virtual public _CommandEntry {
 public:
