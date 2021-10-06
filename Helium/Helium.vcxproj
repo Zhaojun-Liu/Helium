@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="events.cpp" />
+    <ClCompile Include="exportfunction.cpp" />
     <ClCompile Include="logger.cpp" />
     <ClCompile Include="replxx\conversion.cxx" />
     <ClCompile Include="replxx\ConvertUTF.cpp" />
@@ -176,6 +177,7 @@
     <ClCompile Include="commands.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="exportfunction.h" />
     <ClInclude Include="logger.h" />
     <ClInclude Include="replxx\conversion.hxx" />
     <ClInclude Include="replxx\ConvertUTF.h" />

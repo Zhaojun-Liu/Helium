@@ -1,7 +1,7 @@
 #include"events.h"
 
-deque<HeliumEventInstance> eventsqueue;
-map<int, HeliumEvent> eventmap;
+deque<HeliumEventInstance*> eventsqueue;
+map<int, HeliumEvent*> eventmap;
 
 int RegisterHeliumEvent(HeliumEvent* event, int eventnum)
 {

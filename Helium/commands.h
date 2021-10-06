@@ -31,7 +31,6 @@ class SingleVariableCommandBind;
 class MultiFixedCommandBind;
 class MultiVariableCommandBind;
 
-
 class _BasicHeliumCommandQueue;
 
 class ShellCommandQueue;
