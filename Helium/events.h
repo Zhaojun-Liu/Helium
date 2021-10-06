@@ -2,6 +2,7 @@
 
 #ifndef _H_EVENTS
 #define _H_EVENTS
+#define EXPORTFUNC extern "C" _declspec(dllexport)
 
 #include<deque>
 #include<map>
@@ -19,12 +20,21 @@ class HeliumEventInstance;
 extern deque<HeliumEventInstance> eventsqueue;
 extern map<int, HeliumEvent> eventmap;
 
-int RegisterEvent(HeliumEvent* event, int eventnum);
-int DeleteEvent(int eventnum);
-int GetEvent(int eventnum, HeliumEvent* event);
-int GetEventIterator(int eventnum, map<int, HeliumEvent>::iterator* outit);
+EXPORTFUNC int RegisterHeliumEvent(HeliumEvent* event, int eventnum);
+EXPORTFUNC int DeleteHeliumEvent(int eventnum);
+EXPORTFUNC int GetHeliumEvent(int eventnum, HeliumEvent* event);
+EXPORTFUNC int GetHeliumEventIterator(int eventnum, map<int, HeliumEvent>::iterator* outit);
 
-int CreateEvent(int eventnum, int quantity = 1);
+EXPORTFUNC int CreateHeliumEvent(int eventnum, int quantity = 1);
+EXPORTFUNC int BlockHeliumEvent(int eventnum);
+
+typedef int (*RegisterHeliumEvent_FuncT)(HeliumEvent* event, int eventnum);
+typedef int (*DeleteHeliumEvent_FuncT)(int eventnum);
+typedef int (*GetHeliumEvent_FuncT)(int eventnum, HeliumEvent* event);
+typedef int (*GetHeliumEventIterator_FuncT)(int eventnum, map<int, HeliumEvent>::iterator* outit);
+
+typedef int (*CreateHeliumEvent_FuncT)(int eventnum, int quantity);
+typedef int (*BlockHeliumEvent_FuncT)(int eventnum);
 
 class HeliumEvent {
 public:
