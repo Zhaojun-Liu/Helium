@@ -9,9 +9,10 @@
 #include<iostream>
 
 #include"tinyxml2.h"
+namespace Helium {
+	using namespace std;
 
-using namespace std;
-
-bool _stdcall GetNodePointerByName(tinyxml2::XMLElement* pRootEle, const char* strNodeName, tinyxml2::XMLElement*& Node);
-string _stdcall GetNodeStringByName(tinyxml2::XMLElement* pRootEle, string strNodeName);
+	bool _stdcall GetNodePointerByName(tinyxml2::XMLElement* pRootEle, const char* strNodeName, tinyxml2::XMLElement*& Node);
+	string _stdcall GetNodeStringByName(tinyxml2::XMLElement* pRootEle, string strNodeName);
+}
 #endif // !_H_XMLUTILS

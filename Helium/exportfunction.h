@@ -6,7 +6,9 @@
 #include<map>
 #include<string>
 
-extern std::map<std::string, void*> HeliumExportFunctionMap;
-int InitFuncMap();
+namespace Helium {
+	extern std::map<std::string, void*> HeliumExportFunctionMap;
+	int InitFuncMap();
+}
 
 #endif // !_H_EXPORTFUNCTION

@@ -1,40 +1,43 @@
 #include "logger.h"
 #include<spdlog/fmt/fmt.h>
-def Logger::getDebugMode(bool*)
-{
+namespace Helium {
 
-	return 0;
-}
+	def Logger::getDebugMode(bool*)
+	{
 
-def Logger::setDebugMode(bool)
-{
-	
-	return 0;
-}
+		return 0;
+	}
 
-template<typename FormatString, typename... Args>
-def Logger::info(const FormatString &fmt,Args&&... args)
-{
-	spdlog::info(fmt,std::forward<Args>(args)...);
-	return 0;
-}
+	def Logger::setDebugMode(bool)
+	{
 
-def Logger::debug(const char*)
-{
-	return 0;
-}
+		return 0;
+	}
 
-def Logger::warn(const char*)
-{
-	return 0;
-}
+	template<typename FormatString, typename... Args>
+	def Logger::info(const FormatString& fmt, Args&&... args)
+	{
+		spdlog::info(fmt, std::forward<Args>(args)...);
+		return 0;
+	}
 
-def Logger::error(const char*)
-{
-	return 0;
-}
+	def Logger::debug(const char*)
+	{
+		return 0;
+	}
 
-def Logger::critical(const char*)
-{
-	return 0;
+	def Logger::warn(const char*)
+	{
+		return 0;
+	}
+
+	def Logger::error(const char*)
+	{
+		return 0;
+	}
+
+	def Logger::critical(const char*)
+	{
+		return 0;
+	}
 }

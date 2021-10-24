@@ -1,39 +1,40 @@
 #include"xmlutils.h"
-
-bool _stdcall GetNodePointerByName(tinyxml2::XMLElement* pRootEle, const char* strNodeName, tinyxml2::XMLElement*& Node)
-{
-	if (0 == strcmp(strNodeName, pRootEle->Value()))
+namespace Helium {
+	bool _stdcall GetNodePointerByName(tinyxml2::XMLElement* pRootEle, const char* strNodeName, tinyxml2::XMLElement*& Node)
 	{
-		Node = pRootEle;
-		return true;
-	}
-
-	tinyxml2::XMLElement* pEle = pRootEle;
-	for (pEle = pRootEle->FirstChildElement(); pEle; pEle = pEle->NextSiblingElement())
-	{
-		if (0 != strcmp(pEle->Name(), strNodeName))
+		if (0 == strcmp(strNodeName, pRootEle->Value()))
 		{
-			GetNodePointerByName(pEle, strNodeName, Node);
-		}
-		else
-		{
-			Node = pEle;
+			Node = pRootEle;
 			return true;
 		}
-	}
 
-	return false;
-}//https://blog.csdn.net/masikkk/article/details/14191933?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.add_param_isCf&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.add_param_isCf
+		tinyxml2::XMLElement* pEle = pRootEle;
+		for (pEle = pRootEle->FirstChildElement(); pEle; pEle = pEle->NextSiblingElement())
+		{
+			if (0 != strcmp(pEle->Name(), strNodeName))
+			{
+				GetNodePointerByName(pEle, strNodeName, Node);
+			}
+			else
+			{
+				Node = pEle;
+				return true;
+			}
+		}
 
-string _stdcall GetNodeStringByName(tinyxml2::XMLElement* pRootEle, string strNodeName)
-{
-	tinyxml2::XMLElement* pReadEle;
-	if(GetNodePointerByName(pRootEle, strNodeName.c_str(), pReadEle))
-		return pReadEle->GetText();
-	else
+		return false;
+	}//https://blog.csdn.net/masikkk/article/details/14191933?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.add_param_isCf&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.add_param_isCf
+
+	string _stdcall GetNodeStringByName(tinyxml2::XMLElement* pRootEle, string strNodeName)
 	{
-		string v1;
-		v1 = "";
-		return v1;
+		tinyxml2::XMLElement* pReadEle;
+		if (GetNodePointerByName(pRootEle, strNodeName.c_str(), pReadEle))
+			return pReadEle->GetText();
+		else
+		{
+			string v1;
+			v1 = "";
+			return v1;
+		}
 	}
 }

@@ -2,6 +2,16 @@
 
 #ifndef _H_EVENTS
 #define _H_EVENTS
+
+#include<deque>
+#include<map>
+#include<string>
+#include<vector>
+#include<guiddef.h>
+
+namespace Helium {
+	using namespace std;
+
 #define EXPORTFUNC extern "C" _declspec(dllexport)
 
 #define HELIUM_EVENT_EXTENSION_ON_LOAD 0
@@ -38,66 +48,59 @@
 #define GET_EVENT_NUM(eventtype, eventname) (HELIUM_EVENT##_##eventtype##_##eventname)
 #define GET_EVENT_DEF_FUNC_NAME(eventtype, eventname) (HELIUM_EVENT##_##eventtype##_##eventname##_##_DEF_FUNC_NAME)
 
-#include<deque>
-#include<map>
-#include<string>
-#include<vector>
-#include<guiddef.h>
+	typedef int(_stdcall* HeliumEventCallbackType)(int events);
 
-using namespace std;
+	class HeliumEvent;
+	class HeliumEventInstance;
 
-typedef int (_stdcall* HeliumEventCallbackType)(int events);
+	extern deque<HeliumEventInstance*> eventsqueue;
+	extern map<int, HeliumEvent*> eventmap;
 
-class HeliumEvent;
-class HeliumEventInstance;
+	EXPORTFUNC int RegisterHeliumEvent(HeliumEvent* event, int eventnum);
+	EXPORTFUNC int DeleteHeliumEvent(int eventnum);
+	EXPORTFUNC int GetHeliumEvent(int eventnum, HeliumEvent* event);
+	EXPORTFUNC int GetHeliumEventIterator(int eventnum, map<int, HeliumEvent*>::iterator* outit);
 
-extern deque<HeliumEventInstance*> eventsqueue;
-extern map<int, HeliumEvent*> eventmap;
+	EXPORTFUNC int CreateHeliumEvent(int eventnum, int quantity = 1);
+	EXPORTFUNC int BlockHeliumEvent(int eventnum);
 
-EXPORTFUNC int RegisterHeliumEvent(HeliumEvent* event, int eventnum);
-EXPORTFUNC int DeleteHeliumEvent(int eventnum);
-EXPORTFUNC int GetHeliumEvent(int eventnum, HeliumEvent* event);
-EXPORTFUNC int GetHeliumEventIterator(int eventnum, map<int, HeliumEvent*>::iterator* outit);
+	typedef int (*RegisterHeliumEvent_FuncT)(HeliumEvent* event, int eventnum);
+	typedef int (*DeleteHeliumEvent_FuncT)(int eventnum);
+	typedef int (*GetHeliumEvent_FuncT)(int eventnum, HeliumEvent* event);
+	typedef int (*GetHeliumEventIterator_FuncT)(int eventnum, map<int, HeliumEvent*>::iterator* outit);
 
-EXPORTFUNC int CreateHeliumEvent(int eventnum, int quantity = 1);
-EXPORTFUNC int BlockHeliumEvent(int eventnum);
+	typedef int (*CreateHeliumEvent_FuncT)(int eventnum, int quantity);
+	typedef int (*BlockHeliumEvent_FuncT)(int eventnum);
 
-typedef int (*RegisterHeliumEvent_FuncT)(HeliumEvent* event, int eventnum);
-typedef int (*DeleteHeliumEvent_FuncT)(int eventnum);
-typedef int (*GetHeliumEvent_FuncT)(int eventnum, HeliumEvent* event);
-typedef int (*GetHeliumEventIterator_FuncT)(int eventnum, map<int, HeliumEvent*>::iterator* outit);
+	class HeliumEvent {
+	public:
+		struct CallbackFunctionInfo {
+			GUID funcguid;
+			HeliumEventCallbackType funcptr;
+			bool funccallbackenable;
 
-typedef int (*CreateHeliumEvent_FuncT)(int eventnum, int quantity);
-typedef int (*BlockHeliumEvent_FuncT)(int eventnum);
+			CallbackFunctionInfo();
+		};
+		HeliumEvent();
 
-class HeliumEvent {
-public:
-	struct CallbackFunctionInfo {
-		GUID funcguid;
-		HeliumEventCallbackType funcptr;
-		bool funccallbackenable;
+		int RegisterListenerFunction(HeliumEventCallbackType funcptr);
+		CallbackFunctionInfo GetListenerFunction(LPGUID guid);
+		int DeleteListenerFunction(LPGUID guid);
+		void EnableCallback();
+		void DisableCallback();
+		void EnableFunctionCallback(LPGUID guid);
+		void DisableFunctionCallback(LPGUID guid);
+	protected:
+		string eventname;
+		string eventdesc;
+		bool callbackenable;
 
-		CallbackFunctionInfo();
+		vector<CallbackFunctionInfo> listenerfuncs;
 	};
-	HeliumEvent();
 
-	int RegisterListenerFunction(HeliumEventCallbackType funcptr);
-	CallbackFunctionInfo GetListenerFunction(LPGUID guid);
-	int DeleteListenerFunction(LPGUID guid);
-	void EnableCallback();
-	void DisableCallback();
-	void EnableFunctionCallback(LPGUID guid);
-	void DisableFunctionCallback(LPGUID guid);
-protected:
-	string eventname;
-	string eventdesc;
-	bool callbackenable;
+	class HeliumEventInstance {
 
-	vector<CallbackFunctionInfo> listenerfuncs;
-};
-
-class HeliumEventInstance {
-
-};
+	};
 
 #endif // !_H_EVENTS
+}

@@ -15,38 +15,40 @@
 #include"xmlutils.h"
 #include"minecraftserver.h"
 
+namespace Helium {
+
 #define CFG_FILENAME "HeliumConfig.xml"
 #define gnsbn(name) GetNodeStringByName(pRootEle,name)
 
-using namespace std;
+	using namespace std;
 
-static const char* boolstr[] = { "True", "False" };
+	static const char* boolstr[] = { "True", "False" };
 #define VALUE_TYPE_INTEGER 0
 #define VALUE_TYPE_DOUBLE 1
 #define VALUE_TYPE_STRING 2
 #define VALUE_TYPE_BOOLEAN 3
 
-struct ConfigNode
-{
-	string nodename;
-	int valuetype = VALUE_TYPE_INTEGER;
-	variant<int, double, string, bool> var;
+	struct ConfigNode
+	{
+		string nodename;
+		int valuetype = VALUE_TYPE_INTEGER;
+		variant<int, double, string, bool> var;
 
-	int Print();
-};
+		int Print();
+	};
 
-struct HeliumAttribute{
-	string nodename;
-	int valuetype = VALUE_TYPE_INTEGER;
-	variant<int, double, string, bool> var;
-};
+	struct HeliumAttribute {
+		string nodename;
+		int valuetype = VALUE_TYPE_INTEGER;
+		variant<int, double, string, bool> var;
+	};
 
-extern vector<HeliumAttribute> attrlist;
+	extern vector<HeliumAttribute> attrlist;
 
-int _stdcall SaveConfigFile();
-int _stdcall CreateConfigFile();
-int _stdcall ReadConfigFile();
-int _stdcall Config();
+	int _stdcall SaveConfigFile();
+	int _stdcall CreateConfigFile();
+	int _stdcall ReadConfigFile();
+	int _stdcall Config();
 
 #define START_CONFIG_NODES_REGISTER vector<ConfigNode> _confignodes_
 #define ADD_CONFIG_NODE(nodenamestr, _nodename, _valuetype, defaultvalue) ConfigNode _newnode_##_nodename##_;\
@@ -54,4 +56,5 @@ _newnode_##_nodename##_.nodename = nodenamestr;\
 _newnode_##_nodename##_.valuetype = _valuetype;\
 _newnode_##_nodename##_.var.emplace<_valuetype>(defaultvalue);\
 _confignodes_.push_back(_newnode_##_nodename##_);
+}
 #endif // !_H_CONFIG

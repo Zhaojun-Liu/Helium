@@ -1,7 +1,7 @@
 #pragma once
 
 #ifndef _H_PERMISSIONS
-
+#define _H_PERMISSIONS
 #define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
 
 #include<vector>
@@ -11,8 +11,9 @@
 
 #include"tinyxml2.h"
 #include"minecraftserver.h"
+namespace Helium {
 
-using namespace std;
+	using namespace std;
 
 #define PERMISSION_FILENAME "permission.xml"
 
@@ -22,19 +23,19 @@ using namespace std;
 #define PERMISSION_LEVEL_SERVEROWNER	3
 #define PERMISSION_LEVEL_HELIUMOWNER	4
 
-extern const char* permdescstr[];
+	extern const char* permdescstr[];
 
-int _stdcall ReadPermissionFile();
-int _stdcall CreatePermissionFile();
-int _stdcall SavePermissionFile();
+	int _stdcall ReadPermissionFile();
+	int _stdcall CreatePermissionFile();
+	int _stdcall SavePermissionFile();
 
-struct PermissionNamespace {
-	GUID serverguid;
-	int defaultpermission;
-	vector<pair<string, int>> permissions;
-};
+	struct PermissionNamespace {
+		GUID serverguid;
+		int defaultpermission;
+		vector<pair<string, int>> permissions;
+	};
 
-extern vector<PermissionNamespace> permissions;
+	extern vector<PermissionNamespace> permissions;
 
-#define _H_PERMISSIONS
+}
 #endif // !_H_PERMISSIONS
