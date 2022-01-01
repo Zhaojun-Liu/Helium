@@ -1,7 +1,5 @@
 ﻿#pragma region Includes
-    //不要随意调换include顺序 awa
-
-#define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
+//不要随意调换include顺序 awa
 
 #include<iostream>
 #include<Windows.h>
@@ -60,7 +58,7 @@ namespace Helium {
 #pragma endregion
 
 #pragma region Var
-    Logger logger;
+    HeliumLogger logger("HeliumMain");
     map<string, HeliumExtension> extensions;
     string pns = PROJECT_NAME_STR;
     vector<MinecraftServerInstance> serverlist;
@@ -147,15 +145,15 @@ namespace Helium {
         ostringstream str;
 
         SetConsoleTitleA(PROJECT_NAME_STR);
+        spdlog::set_level(spdlog::level::info);
 
         pns.append(" ").append(PROJECT_VER_STR).append(" ").append(PROJECT_DEVSTAT);
-        spdlog::info(pns);
+        logger << HeliumLoggerLevel::LOG_LEVEL_INFO << pns;
 
 #ifdef NOT_STABLE
-        spdlog::warn("This is a early version of Helium, don't use this in a productive environment.");
+        spdlog::set_level(spdlog::level::debug);
+        logger << HeliumLoggerLevel::LOG_LEVEL_WARNING << "This is a early version of Helium, don't use this in a productive environment.";
 #endif
-
-        spdlog::set_level(spdlog::level::debug); // Set global log level to debug
 
         if (auto ret = Config(); ret != 0) {
             spdlog::critical("Failed to read config,exiting...");
@@ -219,6 +217,7 @@ namespace Helium {
             spdlog::error("Failed to save the permission file, your changes may not be saved.");
         }
 
+        spdlog::drop_all();
         system("pause");
     }
 #pragma endregion

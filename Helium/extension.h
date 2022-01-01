@@ -38,7 +38,7 @@ namespace Helium {
 		int ReadConfig();
 	private:
 		string configpath;
-		string Extname;
+		string extname;
 	};
 
 	class HeliumExtensionFuncs {
