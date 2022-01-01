@@ -2,8 +2,6 @@
 #include<spdlog/spdlog.h>
 #include<spdlog/sinks/stdout_color_sinks.h>
 #include<spdlog/sinks/daily_file_sink.h>
-#include<thread>
-#include<strstream>
 #include<string>
 #include<iostream>
 namespace Helium {
@@ -12,8 +10,6 @@ namespace Helium {
 #define INVALID_LOGGER NULL
 
 	using namespace std;
-	auto heliumdailysink;
-	auto heliumconsolesink;
 
 	enum HeliumLoggerLevel
 	{
@@ -36,23 +32,7 @@ namespace Helium {
 			this->loggername = n;
 		}
 		
-		HeliumLogger(string name) {
-			this->loggername = name;
-			try {
-				auto console_sink = std::make_shared<spdlog::logger>(name, heliumconsolesink);
-				console_sink->set_pattern("[%T][%l]%n > %v");
-
-				auto file_logger = std::make_shared<spdlog::logger>(name, heliumdailysink);
-
-				spdlog::register_logger(console_sink);
-				spdlog::register_logger(file_logger);
-				this->log = console_sink;
-				this->filelog = file_logger;
-			}
-			catch (const spdlog::spdlog_ex& ex) {
-				cout << "Logger initalization failed(" << this->name << ")" << ex.what() << endl;
-			}
-		}
+		HeliumLogger(string name);
 		~HeliumLogger() {
 			this->log->flush();
 		}

@@ -1,6 +1,30 @@
 #include "logger.h"
 #include<spdlog/fmt/fmt.h>
 namespace Helium {
+	auto heliumdailysink = make_shared<spdlog::sinks::daily_file_sink_mt>("./logs/helium_log.txt", 23, 59);
+	auto heliumconsolesink = make_shared<spdlog::sinks::stdout_color_sink_mt>(spdlog::color_mode::automatic);
+
+	HeliumLogger::HeliumLogger(string name) {
+		this->loggername = name;
+		try {
+			string logname = name;
+
+			auto console_sink = make_shared<spdlog::logger>(logname, heliumconsolesink);
+
+			logname.clear();
+			logname.append(name).append("_filesink");
+			auto file_logger = make_shared<spdlog::logger>(logname, heliumdailysink);
+
+			spdlog::register_logger(console_sink);
+			spdlog::register_logger(file_logger);
+			this->log = console_sink;
+			this->filelog = file_logger;
+		}
+		catch (const spdlog::spdlog_ex& ex) {
+			cout << "Logger initalization failed(" << this->name << "), reason : " << ex.what() << endl;
+		}
+	}
+
 	HeliumLogger& HeliumLogger::operator<<(HeliumLoggerLevel n) {
 		this->loglevel = n;
 		return *this;
