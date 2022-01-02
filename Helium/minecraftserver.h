@@ -16,6 +16,7 @@
 #include"commands.h"
 #include<spdlog/spdlog.h>
 #include"tinyxml2.h"
+#include"logger.h"
 namespace Helium {
 
 	using namespace std;

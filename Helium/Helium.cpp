@@ -1,10 +1,10 @@
 ﻿#pragma region Includes
 //不要随意调换include顺序 awa
 
-#include<iostream>
 #include<Windows.h>
 #include<thread>
 #include<strstream>
+#include<iostream>
 #include<regex>
 #include<functional>
 
@@ -60,7 +60,6 @@ namespace Helium {
 #pragma region Var
     HeliumLogger logger("HeliumMain");
     map<string, HeliumExtension> extensions;
-    string pns = PROJECT_NAME_STR;
     vector<MinecraftServerInstance> serverlist;
 
 #pragma endregion
@@ -75,38 +74,31 @@ namespace Helium {
         return lpIns->GerServerPid();
     }
     int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread, HANDLE hProc) {
-        //cout << "Server started at PID : " << ptr->dwPid << endl;
-        spdlog::debug("server started at PID:{}", ptr->GerServerPid());
+        HeliumEndline hendl;
+        logger << HLL::LL_INFO << servername << " server started at PID : " << (long)ptr->GerServerPid() << hendl;
         char out_buffer[BUFSIZE];
         DWORD dwRead;
         bool ret = FALSE;
-        DWORD dwCode;
+        DWORD dwCode = 0;
         string read;
-        while (true)
-        {
+        while (true) {
             ZeroMemory(out_buffer, BUFSIZE);
             //用WriteFile，从hStdOutRead读出子进程stdout输出的数据，数据结果在out_buffer中，长度为dwRead
 
-            //ret = ReadFile(stdread, out_buffer, BUFSIZE - 1, &dwRead, NULL);
             char ch;
-            //spdlog::critical(stdread);
             if (stdread == INVALID_HANDLE_VALUE || stdread == NULL)
                 break;
             if (ReadFile(stdread, &ch, 1, &dwRead, NULL) == false)
                 break;
             if (dwRead == 0)
-            {
                 pass;
-            }
             if (ch != '\n') {
                 read += ch;
                 pass;
             }
-            else
-            {
-                if (ptr->GetVisibility())
-                {
-                    spdlog::info("{}->{}", servername, read);
+            else {
+                if (ptr->GetVisibility()) {
+                    cout << servername << "->" << read << endl;
                 }
                 read = "";
             }
@@ -115,7 +107,6 @@ namespace Helium {
             DWORD dwRet = MsgWaitForMultipleObjects(1, ptr->GetThreadPHandle(), FALSE, 20, QS_ALLINPUT);
             switch (dwRet) {
             case WAIT_OBJECT_0:
-                break;
                 break;
             case WAIT_OBJECT_0 + 1:
                 PeekMessage(&msg, NULL, 0, 0, PM_REMOVE);
@@ -126,9 +117,7 @@ namespace Helium {
             }
         }
 
-
-        spdlog::info("服务器{0}已退出，返回值{1:d}(0x{1:x})", servername, dwCode);
-        cout << "Exiting ProcessServerOutput()" << dwCode << endl;
+        logger << HLL::LL_INFO << "Server " << servername << " exited." << hendl;
         ptr->SetServerReturnValue(dwCode);
         ptr->SetServerStatus(1);
         return 114514;
@@ -140,37 +129,36 @@ namespace Helium {
 
 #pragma region Main
 
-    int main()
-    {
-        ostringstream str;
-
+    int main() {
+        HeliumEndline hendl;
         SetConsoleTitleA(PROJECT_NAME_STR);
+        ios::sync_with_stdio(false);
+        cin.tie(0);
         spdlog::set_level(spdlog::level::info);
 
-        pns.append(" ").append(PROJECT_VER_STR).append(" ").append(PROJECT_DEVSTAT);
-        logger << HeliumLoggerLevel::LOG_LEVEL_INFO << pns;
+        logger << HLL::LL_INFO << PROJECT_NAME_STR << " " << PROJECT_VER_STR << " " << PROJECT_DEVSTAT << hendl;
 
 #ifdef NOT_STABLE
         spdlog::set_level(spdlog::level::debug);
-        logger << HeliumLoggerLevel::LOG_LEVEL_WARNING << "This is a early version of Helium, don't use this in a productive environment.";
+        logger << HLL::LL_WARN << "This is a early version of Helium, don't use this in a productive environment." << hendl;
 #endif
 
         if (auto ret = Config(); ret != 0) {
-            spdlog::critical("Failed to read config,exiting...");
+            logger << HLL::LL_CRIT << "Failed to read config,exiting..." << hendl;
             system("pause");
             return -1;
         }
 
         if (auto ret = ReadServerFile(); ret != 0) {
             CreateServerFile();
-            spdlog::critical("Failed to read global server config,exiting...");
+            logger << HLL::LL_CRIT << "Failed to read global server config,exiting..." << hendl;
             system("pause");
             return -1;
         }
 
         if (auto ret = ReadPermissionFile(); ret != 0) {
             CreatePermissionFile();
-            spdlog::critical("Failed to read permission file,exiting...");
+            logger << HLL::LL_CRIT << "Failed to read permission file,exiting..." << hendl;
             system("pause");
             return -1;
         }
@@ -180,22 +168,16 @@ namespace Helium {
         for (auto ins = serverlist.begin(); ins < serverlist.end(); ins++) {
             int ret;
             if (ins->GetAutoStart()) {
-                str << "Starting Minecraft server : " << ins->GetServerName();
-                spdlog::info(str.str());
-                str.clear();
+                logger << HLL::LL_INFO << "Starting Minecraft server : " << ins->GetServerName() << hendl;
                 ret = ins->StartServer();
-                str << "Started with return code : " << ret << endl;
-                spdlog::info(str.str());
-                str.clear();
+                logger << HLL::LL_INFO << "Started with return code : " << ret << hendl;
                 StartInfoThread(&(*ins));
             }
             else {
                 continue;
             }
             if (ret != 0) {
-                str << "Error starting Minecraft server : " << ins->GetServerName() << endl;
-                spdlog::error(str.str());
-                str.clear();
+                logger << HLL::LL_ERR << "Error starting Minecraft server : " << ins->GetServerName() << hendl;
             }
         }
 
@@ -206,15 +188,15 @@ namespace Helium {
         }
 
         if (auto ret = SaveConfigFile(); ret != 0) {
-            spdlog::error("Failed to save the config file, your changes may not be saved.");
+            logger << HLL::LL_WARN << "Failed to save the config file, your changes may not be saved." << hendl;
         }
 
         if (auto ret = SaveServerFile(); ret != 0) {
-            spdlog::error("Failed to save the global server config file, your changes may not be saved.");
+            logger << HLL::LL_WARN << "Failed to save the global server config file, your changes may not be saved." << hendl;
         }
 
         if (auto ret = SavePermissionFile(); ret != 0) {
-            spdlog::error("Failed to save the permission file, your changes may not be saved.");
+            logger << HLL::LL_WARN << "Failed to save the permission file, your changes may not be saved." << hendl;
         }
 
         spdlog::drop_all();

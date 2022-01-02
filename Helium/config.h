@@ -8,12 +8,12 @@
 #include<string>
 #include<vector>
 #include<variant>
-#include<iostream>
 #include<spdlog/spdlog.h>
 
 #include"tinyxml2.h"
 #include"xmlutils.h"
 #include"minecraftserver.h"
+#include"logger.h"
 
 namespace Helium {
 

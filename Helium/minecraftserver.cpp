@@ -3,6 +3,7 @@ namespace Helium {
 
     CRITICAL_SECTION cs;
     static bool isinit = false;
+    HeliumLogger msl("HeliumServerConfig");
 
     MinecraftServerInstance::MinecraftServerInstance() {
         this->hProc = INVALID_HANDLE_VALUE;
@@ -188,6 +189,8 @@ namespace Helium {
 
     [[nodiscard("")]]
     int    MinecraftServerInstance::StartServer() {
+        HeliumEndline hendl;
+
         if (this->serverstartuptype == STARTUP_TYPE_JAR) {
             char cwd[MAX_PATH];
             string startupcmdline, servercwd;
@@ -206,8 +209,8 @@ namespace Helium {
                 servercwd = this->serverdirectory;
             }
 
-            cout << startupcmdline << endl;
-            cout << servercwd << endl;
+            msl << startupcmdline << hendl;
+            msl << servercwd << hendl;
 
             HANDLE hStdInRead = NULL;   //子进程用的stdin的读入端  
             HANDLE hStdInWrite = NULL;  //主程序用的stdin的读入端 
@@ -246,7 +249,6 @@ namespace Helium {
             unsigned int serverexitcode = 0;
 
             char* c_scl = const_cast<char*>(startupcmdline.c_str());
-            cout << c_scl << endl;
 
             BOOL bSuc = CreateProcessA(NULL
                 , c_scl
@@ -258,14 +260,13 @@ namespace Helium {
                 , servercwd.c_str()
                 , &si
                 , &pi);
-            spdlog::debug("bSuc:{}", bSuc);
             if (bSuc == FALSE) {
-                cout << "CreateProcess() failed!" << endl;
+                msl << HLL::LL_CRIT << "CreateProcess() failed!" << hendl;
                 return -1;
             }
 
             this->serverstatus = SERVER_STATUS_RUNNING;
-            cout << "Minecraft server launched successfully" << endl;
+            msl << HLL::LL_INFO << "Minecraft server launched successfully" << hendl;
             this->hProc = pi.hProcess;
             this->redir.hStdErrWrite = hStdOutWrite;
             this->redir.hStdInRead = hStdInRead;
@@ -275,13 +276,12 @@ namespace Helium {
             this->dwPid = pi.dwProcessId;
 
             DWORD dwRet = ResumeThread(pi.hThread);
-            spdlog::debug("dwRet:{}", dwRet);
             if (dwRet == -1) {
                 TerminateProcess(pi.hProcess, serverexitcode);
                 return -1;
             }
 
-            cout << "Minecraft server process resumed successfully" << endl;
+            msl << HLL::LL_INFO << "Minecraft server process resumed successfully" << hendl;
 
             c_scl = NULL;
         }
@@ -300,9 +300,6 @@ namespace Helium {
                 servercwd = this->serverdirectory;
             }
 
-            cout << startupcmdline << endl;
-            cout << servercwd << endl;
-
             HANDLE hStdInRead = NULL;   //子进程用的stdin的读入端  
             HANDLE hStdInWrite = NULL;  //主程序用的stdin的读入端 
             HANDLE hStdOutRead = NULL;  //主程序用的stdout的读入端  
@@ -340,7 +337,7 @@ namespace Helium {
             unsigned int serverexitcode = 0;
 
             char* c_scl = const_cast<char*>(startupcmdline.c_str());
-            cout << c_scl << endl;
+            msl << c_scl << hendl;
             BOOL bSuc = CreateProcessA(NULL
                 , c_scl
                 , NULL
@@ -353,12 +350,12 @@ namespace Helium {
                 , &pi);
 
             if (bSuc == FALSE) {
-                cout << "CreateProcess() failed!" << endl;
+                msl << HLL::LL_CRIT << "CreateProcess() failed!" << hendl;
                 return -1;
             }
 
             this->serverstatus = SERVER_STATUS_RUNNING;
-            cout << "Minecraft server launched successfully" << endl;
+            msl << HLL::LL_INFO << "Minecraft server launched successfully" << hendl;
             this->hProc = pi.hProcess;
             this->redir.hStdErrWrite = hStdOutWrite;
             this->redir.hStdInRead = hStdInRead;
@@ -379,7 +376,7 @@ namespace Helium {
                 return -1;
             }
 
-            cout << "Minecraft server process resumed successfully" << endl;
+            msl << HLL::LL_INFO << "Minecraft server process resumed successfully" << hendl;
 
             c_scl = NULL;
 
@@ -410,19 +407,20 @@ namespace Helium {
 
 
     void   MinecraftServerInstance::Print() {
-        cout << endl << "Minecraft Server Instance Debug Print" << endl;
-        cout << "Server Name : " << this->servername << endl;
-        cout << "Server Directory :" << this->serverdirectory << endl;
-        cout << "Server File Name : " << this->serverfilename << endl;
-        cout << "JVM Directory : " << this->jvmdirectory << endl;
-        cout << "JVM Option : " << this->jvmoption << endl;
-        cout << "Max Memory : " << this->maxmem << endl;
-        cout << "Min Memory : " << this->minmem << endl << endl;
-        cout << "Startup Type : " << this->serverstartuptype << endl;
-        cout << "Server Type : " << this->servertype << endl;
-        cout << "Server Status : " << this->serverstatus << endl << endl;
-        cout << "Output Visibility : " << this->outputvisibility << endl;
-        cout << "Auto Start : " << this->autostart << endl << endl;
+        HeliumEndline hendl;
+        msl << HLL::LL_DBG << hendl << "Minecraft Server Instance Debug Print" << hendl;
+        msl << "Server Name : " << this->servername << hendl;
+        msl << "Server Directory :" << this->serverdirectory << hendl;
+        msl << "Server File Name : " << this->serverfilename << hendl;
+        msl << "JVM Directory : " << this->jvmdirectory << hendl;
+        msl << "JVM Option : " << this->jvmoption << hendl;
+        msl << "Max Memory : " << this->maxmem << hendl;
+        msl << "Min Memory : " << this->minmem << hendl << hendl;
+        msl << "Startup Type : " << this->serverstartuptype << hendl;
+        msl << "Server Type : " << this->servertype << hendl;
+        msl << "Server Status : " << this->serverstatus << hendl << hendl;
+        msl << "Output Visibility : " << this->outputvisibility << hendl;
+        msl << "Auto Start : " << this->autostart << hendl << hendl;
         return;
     }
 
@@ -451,10 +449,12 @@ namespace Helium {
     }
 
     int _stdcall ReadServerFile() {
+        HeliumEndline hendl;
+        msl << HLL::LL_INFO << "Reading global server config file..." << hendl;
         tinyxml2::XMLDocument doc;
         auto error = doc.LoadFile(SERVER_FILENAME);
         if (error != tinyxml2::XMLError::XML_SUCCESS) {
-            spdlog::critical("Cannot read server.xml");
+            msl << HLL::LL_CRIT << "Cannot read global server config file" << hendl;
             return -1;
         }
 
@@ -470,7 +470,7 @@ namespace Helium {
         servernodechild = servernode->FirstChildElement("ServerName");
 
         if (servernode == NULL) {
-            spdlog::critical("Failed to get the root element of the server.xml.");
+            msl << HLL::LL_CRIT << "Failed to get the root element of the global server config file." << hendl;
             return -1;
         }
 
@@ -555,17 +555,21 @@ namespace Helium {
             servernode = servernode->NextSiblingElement("MinecraftServer");
         }
 
+        msl << HLL::LL_INFO << "Done." << hendl;
+
         return 0;
     }
     int _stdcall SaveServerFile() {
+        HeliumEndline hendl;
+        msl << HLL::LL_INFO << "Saving global server config file..." << hendl;
         tinyxml2::XMLDocument doc;
         auto dec = doc.NewDeclaration("<?xml version=\"1.0\"?>");
         doc.InsertEndChild(dec);
-
+        
         auto root = doc.NewElement("HeliumServerConfig");
 
         if (root == NULL) {
-            spdlog::error("Failed to create root element for server.xml.");
+            msl << HLL::LL_ERR << "Failed to create root element for global server config file." << hendl;
             return -1;
         }
 
@@ -643,13 +647,17 @@ namespace Helium {
 
         auto error = doc.SaveFile(SERVER_FILENAME);
         if (error != tinyxml2::XMLError::XML_SUCCESS) {
-            spdlog::error("Failed to save server.xml.");
+            msl << HLL::LL_ERR << "Failed to save global server config file, your changes may not be saved." << hendl;
             return -1;
         }
+
+        msl << HLL::LL_INFO << "Done." << hendl;
 
         return 0;
     }
     int _stdcall CreateServerFile() {
+        HeliumEndline hendl;
+        msl << HLL::LL_INFO << "Creating global server config file..." << hendl;
         tinyxml2::XMLDocument doc;
         auto dec = doc.NewDeclaration("xml version=\"1.0\"");
         doc.InsertEndChild(dec);
@@ -657,7 +665,7 @@ namespace Helium {
         auto root = doc.NewElement("HeliumServerConfig");
 
         if (root == NULL) {
-            spdlog::error("Failed to create root element for server.xml.");
+            msl << HLL::LL_ERR << "Failed to create root element for global server config file." << hendl;
             return -1;
         }
 
@@ -680,9 +688,11 @@ namespace Helium {
 
         auto error = doc.SaveFile(SERVER_FILENAME);
         if (error != tinyxml2::XMLError::XML_SUCCESS) {
-            spdlog::error("Failed to save server.xml.");
+            msl << HLL::LL_ERR << "Failed to save global server config file, your changes may not be saved." << hendl;
             return -1;
         }
+
+        msl << HLL::LL_INFO << "Done." << hendl;
 
         return 0;
     }

@@ -4,6 +4,7 @@
 #include<spdlog/sinks/daily_file_sink.h>
 #include<string>
 #include<iostream>
+#include<sstream>
 namespace Helium {
 
 #define def int _stdcall
@@ -13,12 +14,15 @@ namespace Helium {
 
 	enum HeliumLoggerLevel
 	{
-		LOG_LEVEL_DEBUG,
-		LOG_LEVEL_INFO,
-		LOG_LEVEL_WARNING,
-		LOG_LEVEL_ERROR,
-		LOG_LEVEL_CRITICAL
+		LL_DBG,
+		LL_INFO,
+		LL_WARN,
+		LL_ERR,
+		LL_CRIT
 	};
+	typedef HeliumLoggerLevel HLL;
+	
+	struct HeliumEndline{};
 
 	class HeliumLogger
 	{
@@ -43,9 +47,11 @@ namespace Helium {
 		HeliumLogger& operator<<(int n);
 		HeliumLogger& operator<<(long n);
 		HeliumLogger& operator<<(double s);
+		HeliumLogger& operator<<(HeliumEndline hendl);
 	protected:
 		int loglevel;
 		string loggername;
+		stringstream buffer;
 		shared_ptr<spdlog::logger> log;
 		shared_ptr<spdlog::logger> filelog;
 	};

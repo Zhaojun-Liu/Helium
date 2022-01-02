@@ -1,4 +1,4 @@
-#include "logger.h"
+#include"logger.h"
 #include<spdlog/fmt/fmt.h>
 namespace Helium {
 	auto heliumdailysink = make_shared<spdlog::sinks::daily_file_sink_mt>("./logs/helium_log.txt", 23, 59);
@@ -30,138 +30,51 @@ namespace Helium {
 		return *this;
 	}
 	HeliumLogger& HeliumLogger::operator<<(string s) {
-		switch (this->loglevel) {
-		case HeliumLoggerLevel::LOG_LEVEL_DEBUG:
-			this->log->debug(s);
-			this->filelog->debug(s);
-			break;
-		case HeliumLoggerLevel::LOG_LEVEL_INFO:
-			this->log->info(s);
-			this->filelog->info(s);
-			break;
-		case HeliumLoggerLevel::LOG_LEVEL_WARNING:
-			this->log->warn(s);
-			this->filelog->warn(s);
-			break;
-		case HeliumLoggerLevel::LOG_LEVEL_ERROR:
-			this->log->error(s);
-			this->filelog->error(s);
-			break;
-		case HeliumLoggerLevel::LOG_LEVEL_CRITICAL:
-			this->log->critical(s);
-			this->filelog->critical(s);
-			break;
-		default:
-			break;
-		}
+		this->buffer << s;
 		return *this;
 	}
 	HeliumLogger& HeliumLogger::operator<<(const char* c) {
-		switch (this->loglevel) {
-		case HeliumLoggerLevel::LOG_LEVEL_DEBUG:
-			this->log->debug(c);
-			this->filelog->debug(c);
-			break;
-		case HeliumLoggerLevel::LOG_LEVEL_INFO:
-			this->log->info(c);
-			this->filelog->info(c);
-			break;
-		case HeliumLoggerLevel::LOG_LEVEL_WARNING:
-			this->log->warn(c);
-			this->filelog->warn(c);
-			break;
-		case HeliumLoggerLevel::LOG_LEVEL_ERROR:
-			this->log->error(c);
-			this->filelog->error(c);
-			break;
-		case HeliumLoggerLevel::LOG_LEVEL_CRITICAL:
-			this->log->critical(c);
-			this->filelog->critical(c);
-			break;
-		default:
-			break;
-		}
+		this->buffer << c;
 		return *this;
 	}
 	HeliumLogger& HeliumLogger::operator<<(int n) {
-		switch (this->loglevel) {
-		case HeliumLoggerLevel::LOG_LEVEL_DEBUG:
-			this->log->debug(n);
-			this->filelog->debug(n);
-			break;
-		case HeliumLoggerLevel::LOG_LEVEL_INFO:
-			this->log->info(n);
-			this->filelog->info(n);
-			break;
-		case HeliumLoggerLevel::LOG_LEVEL_WARNING:
-			this->log->warn(n);
-			this->filelog->warn(n);
-			break;
-		case HeliumLoggerLevel::LOG_LEVEL_ERROR:
-			this->log->error(n);
-			this->filelog->error(n);
-			break;
-		case HeliumLoggerLevel::LOG_LEVEL_CRITICAL:
-			this->log->critical(n);
-			this->filelog->critical(n);
-			break;
-		default:
-			break;
-		}
+		this->buffer << n;
 		return *this;
 	}
 	HeliumLogger& HeliumLogger::operator<<(long n) {
-		switch (this->loglevel) {
-		case HeliumLoggerLevel::LOG_LEVEL_DEBUG:
-			this->log->debug(n);
-			this->filelog->debug(n);
-			break;
-		case HeliumLoggerLevel::LOG_LEVEL_INFO:
-			this->log->info(n);
-			this->filelog->info(n);
-			break;
-		case HeliumLoggerLevel::LOG_LEVEL_WARNING:
-			this->log->warn(n);
-			this->filelog->warn(n);
-			break;
-		case HeliumLoggerLevel::LOG_LEVEL_ERROR:
-			this->log->error(n);
-			this->filelog->error(n);
-			break;
-		case HeliumLoggerLevel::LOG_LEVEL_CRITICAL:
-			this->log->critical(n);
-			this->filelog->critical(n);
-			break;
-		default:
-			break;
-		}
+		this->buffer << n;
 		return *this;
 	}
 	HeliumLogger& HeliumLogger::operator<<(double s) {
+		this->buffer << s;
+		return *this;
+	}
+	HeliumLogger& HeliumLogger::operator<<(HeliumEndline hendl) {
 		switch (this->loglevel) {
-		case HeliumLoggerLevel::LOG_LEVEL_DEBUG:
-			this->log->debug(s);
-			this->filelog->debug(s);
+		case HeliumLoggerLevel::LL_DBG:
+			this->log->debug(this->buffer.str());
+			this->filelog->debug(this->buffer.str());
 			break;
-		case HeliumLoggerLevel::LOG_LEVEL_INFO:
-			this->log->info(s);
-			this->filelog->info(s);
+		case HeliumLoggerLevel::LL_INFO:
+			this->log->info(this->buffer.str());
+			this->filelog->info(this->buffer.str());
 			break;
-		case HeliumLoggerLevel::LOG_LEVEL_WARNING:
-			this->log->warn(s);
-			this->filelog->warn(s);
+		case HeliumLoggerLevel::LL_WARN:
+			this->log->warn(this->buffer.str());
+			this->filelog->warn(this->buffer.str());
 			break;
-		case HeliumLoggerLevel::LOG_LEVEL_ERROR:
-			this->log->error(s);
-			this->filelog->error(s);
+		case HeliumLoggerLevel::LL_ERR:
+			this->log->error(this->buffer.str());
+			this->filelog->error(this->buffer.str());
 			break;
-		case HeliumLoggerLevel::LOG_LEVEL_CRITICAL:
-			this->log->critical(s);
-			this->filelog->critical(s);
+		case HeliumLoggerLevel::LL_CRIT:
+			this->log->critical(this->buffer.str());
+			this->filelog->critical(this->buffer.str());
 			break;
 		default:
 			break;
 		}
+		this->buffer.str("");
 		return *this;
 	}
 }

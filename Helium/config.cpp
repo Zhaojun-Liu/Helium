@@ -1,49 +1,51 @@
 #include"config.h"
 namespace Helium {
     vector<HeliumAttribute> attrlist;
+    HeliumLogger cfglogger("HeliumConfigReader");
 
     START_CONFIG_NODES_REGISTER;
 
     int ConfigNode::Print() {
-        cout << "NodeName:" << this->nodename << endl;
-        cout << "ValueType:" << this->valuetype << endl;
+        HeliumEndline hendl;
+        cfglogger << HLL::LL_DBG <<"NodeName:" << this->nodename << hendl;
+        cfglogger << "ValueType:" << this->valuetype << hendl;
         switch (this->valuetype)
         {
         [[likely]] case VALUE_TYPE_INTEGER:
             try {
                 auto value = std::get<int>(this->var); // access by type
-                cout << "Value:" << value << endl;
+                cfglogger << "Value:" << value << hendl;
             }
             catch (const std::bad_variant_access& e) { // in case a wrong type/index is used
-                cout << "Failed to get the value" << endl;
+                cfglogger << "Failed to get the value" << hendl;
             }
             break;
         [[likely]] case VALUE_TYPE_DOUBLE:
             try {
                 auto value = std::get<double>(this->var); // access by type
-                cout << "Value:" << value << endl;
+                cfglogger << "Value:" << value << hendl;
             }
             catch (const std::bad_variant_access& e) { // in case a wrong type/index is used
-                cout << "Failed to get the value" << endl;
+                cfglogger << "Failed to get the value" << hendl;
             }
             break;
         [[likely]] case VALUE_TYPE_STRING:
             try {
                 auto value = std::get<string>(this->var); // access by type
-                cout << "Value:" << value << endl;
+                cfglogger << "Value:" << value << hendl;
             }
             catch (const std::bad_variant_access& e) { // in case a wrong type/index is used
-                cout << "Failed to get the value" << endl;
+                cfglogger << "Failed to get the value" << hendl;
             }
             break;
         [[likely]] case VALUE_TYPE_BOOLEAN:
             try {
                 auto temp = std::get<bool>(this->var); // access by type
                 auto value = boolstr[temp];
-                cout << "Value:" << value << endl;
+                cfglogger << "Value:" << value << hendl;
             }
             catch (const std::bad_variant_access& e) { // in case a wrong type/index is used
-                cout << "Failed to get the value" << endl;
+                cfglogger << "Failed to get the value" << hendl;
             }
             break;
         [[unlikely]] default:
@@ -56,9 +58,11 @@ namespace Helium {
 
     [[nodiscard("Do not discard return value of SaveConfigFile() plz")]]
     int _stdcall SaveConfigFile() {
+        HeliumEndline hendl;
+        cfglogger << HLL::LL_INFO << "Saving config file..." << hendl;
         tinyxml2::XMLDocument doc;
         if (auto ret = doc.LoadFile(CFG_FILENAME); ret != 0) {
-            cout << "Failed to create XML file declaration" << endl;
+            cfglogger << HLL::LL_CRIT << "Failed to create XML file declaration for config file" << hendl;
             return -1;
         }
 
@@ -79,7 +83,7 @@ namespace Helium {
                     newelement->InsertEndChild(newtext);
                 }
                 catch (const std::bad_variant_access& e) { // in case a wrong type/index is used
-                    cout << "Failed to get the value" << endl;
+                    cfglogger << HLL::LL_CRIT << "Failed to get the value of : " << node.nodename << hendl;
                 }
                 break;
             [[likely]] case VALUE_TYPE_DOUBLE:
@@ -91,7 +95,7 @@ namespace Helium {
                     newelement->InsertEndChild(newtext);
                 }
                 catch (const std::bad_variant_access& e) { // in case a wrong type/index is used
-                    cout << "Failed to get the value" << endl;
+                    cfglogger << HLL::LL_CRIT << "Failed to get the value of : " << node.nodename << hendl;
                 }
                 break;
             [[likely]] case VALUE_TYPE_STRING:
@@ -103,7 +107,7 @@ namespace Helium {
                     newelement->InsertEndChild(newtext);
                 }
                 catch (const std::bad_variant_access& e) { // in case a wrong type/index is used
-                    cout << "Failed to get the value" << endl;
+                    cfglogger << HLL::LL_CRIT << "Failed to get the value of : " << node.nodename << hendl;
                 }
                 break;
             [[likely]] case VALUE_TYPE_BOOLEAN:
@@ -115,7 +119,7 @@ namespace Helium {
                     newelement->InsertEndChild(newtext);
                 }
                 catch (const std::bad_variant_access& e) { // in case a wrong type/index is used
-                    cout << "Failed to get the value" << endl;
+                    cfglogger << HLL::LL_CRIT << "Failed to get the value of : " << node.nodename << hendl;
                 }
                 break;
             [[unlikely]] default:
@@ -126,9 +130,11 @@ namespace Helium {
         }
 
         if (auto ret = doc.SaveFile(CFG_FILENAME); ret != 0) {
-            cout << "Failed to save config file" << endl;
+            cfglogger << HLL::LL_WARN << "Failed to save the main config file" << hendl;
             return -1;
         }
+
+        cfglogger << HLL::LL_INFO << "Done." << hendl;
 
         return 0;
     }
@@ -136,11 +142,13 @@ namespace Helium {
     [[nodiscard("Ignoring return value may cause config file create incorrectly.")]]
     int _stdcall CreateConfigFile()
     {
-        cout << "Enter CreateConfigFile()" << endl;
         const char* declaration = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+        HeliumEndline hendl;
+        cfglogger << HLL::LL_INFO << "Creating config file..." << hendl;
         tinyxml2::XMLDocument doc;
+
         if (auto ret = doc.Parse(declaration); ret != 0) {
-            cout << "Failed to create XML file declaration" << endl;
+            cfglogger << HLL::LL_CRIT << "Failed to create XML file declaration for config file" << hendl;
             return -1;
         }
 
@@ -161,7 +169,7 @@ namespace Helium {
                     newelement->InsertEndChild(newtext);
                 }
                 catch (const std::bad_variant_access& e) { // in case a wrong type/index is used
-                    cout << "Failed to get the value" << endl;
+                    cfglogger << HLL::LL_CRIT << "Failed to get the value of : " << node.nodename << hendl;
                 }
                 break;
             [[likely]] case VALUE_TYPE_DOUBLE:
@@ -173,7 +181,7 @@ namespace Helium {
                     newelement->InsertEndChild(newtext);
                 }
                 catch (const std::bad_variant_access& e) { // in case a wrong type/index is used
-                    cout << "Failed to get the value" << endl;
+                    cfglogger << HLL::LL_CRIT << "Failed to get the value of : " << node.nodename << hendl;
                 }
                 break;
             [[likely]] case VALUE_TYPE_STRING:
@@ -185,7 +193,7 @@ namespace Helium {
                     newelement->InsertEndChild(newtext);
                 }
                 catch (const std::bad_variant_access& e) { // in case a wrong type/index is used
-                    cout << "Failed to get the value" << endl;
+                    cfglogger << HLL::LL_CRIT << "Failed to get the value of : " << node.nodename << hendl;
                 }
                 break;
             [[likely]] case VALUE_TYPE_BOOLEAN:
@@ -197,7 +205,7 @@ namespace Helium {
                     newelement->InsertEndChild(newtext);
                 }
                 catch (const std::bad_variant_access& e) { // in case a wrong type/index is used
-                    cout << "Failed to get the value" << endl;
+                    cfglogger << HLL::LL_CRIT << "Failed to get the value of : " << node.nodename << hendl;
                 }
                 break;
             [[unlikely]] default:
@@ -208,22 +216,24 @@ namespace Helium {
         }
 
         if (auto ret = doc.SaveFile(CFG_FILENAME); ret != 0) {
-            cout << "Failed to save config file" << endl;
+            cfglogger << HLL::LL_WARN << "Failed to save config file" << hendl;
             return -1;
         }
+
+        cfglogger << HLL::LL_INFO << "Done." << hendl;
 
         return 0;
     }
 
     [[nodiscard("Ignoring return value may cause invaild attribute value.")]]
     int _stdcall ReadConfigFile() {
-        spdlog::debug("Reading config file...");
-
         tinyxml2::XMLDocument config;
         tinyxml2::XMLElement* pRootEle;
-
+        HeliumEndline hendl;
         stringstream sstr;
         string str;
+
+        cfglogger << HLL::LL_INFO << "Reading config file..." << hendl;
 
         auto ret = config.LoadFile(CFG_FILENAME);
 
@@ -273,18 +283,20 @@ namespace Helium {
             }
         }
 
-        cout << "Done." << endl;
+        cfglogger << HLL::LL_INFO << "Done" << hendl;
         return 0;
     }
 
     int _stdcall Config() {
+        HeliumEndline hendl;
+
         ADD_CONFIG_NODE("EnableTimeStamp", EnableTimeStamp, VALUE_TYPE_BOOLEAN, true);
         ADD_CONFIG_NODE("Language", Language, VALUE_TYPE_INTEGER, 0);
         ADD_CONFIG_NODE("PluginDirectory", PluginDirectory, VALUE_TYPE_STRING, "plugins");
         ADD_CONFIG_NODE("MaxQueue", MaxQueue, VALUE_TYPE_INTEGER, 2048);
 
         if (auto ret = ReadConfigFile(); ret == -1) {
-            cout << "Failed to read the config file" << endl;
+            cfglogger << HLL::LL_CRIT << "Failed to read the config file" << hendl;
             return -1;
         }
         return 0;
