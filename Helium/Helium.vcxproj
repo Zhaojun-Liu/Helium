@@ -153,7 +153,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="COPYING" />
     <ClCompile Include="events.cpp" />
     <ClCompile Include="exportfunction.cpp" />
     <ClCompile Include="logger.cpp" />

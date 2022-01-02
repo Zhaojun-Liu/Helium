@@ -49,7 +49,7 @@
 #include<spdlog/spdlog.h>
 #include"xmlutils.h"
 #include"events.h"
-#include"tinyxml2.h"
+#include"tinyxml2/tinyxml2.h"
 
 using namespace std;
 

@@ -164,11 +164,10 @@ namespace Helium {
         spdlog::set_level(spdlog::level::info);
 
         logger << HLL::LL_INFO << PROJECT_NAME_STR << " " << PROJECT_VER_STR << " " << PROJECT_DEVSTAT;
-        logger << " Copyright(C) 2021-2022 HeliumDevTeam";
-        logger << "This program comes with ABSOLUTELY NO WARRANTY; for details type \`show w\'.";
+        logger << " Copyright(C) 2021-2022 HeliumDevTeam" << hendl;
+        logger << "This program comes with ABSOLUTELY NO WARRANTY; for details type \'show w\'." << hendl;
         logger << "This is free software, and you are welcome to redistribute it";
-        logger <<"under certain conditions; type \`show c\' for details.";
-        logger << hendl;
+        logger << " under certain conditions; type \'show c\' for details." << hendl;
 
 #ifdef NOT_STABLE
         spdlog::set_level(spdlog::level::debug);

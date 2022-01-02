@@ -50,7 +50,7 @@ namespace Helium {
 			auto console_sink = make_shared<spdlog::logger>(logname, heliumconsolesink);
 
 			logname.clear();
-			logname.append(name).append("_filesink");
+			logname.append(name).append("_file");
 			auto file_logger = make_shared<spdlog::logger>(logname, heliumdailysink);
 
 			spdlog::register_logger(console_sink);

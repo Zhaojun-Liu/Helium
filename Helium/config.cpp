@@ -321,7 +321,7 @@ namespace Helium {
             }
         }
 
-        cfglogger << HLL::LL_INFO << "Done" << hendl;
+        cfglogger << HLL::LL_INFO << "Done." << hendl;
         return 0;
     }
 
