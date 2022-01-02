@@ -1,3 +1,31 @@
+/*
+* Helium Pre-Alpha 0.6.1
+*
+* Helium is a customizable extension system for Minecraft server which is written in C++.
+* This project is inspired by the [Fallen-Breath/MCDReforged](https://github.com/Fallen-Breath/MCDReforged).
+* We target to provide a liter, faster, and more customizable choice.
+* As a trade-off, we sacrifice its portability and the simplicity of writing extensions.
+* (we r sry that we haven't finish the first alpha version yet, if u r interested in our project, we recommend u to use mcdr as a temporary alternative)
+* This project is licensed by the GPL-3.0-or-later license.
+*
+* Very very special thank to contributors of the following projects:
+* [Fallen-Breath/MCDReforged](https://github.com/Fallen-Breath/MCDReforged)
+* [kpeeters/tree.hh](https://github.com/kpeeters/tree.hh)
+* [leethomason/tinyxml2](https://github.com/leethomason/tinyxml2/)
+* [jcwangxp/Crossline](https://github.com/jcwangxp/Crossline/)
+*
+* You can get the lastest source code and releases of Helium at :
+* https://github.com/Minecraft1248/Helium
+*
+* -------------------------------------------------------------------------------------------------------------------------------------------------------
+* Helium Pre-Alpha 0.6.1
+* Copyright (C) 2021-2022 HeliumDevTeam
+* This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+* This is free software, and you are welcome to redistribute it
+* under certain conditions; type `show c' for details.
+* -------------------------------------------------------------------------------------------------------------------------------------------------------
+*/
+
 #pragma once
 
 #ifndef _H_COMMANDS
@@ -6,12 +34,10 @@
 #include<map>
 #include<string>
 
-#include"tree.hh"
-#define REPLXX_STATIC
-#include"replxx/replxx.hxx"
+#include"Crossline/crossline.h"
+#include"tree.hh/tree.hh"
 namespace Helium {
 	using namespace std;
-	using namespace replxx;
 	//fully rewrited command module during the 72th national day xd
 
 	class _BasicHeliumCommand;
@@ -52,10 +78,6 @@ namespace Helium {
 	extern tree<_BasicHeliumCommand*> HeliumCommandTree;
 
 	bool CheckCommandValidance(tree<_BasicHeliumCommand*>::iterator cmdit);
-	int InitReplxx();
-	Replxx::completions_t hook_completion(std::string const& context, int& contextLen);
-	Replxx::hints_t hook_hint(std::string const& context, int& contextLen, Replxx::Color& color);
-	void hook_color(std::string const& context, Replxx::colors_t& colors);
 
 #pragma region CommandClassBase
 	class _BasicHeliumCommand {
