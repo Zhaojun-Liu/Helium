@@ -36,57 +36,40 @@
 * -------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
+#pragma once
+
+#include<Windows.h>
+#include<thread>
+#include<strstream>
+#include<iostream>
+#include<spdlog/spdlog.h>
+
+#include"logger.h"
+#include"parse.h"
+#include"config.h"
+#include"minecraftserver.h"
 #include"extension.h"
+#include"permissions.h"
+#include"initdir.h"
+#include"errorexit.h"
+
 namespace Helium {
-	HeliumLogger extlog("HeliumExtension");
+/*
+附注:此处版本号默认遵守 https://semver.org/lang/zh-CN/ 语义化版本控制规规范2.0.0
+版本格式：主版本号.次版本号.修订号，版本号递增规则如下：
 
-	int HeliumExtensionConfig::ReadConfig()	{
-		HeliumEndline hendl;
-		tinyxml2::XMLDocument doc;
-		if (auto ret = doc.LoadFile(this->configpath.c_str()); ret != tinyxml2::XMLError::XML_SUCCESS) {
-			extlog << HLL::LL_WARN << "Failed to load extension config file : " << this->configpath << hendl;
-			return -1;
-		}
+主版本号：当你做了不兼容的 API 修改，
+次版本号：当你做了向下兼容的功能性新增，
+修订号：当你做了向下兼容的问题修正。
+先行版本号及版本编译信息可以加到“主版本号.次版本号.修订号”的后面，作为延伸。(摘自semver.org)
+*/
+#define PROJECT_NAME_STR "Helium"
+#define PROJECT_VER_STR "0.6.2"
+#define PROJECT_DEVSTAT "Pre-Alpha"
+#define NOT_STABLE
+#define pass continue;
 
-		tinyxml2::XMLElement* root = doc.RootElement();
-		if (root == NULL) {
-			extlog << HLL::LL_WARN << "Failed to get root element of extension config file : " << this->configpath << hendl;
-			return -1;
-		}
-		return 0;
-	}
+	using namespace std;
 
-	HeliumExtension::HeliumExtension(string cfgname) {
-		HeliumEndline hendl;
-		this->extstat = EXT_STATUS_EMPTY;
-		this->config.Extconfigpath.append("./extensions/extconfigs").append(cfgname).append(".xml");
-		extlog << HLL::LL_INFO << "Reading extension config file : " << cfgname << ".xml" << hendl;
-		if (auto ret = this->config.ReadConfig(); ret != 0)
-			return ;
-		extlog << HLL::LL_INFO << "Done." << hendl;
-		this->extstat = EXT_STATUS_UNLOADED;
-		return ;
-	}
-	HeliumExtension::~HeliumExtension() {
-		this->extstat = EXT_STATUS_EMPTY;
-		return ;
-	}
-	int HeliumExtension::LoadExt() {
-		return 0;
-	}
-	int HeliumExtension::LockExt() {
-		return 0;
-	}
-	int HeliumExtension::UnloadExt() {
-		return 0;
-	}
-	int HeliumExtension::UnlockExt() {
-		return 0;
-	}
-	int HeliumExtension::ScanEventFunc() {
-		return 0;
-	}
-	int HeliumExtension::SendExportFuncMap() {
-		return 0;
-	}
+	int  _stdcall ProcessServerOutput(MinecraftServerInstance*, string, HANDLE, HANDLE);
 }

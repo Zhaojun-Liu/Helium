@@ -45,9 +45,9 @@
 #include<vector>
 #include<guiddef.h>
 #include<string>
-#include<spdlog/spdlog.h>
 
 #include"tinyxml2/tinyxml2.h"
+#include"logger.h"
 #include"minecraftserver.h"
 namespace Helium {
 

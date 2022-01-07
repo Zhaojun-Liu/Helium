@@ -36,57 +36,28 @@
 * -------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-#include"extension.h"
+#include"initdir.h"
+
 namespace Helium {
-	HeliumLogger extlog("HeliumExtension");
+	list<HeliumDirectory> heliumdir;
+	list<HeliumDirectoryInitPolicy> policystat;
 
-	int HeliumExtensionConfig::ReadConfig()	{
-		HeliumEndline hendl;
-		tinyxml2::XMLDocument doc;
-		if (auto ret = doc.LoadFile(this->configpath.c_str()); ret != tinyxml2::XMLError::XML_SUCCESS) {
-			extlog << HLL::LL_WARN << "Failed to load extension config file : " << this->configpath << hendl;
-			return -1;
-		}
-
-		tinyxml2::XMLElement* root = doc.RootElement();
-		if (root == NULL) {
-			extlog << HLL::LL_WARN << "Failed to get root element of extension config file : " << this->configpath << hendl;
-			return -1;
-		}
+	int InitHeliumDirectory() {
 		return 0;
 	}
-
-	HeliumExtension::HeliumExtension(string cfgname) {
-		HeliumEndline hendl;
-		this->extstat = EXT_STATUS_EMPTY;
-		this->config.Extconfigpath.append("./extensions/extconfigs").append(cfgname).append(".xml");
-		extlog << HLL::LL_INFO << "Reading extension config file : " << cfgname << ".xml" << hendl;
-		if (auto ret = this->config.ReadConfig(); ret != 0)
-			return ;
-		extlog << HLL::LL_INFO << "Done." << hendl;
-		this->extstat = EXT_STATUS_UNLOADED;
-		return ;
-	}
-	HeliumExtension::~HeliumExtension() {
-		this->extstat = EXT_STATUS_EMPTY;
-		return ;
-	}
-	int HeliumExtension::LoadExt() {
+	int AddHeliumDirectory(string path, string hint, HeliumDirectoryInitPolicy policy) {
 		return 0;
 	}
-	int HeliumExtension::LockExt() {
+	int AddHeliumDirectory(HeliumDirectory* dir) {
 		return 0;
 	}
-	int HeliumExtension::UnloadExt() {
+	int DeleteHeliumDirectory(string path) {
 		return 0;
 	}
-	int HeliumExtension::UnlockExt() {
+	int BlockPolicy(HeliumDirectoryInitPolicy policy) {
 		return 0;
 	}
-	int HeliumExtension::ScanEventFunc() {
-		return 0;
-	}
-	int HeliumExtension::SendExportFuncMap() {
+	int ReplacePolicy(HeliumDirectoryInitPolicy policy, HeliumDirectoryInitPolicy replace) {
 		return 0;
 	}
 }

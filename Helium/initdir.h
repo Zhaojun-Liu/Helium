@@ -36,57 +36,40 @@
 * -------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-#include"extension.h"
+#pragma once
+
+#ifndef _H_INITDIR
+#define _H_INITDIR
+
+#include<list>
+#include<string>
+
 namespace Helium {
-	HeliumLogger extlog("HeliumExtension");
+#define HDIP_BLOCKED -1;
 
-	int HeliumExtensionConfig::ReadConfig()	{
-		HeliumEndline hendl;
-		tinyxml2::XMLDocument doc;
-		if (auto ret = doc.LoadFile(this->configpath.c_str()); ret != tinyxml2::XMLError::XML_SUCCESS) {
-			extlog << HLL::LL_WARN << "Failed to load extension config file : " << this->configpath << hendl;
-			return -1;
-		}
+	using namespace std;
 
-		tinyxml2::XMLElement* root = doc.RootElement();
-		if (root == NULL) {
-			extlog << HLL::LL_WARN << "Failed to get root element of extension config file : " << this->configpath << hendl;
-			return -1;
-		}
-		return 0;
-	}
+	enum HeliumDirectoryInitPolicy {
+		HDIP_CREATE_WARING,
+		HDIP_CREATE_SLIENT,
+		HDIP_CREATE_QUIT,
+		HDIP_IGNORE_WARING,
+		HDIP_IGNORE_SLIENT,
+		HDIP_IGNORE_QUIT,
+	};
 
-	HeliumExtension::HeliumExtension(string cfgname) {
-		HeliumEndline hendl;
-		this->extstat = EXT_STATUS_EMPTY;
-		this->config.Extconfigpath.append("./extensions/extconfigs").append(cfgname).append(".xml");
-		extlog << HLL::LL_INFO << "Reading extension config file : " << cfgname << ".xml" << hendl;
-		if (auto ret = this->config.ReadConfig(); ret != 0)
-			return ;
-		extlog << HLL::LL_INFO << "Done." << hendl;
-		this->extstat = EXT_STATUS_UNLOADED;
-		return ;
-	}
-	HeliumExtension::~HeliumExtension() {
-		this->extstat = EXT_STATUS_EMPTY;
-		return ;
-	}
-	int HeliumExtension::LoadExt() {
-		return 0;
-	}
-	int HeliumExtension::LockExt() {
-		return 0;
-	}
-	int HeliumExtension::UnloadExt() {
-		return 0;
-	}
-	int HeliumExtension::UnlockExt() {
-		return 0;
-	}
-	int HeliumExtension::ScanEventFunc() {
-		return 0;
-	}
-	int HeliumExtension::SendExportFuncMap() {
-		return 0;
-	}
+	struct HeliumDirectory {
+		string dirpath;
+		string extrahint;
+		HeliumDirectoryInitPolicy policy;
+	};
+
+	int InitHeliumDirectory();
+	int AddHeliumDirectory(string path, string hint, HeliumDirectoryInitPolicy policy);
+	int AddHeliumDirectory(HeliumDirectory* dir);
+	int DeleteHeliumDirectory(string path);
+	int BlockPolicy(HeliumDirectoryInitPolicy policy);
+	int ReplacePolicy(HeliumDirectoryInitPolicy policy, HeliumDirectoryInitPolicy replace);
 }
+
+#endif

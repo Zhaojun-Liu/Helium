@@ -91,7 +91,7 @@ namespace Helium {
 
 	public:
 		HeliumExtension(string cfgname);
-		~HeiumExtension();
+		~HeliumExtension();
 
 		int LoadExt();
 		int LockExt();

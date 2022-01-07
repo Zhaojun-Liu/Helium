@@ -36,60 +36,16 @@
 * -------------------------------------------------------------------------------------------------------------------------------------------------------
 */
 
-#pragma region Includes
-#include<Windows.h>
-#include<thread>
-#include<strstream>
-#include<iostream>
+#include"Helium.h"
 
-#include"logger.h"
-#include"parse.h"
-#include"config.h"
-#include"minecraftserver.h"
-#include"extension.h"
-#include"permissions.h"
-
-using namespace std;
 using namespace Helium;
 
 namespace Helium {
     using namespace std;
-    int  _stdcall ProcessServerOutput(MinecraftServerInstance*, string, HANDLE, HANDLE);
-#pragma endregion
 
-#pragma region Macros
-
-    /*
-    附注:此处版本号默认遵守 https://semver.org/lang/zh-CN/ 语义化版本控制规规范2.0.0
-    版本格式：主版本号.次版本号.修订号，版本号递增规则如下：
-
-    主版本号：当你做了不兼容的 API 修改，
-    次版本号：当你做了向下兼容的功能性新增，
-    修订号：当你做了向下兼容的问题修正。
-    先行版本号及版本编译信息可以加到“主版本号.次版本号.修订号”的后面，作为延伸。(摘自semver.org)
-    */
-
-#define PROJECT_NAME_STR "Helium"
-#define PROJECT_VER_STR "0.6.1"
-#define PROJECT_DEVSTAT "Pre-Alpha"
-#define NOT_STABLE
-#define pass continue;
-#pragma endregion
-
-#pragma region Constants
-#define print(a) std::cout<< a << endl;
-#pragma endregion
-
-#pragma region Types
-
-#pragma endregion
-
-#pragma region Var
     HeliumLogger logger("HeliumMain");
     map<string, HeliumExtension> extensions;
     vector<MinecraftServerInstance> serverlist;
-
-#pragma endregion
 
 #pragma region ServerFunc
     int _stdcall StartInfoThread(MinecraftServerInstance* lpIns) {
@@ -97,7 +53,6 @@ namespace Helium {
         tempthread.detach();
         this_thread::yield();
 
-        spdlog::debug("Output processing thread create successfully at 0x{}", "awa");
         return lpIns->GerServerPid();
     }
     int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread, HANDLE hProc) {
@@ -152,8 +107,6 @@ namespace Helium {
 }
 #pragma endregion
 
-
-
 #pragma region Main
 
     int main() {
@@ -163,35 +116,34 @@ namespace Helium {
         cin.tie(0);
         spdlog::set_level(spdlog::level::info);
 
-        logger << HLL::LL_INFO << PROJECT_NAME_STR << " " << PROJECT_VER_STR << " " << PROJECT_DEVSTAT;
-        logger << " Copyright(C) 2021-2022 HeliumDevTeam" << hendl;
+        logger << HLL::LL_INFO << PROJECT_NAME_STR << " " << PROJECT_VER_STR << " " << PROJECT_DEVSTAT << hendl;
+        logger << "Copyright(C) 2021-2022 HeliumDevTeam" << hendl;
         logger << "This program comes with ABSOLUTELY NO WARRANTY; for details type \'show w\'." << hendl;
         logger << "This is free software, and you are welcome to redistribute it";
-        logger << " under certain conditions; type \'show c\' for details." << hendl;
+        logger << "under certain conditions; type \'show c\' for details." << hendl;
 
 #ifdef NOT_STABLE
         spdlog::set_level(spdlog::level::debug);
         logger << HLL::LL_WARN << "This is a early version of Helium, don't use this in a productive environment." << hendl;
+        logger << HLL::LL_WARN << "You can report any bugs you find by sending informations to our E-mail : helium_devteam@outlook.com" << hendl;
 #endif
 
+        if (auto ret = InitHeliumDirectory(); ret != 0) {
+            HeliumErrorExit(true, true, "Failed to initialize directory,exiting...");
+        }
+
         if (auto ret = Config(); ret != 0) {
-            logger << HLL::LL_CRIT << "Failed to read config,exiting..." << hendl;
-            system("pause");
-            return -1;
+            HeliumErrorExit(true, true, "Failed to read config,exiting...");
         }
 
         if (auto ret = ReadServerFile(); ret != 0) {
             CreateServerFile();
-            logger << HLL::LL_CRIT << "Failed to read global server config,exiting..." << hendl;
-            system("pause");
-            return -1;
+            HeliumErrorExit(true, true, "Failed to read global server config,exiting...");
         }
 
         if (auto ret = ReadPermissionFile(); ret != 0) {
             CreatePermissionFile();
-            logger << HLL::LL_CRIT << "Failed to read permission file,exiting..." << hendl;
-            system("pause");
-            return -1;
+            HeliumErrorExit(true, true, "Failed to read permission file,exiting...");
         }
 
 #undef ins
@@ -201,7 +153,7 @@ namespace Helium {
             if (ins->GetAutoStart()) {
                 logger << HLL::LL_INFO << "Starting Minecraft server : " << ins->GetServerName() << hendl;
                 ret = ins->StartServer();
-                logger << HLL::LL_INFO << "Started with return code : " << ret << hendl;
+                logger << HLL::LL_INFO << "Minecraft Server started with return code : " << ret << hendl;
                 StartInfoThread(&(*ins));
             }
             else {
