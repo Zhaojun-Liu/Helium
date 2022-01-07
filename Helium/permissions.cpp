@@ -43,7 +43,7 @@ namespace Helium {
 	HeliumLogger log("HeliumPermissionReader");
 
 	[[nodiscard("Ignoring return value of ReadPermissionFile()")]]
-	int _stdcall ReadPermissionFile() {
+	int ReadPermissionFile() {
 		tinyxml2::XMLDocument permdoc;
 		PermissionNamespace tempns;
 		auto lastxmlerr = permdoc.LoadFile(PERMISSION_FILENAME);
@@ -189,7 +189,7 @@ namespace Helium {
 		return 0;
 	}
 	[[nodiscard("Ignoring return value of SavePermissionFile()")]]
-	int _stdcall SavePermissionFile() {
+	int SavePermissionFile() {
 		tinyxml2::XMLDocument doc;
 		doc.NewDeclaration("?xml version=\"1.0\"?");
 
@@ -289,7 +289,7 @@ namespace Helium {
 		return 0;
 	}
 	[[nodiscard("Ignoring return value of CreatePermissionFile()")]]
-	int _stdcall CreatePermissionFile() {
+	int CreatePermissionFile() {
 		tinyxml2::XMLDocument doc;
 		HeliumEndline hendl;
 

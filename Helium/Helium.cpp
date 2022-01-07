@@ -48,14 +48,14 @@ namespace Helium {
     vector<MinecraftServerInstance> serverlist;
 
 #pragma region ServerFunc
-    int _stdcall StartInfoThread(MinecraftServerInstance* lpIns) {
+    int StartInfoThread(MinecraftServerInstance* lpIns) {
         thread tempthread(ProcessServerOutput, lpIns, lpIns->GetServerName(), lpIns->GetRDInfo().hStdOutRead, lpIns->GetThreadHandle());
         tempthread.detach();
         this_thread::yield();
 
         return lpIns->GerServerPid();
     }
-    int  _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread, HANDLE hProc) {
+    int ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread, HANDLE hProc) {
         HeliumEndline hendl;
         logger << HLL::LL_INFO << servername << " server started at PID : " << (long)ptr->GerServerPid() << hendl;
         char out_buffer[BUFSIZE];

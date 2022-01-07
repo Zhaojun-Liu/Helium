@@ -63,9 +63,9 @@ namespace Helium {
 
 	extern const char* permdescstr[];
 
-	int _stdcall ReadPermissionFile();
-	int _stdcall CreatePermissionFile();
-	int _stdcall SavePermissionFile();
+	int ReadPermissionFile();
+	int CreatePermissionFile();
+	int SavePermissionFile();
 
 	struct PermissionNamespace {
 		GUID serverguid;
