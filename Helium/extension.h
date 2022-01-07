@@ -45,11 +45,13 @@
 #include<vector>
 #include<iostream>
 #include<map>
-#include<Windows.h>
 #include<spdlog/spdlog.h>
+#include<boost/dll.hpp>
+
 #include"xmlutils.h"
 #include"events.h"
 #include"tinyxml2/tinyxml2.h"
+#include"logger.h"
 
 using namespace std;
 
@@ -88,17 +90,22 @@ namespace Helium {
 		friend class HeliumExtensionFuncs;
 
 	public:
-		int _stdcall LoadExt();
-		int _stdcall LockExt();
-		int _stdcall UnlockExt();
-		int _stdcall UnloadExt();
-		int _stdcall SetConfigPath(string path);
+		HeliumExtension(string cfgname);
+		~HeiumExtension();
+
+		int LoadExt();
+		int LockExt();
+		int UnlockExt();
+		int UnloadExt();
+		int ScanEventFunc();
+		int SendExportFuncMap();
 
 		enum ExtStat {
 			EXT_STATUS_EMPTY,
 			EXT_STATUS_LOADING,
 			EXT_STATUS_LOADED,
 			EXT_STATUS_UNLOADING,
+			EXT_STATUS_UNLOADED,
 			EXT_STATUS_LOCKED
 		};
 	private:

@@ -38,19 +38,55 @@
 
 #include"extension.h"
 namespace Helium {
+	HeliumLogger extlog("HeliumExtension");
+
 	int HeliumExtensionConfig::ReadConfig()	{
+		HeliumEndline hendl;
 		tinyxml2::XMLDocument doc;
-		if (auto ret = doc.LoadFile(this->configpath.c_str())
-			; ret != tinyxml2::XMLError::XML_SUCCESS) {
-			spdlog::critical("Failed to load extension config file : " + this->configpath);
+		if (auto ret = doc.LoadFile(this->configpath.c_str()); ret != tinyxml2::XMLError::XML_SUCCESS) {
+			extlog << HLL::LL_WARN << "Failed to load extension config file : " << this->configpath << hendl;
 			return -1;
 		}
 
 		tinyxml2::XMLElement* root = doc.RootElement();
 		if (root == NULL) {
-			spdlog::critical("Failed to get root element of extension config file : " + this->configpath);
+			extlog << HLL::LL_WARN << "Failed to get root element of extension config file : " << this->configpath << hendl;
 			return -1;
 		}
+		return 0;
+	}
+
+	HeliumExtension::HeliumExtension(string cfgname) {
+		HeliumEndline hendl;
+		this->extstat = EXT_STATUS_EMPTY;
+		this->config.Extconfigpath.append("./extensions/").append(cfgname).append(".xml");
+		extlog << HLL::LL_INFO << "Reading extension config file : " << cfgname << ".xml" << hendl;
+		if (auto ret = this->config.ReadConfig(); ret != 0)
+			return ;
+		extlog << HLL::LL_INFO << "Done." << hendl;
+		this->extstat = EXT_STATUS_UNLOADED;
+		return ;
+	}
+	HeliumExtension::~HeliumExtension() {
+		this->extstat = EXT_STATUS_EMPTY;
+		return ;
+	}
+	int HeliumExtension::LoadExt() {
+		return 0;
+	}
+	int HeliumExtension::LockExt() {
+		return 0;
+	}
+	int HeliumExtension::UnloadExt() {
+		return 0;
+	}
+	int HeliumExtension::UnlockExt() {
+		return 0;
+	}
+	int HeliumExtension::ScanEventFunc() {
+		return 0;
+	}
+	int HeliumExtension::SendExportFuncMap() {
 		return 0;
 	}
 }
