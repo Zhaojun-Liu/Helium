@@ -79,7 +79,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);${ProjectDir}\spdlog\;${ProjectDir}\Crossline;${ProjectDir}\tinyxml2;${ProjectDir}\tree.hh</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);${ProjectDir}\spdlog\;${ProjectDir}\tinyxml2\;${ProjectDir}\tree.hh\;${ProjectDir}\replxx\</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -124,6 +124,7 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CallingConvention>StdCall</CallingConvention>
+      <DisableSpecificWarnings>4215;4273;4101</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -160,6 +161,17 @@
     <ClCompile Include="logger.cpp" />
     <ClCompile Include="Helium.cpp" />
     <ClCompile Include="parse.cpp" />
+    <ClCompile Include="replxx\conversion.cxx" />
+    <ClCompile Include="replxx\ConvertUTF.cpp" />
+    <ClCompile Include="replxx\escape.cxx" />
+    <ClCompile Include="replxx\history.cxx" />
+    <ClCompile Include="replxx\io.cxx" />
+    <ClCompile Include="replxx\prompt.cxx" />
+    <ClCompile Include="replxx\replxx.cxx" />
+    <ClCompile Include="replxx\replxx_impl.cxx" />
+    <ClCompile Include="replxx\util.cxx" />
+    <ClCompile Include="replxx\wcwidth.cpp" />
+    <ClCompile Include="replxx\windows.cxx" />
     <ClCompile Include="tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="config.cpp" />
@@ -177,6 +189,20 @@
     <ClInclude Include="initdir.h" />
     <ClInclude Include="logger.h" />
     <ClInclude Include="parse.h" />
+    <ClInclude Include="replxx\conversion.hxx" />
+    <ClInclude Include="replxx\ConvertUTF.h" />
+    <ClInclude Include="replxx\escape.hxx" />
+    <ClInclude Include="replxx\history.hxx" />
+    <ClInclude Include="replxx\io.hxx" />
+    <ClInclude Include="replxx\killring.hxx" />
+    <ClInclude Include="replxx\prompt.hxx" />
+    <ClInclude Include="replxx\replxx.h" />
+    <ClInclude Include="replxx\replxx.hxx" />
+    <ClInclude Include="replxx\replxx_impl.hxx" />
+    <ClInclude Include="replxx\unicodestring.hxx" />
+    <ClInclude Include="replxx\utf8string.hxx" />
+    <ClInclude Include="replxx\util.hxx" />
+    <ClInclude Include="replxx\windows.hxx" />
     <ClInclude Include="tinyxml2\tinyxml2.h" />
     <ClInclude Include="tree.hh\tree.hh" />
     <ClInclude Include="utils.h" />

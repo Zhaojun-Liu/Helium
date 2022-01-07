@@ -27,6 +27,7 @@
 */
 
 #include"commands.h"
+
 namespace Helium {
 	tree<_BasicHeliumCommand*> HeliumCommandTree;
 

@@ -34,10 +34,12 @@
 #include<map>
 #include<string>
 
-#include"Crossline/crossline.h"
 #include"tree.hh/tree.hh"
+#define REPLXX_STATIC
+#include"replxx/replxx.hxx"
 namespace Helium {
 	using namespace std;
+	using namespace replxx;
 	//fully rewrited command module during the 72th national day xd
 
 	class _BasicHeliumCommand;
