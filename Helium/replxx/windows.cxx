@@ -4,7 +4,7 @@
 
 #include "windows.hxx"
 #include "conversion.hxx"
-#include "io.hxx"
+#include "terminal.hxx"
 
 using namespace std;
 
@@ -113,7 +113,7 @@ int win_write( HANDLE out_, bool autoEscape_, char const* str_, int size_ ) {
 						int toWrite( static_cast<int>( str_ - s ) );
 						WriteConsoleA( out_, s, static_cast<DWORD>( toWrite ), &nWritten, nullptr );
 						count += nWritten;
-						if ( nWritten != toWrite ) {
+						if ( static_cast<int>( nWritten ) != toWrite ) {
 							s = str_ = nullptr;
 							break;
 						}
