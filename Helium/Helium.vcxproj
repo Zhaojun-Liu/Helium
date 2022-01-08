@@ -124,7 +124,7 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CallingConvention>StdCall</CallingConvention>
-      <DisableSpecificWarnings>4215;4273;4101</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4215;4273;4101;26812</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

@@ -127,6 +127,13 @@ namespace Helium {
         logger << HLL::LL_WARN << "This is a early version of Helium, don't use this in a productive environment." << hendl;
         logger << HLL::LL_WARN << "You can report any bugs you find by sending informations to our E-mail : helium_devteam@outlook.com" << hendl;
 #endif
+        logger << HLL::LL_DBG << "Start adding dirs" << hendl;
+        AddHeliumDirectory("./extensions", "The \"extension\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
+        AddHeliumDirectory("./extensions/extconfigs", "The \"extensions/extconfigs\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
+        AddHeliumDirectory("./logs", "The \"logs\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
+        AddHeliumDirectory("./scripts", "The \"scripts\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
+        AddHeliumDirectory("./scripts/initscripts", "The \"scripts/initscripts\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
+        logger << HLL::LL_DBG << "End adding dirs" << hendl;
 
         if (auto ret = InitHeliumDirectory(); ret != 0) {
             HeliumErrorExit(true, true, "Failed to initialize directory,exiting...");

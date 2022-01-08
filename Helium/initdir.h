@@ -42,14 +42,17 @@
 #define _H_INITDIR
 
 #include<list>
+#include<map>
 #include<string>
 
-namespace Helium {
-#define HDIP_BLOCKED -1;
+#include"logger.h"
+#include"errorexit.h"
 
+namespace Helium {
 	using namespace std;
 
 	enum HeliumDirectoryInitPolicy {
+		HDIP_BLOCKED,
 		HDIP_CREATE_WARING,
 		HDIP_CREATE_SLIENT,
 		HDIP_CREATE_QUIT,
@@ -57,11 +60,19 @@ namespace Helium {
 		HDIP_IGNORE_SLIENT,
 		HDIP_IGNORE_QUIT,
 	};
+	typedef HeliumDirectoryInitPolicy HDIP;
 
 	struct HeliumDirectory {
 		string dirpath;
 		string extrahint;
 		HeliumDirectoryInitPolicy policy;
+
+		bool operator==(HeliumDirectory dir) {
+			if (this->dirpath == dir.dirpath
+				&& this->extrahint == dir.extrahint
+				&& this->policy == dir.policy) return true;
+			return false;
+		}
 	};
 
 	int InitHeliumDirectory();
