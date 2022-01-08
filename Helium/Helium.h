@@ -72,4 +72,10 @@ namespace Helium {
 	using namespace std;
 
 	int ProcessServerOutput(MinecraftServerInstance*, string, HANDLE, HANDLE);
+	int HeliumMain(int argc, char* argv[]);
+	void HeliumInitOutput();
+	int HeliumInit();
+	int HeliumEnvInit();
+	int HeliumFin();
+	int HeliumStartServer();
 }

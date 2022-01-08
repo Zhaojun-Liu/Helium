@@ -87,7 +87,7 @@ namespace Helium {
 	int AddHeliumDirectory(string path, string hint, HeliumDirectoryInitPolicy policy) {
 		HeliumEndline hendl;
 		dirlog << HLL::LL_DBG << path << hendl;
-		HeliumDirectory dir{ path, hint, policy };
+		HeliumDirectory dir{ .dirpath = path, .extrahint = hint, .policy = policy };
 		heliumdir.push_back(dir);
 		return 0;
 	}

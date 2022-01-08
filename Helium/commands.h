@@ -33,6 +33,7 @@
 
 #include<map>
 #include<string>
+#include<functional>
 
 #include"tree.hh/tree.hh"
 #define REPLXX_STATIC
@@ -40,20 +41,16 @@
 namespace Helium {
 	using namespace std;
 	using namespace replxx;
+	using namespace placeholders;
 	//fully rewrited command module during the 72th national day xd
 
 	class _BasicHeliumCommand;
-	class CommandConstantString;
-	class CommandPlaceHolder;
-
+	class _CommandConstantString;
 	class _CommandArgument;
+
 	class _ArgumentNumber;
 	class CommandArgumentInt;
-	class CommandArgumentLongInt;
 	class CommandArgumentFloat;
-	class CommandArgumentLongFloat;
-	class CommandArgumentDouble;
-	class CommandArgumentLongDouble;
 	class _ArgumentString;
 	class CommandArgumentString;
 	class CommandArgumentQuotableString;
@@ -62,24 +59,17 @@ namespace Helium {
 	class _CommandEntry;
 	class CommandEntry;
 
-	class _CommandRoot;
-
-	class _CommandBinding;
-	class SingleFixedCommandBind;
-	class SingleVariableCommandBind;
-	class MultiFixedCommandBind;
-	class MultiVariableCommandBind;
-
-
-	class _BasicHeliumCommandQueue;
-
-	class ShellCommandQueue;
-	class RuntimeCommandQueue;
-	class SaveableCommandQueue;
+	class _CommandBind;
+	class CommandBind;
 
 	extern tree<_BasicHeliumCommand*> HeliumCommandTree;
 
 	bool CheckCommandValidance(tree<_BasicHeliumCommand*>::iterator cmdit);
+	int InitShellEnv();
+	Replxx::hints_t HintCallBack(string const& context, int& len, Replxx::Color& color);
+	Replxx::completions_t CompletionCallBack(string const& context, int& len);
+	void ColorCallBack(string const& str, Replxx::colors_t& colors);
+	Replxx::ACTION_RESULT KeyMessage(Replxx& replxx, std::string s, char32_t);
 
 #pragma region CommandClassBase
 	class _BasicHeliumCommand {
@@ -87,16 +77,13 @@ namespace Helium {
 		string commanddesc;
 		string commandstr;
 
-		bool listenabled;
-		bool execenabled;
-		bool hintenabled;
-		bool autocompenabled;
+		bool callback;
+		bool list;
+		bool exec;
+		bool hint;
+		bool autocomp;
 	public:
 		virtual _BasicHeliumCommand* GetCommandClassType();
-	};
-	class _CommandRoot : virtual public _BasicHeliumCommand {
-	public:
-		virtual _CommandRoot* GetCommandClassType();
 	};
 	class _CommandArgument : virtual public _BasicHeliumCommand {
 	protected:
@@ -107,20 +94,15 @@ namespace Helium {
 		virtual bool EnablePreprocessing();
 		virtual bool DisablePreprocessing();
 	};
-	class _CommandEntry : virtual public _BasicHeliumCommand {
-	protected:
-		int exectype;
-		union execinfo {
-
-		};
-
-		bool hasargument;
+	class _CommandConstantString : virtual public _BasicHeliumCommand {
 	public:
-		virtual _CommandEntry* GetCommandClassType();
+		virtual _CommandConstantString* GetCommandClassType();
 	};
-	class _CommandBinding : virtual public _BasicHeliumCommand {
+
+
+	class _CommandBind : virtual public _CommandConstantString {
 	public:
-		virtual _CommandBinding* GetCommandClassType();
+		virtual _CommandBind* GetCommandClassType();
 	};
 	class _ArgumentNumber : public _CommandArgument {
 	public:
@@ -138,6 +120,8 @@ namespace Helium {
 	};
 #pragma endregion
 
+
+
 	class CommandArgumentInt : public _ArgumentNumber {
 	public:
 		virtual CommandArgumentInt* GetCommandClassType();
@@ -149,17 +133,6 @@ namespace Helium {
 		int upperbound;
 		int lowerbound;
 	};
-	class CommandArgumentLongInt : public _ArgumentNumber {
-	public:
-		virtual CommandArgumentLongInt* GetCommandClassType();
-		virtual long int SetUpperbound(long int up);
-		virtual long int SetLowerbound(long int down);
-		virtual long int GetUpperbound(long int up);
-		virtual long int GetLowerbound(long int down);
-	protected:
-		long int upperbound;
-		long int lowerbound;
-	};
 	class CommandArgumentFloat : public _ArgumentNumber {
 	public:
 		virtual CommandArgumentFloat* GetCommandClassType();
@@ -170,39 +143,6 @@ namespace Helium {
 	protected:
 		float upperbound;
 		float lowerbound;
-	};
-	class CommandArgumentLongFloat : public _ArgumentNumber {
-	public:
-		virtual CommandArgumentLongFloat* GetCommandClassType();
-		virtual long float SetUpperbound(long float up);
-		virtual long float SetLowerbound(long float down);
-		virtual long float GetUpperbound(long float up);
-		virtual long float GetLowerbound(long float down);
-	protected:
-		long float upperbound;
-		long float lowerbound;
-	};
-	class CommandArgumentDouble : public _ArgumentNumber {
-	public:
-		virtual CommandArgumentDouble* GetCommandClassType();
-		virtual double SetUpperbound(double up);
-		virtual double SetLowerbound(double down);
-		virtual double GetUpperbound(double up);
-		virtual double GetLowerbound(double down);
-	protected:
-		double upperbound;
-		double lowerbound;
-	};
-	class CommandArgumentLongDouble : public _ArgumentNumber {
-	public:
-		virtual CommandArgumentLongDouble* GetCommandClassType();
-		virtual long double SetUpperbound(long double up);
-		virtual long double SetLowerbound(long double down);
-		virtual long double GetUpperbound(long double up);
-		virtual long double GetLowerbound(long double down);
-	protected:
-		long double upperbound;
-		long double lowerbound;
 	};
 	class CommandArgumentString : public _ArgumentString {
 	public:
@@ -216,57 +156,13 @@ namespace Helium {
 	public:
 		virtual CommandArgumentGreedyString* GetCommandClassType();
 	};
-	class CommandConstantString : virtual public _BasicHeliumCommand {
-	public:
-		virtual CommandConstantString* GetCommandClassType();
-	};
-	class CommandPlaceHolder : virtual public _BasicHeliumCommand {
-	public:
-		virtual CommandPlaceHolder* GetCommandClassType();
-	};
-	class CommandEntry : virtual public _CommandEntry {
+	class CommandEntry : virtual public _CommandConstantString {
 	public:
 		virtual CommandEntry* GetCommandClassType();
 	};
-	class SingleFixedCommandBind : virtual public _CommandBinding {
+	class CommandBind : virtual public _CommandBind {
 	public:
-		virtual SingleFixedCommandBind* GetCommandClassType();
+		virtual CommandBind* GetCommandClassType();
 	};
-	class SingleVariableCommandBind : virtual public _CommandBinding {
-	public:
-		virtual SingleVariableCommandBind* GetCommandClassType();
-	};
-	class MultiFixedCommandBind : virtual public _CommandBinding {
-	public:
-		virtual MultiFixedCommandBind* GetCommandClassType();
-	};
-	class MultiVariableCommandBind : virtual public _CommandBinding {
-	public:
-		virtual MultiVariableCommandBind* GetCommandClassType();
-	};
-
-
-	class _BasicHeliumCommandQueue {
-	protected:
-		int queuetype;
-		int queuestate;
-		vector<string>::iterator execit;
-
-		vector<string> originalcommands;
-	public:
-		virtual _BasicHeliumCommandQueue* GetCommandQueueClassType();
-	};
-	class ShellCommandQueue : virtual public _BasicHeliumCommandQueue {
-	public:
-		virtual ShellCommandQueue* GetCommandQueueClassType();
-	};
-	class RuntimeCommandQueue : virtual public _BasicHeliumCommandQueue {
-	public:
-		virtual RuntimeCommandQueue* GetCommandQueueClassType();
-	};
-	class SaveableCommandQueue : virtual public _BasicHeliumCommandQueue {
-	public:
-		virtual SaveableCommandQueue* GetCommandQueueClassType();
-	};
-#endif // !_H_COMMANDS
 }
+#endif // !_H_COMMANDS

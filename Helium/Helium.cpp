@@ -47,7 +47,6 @@ namespace Helium {
     map<string, HeliumExtension> extensions;
     vector<MinecraftServerInstance> serverlist;
 
-#pragma region ServerFunc
     int StartInfoThread(MinecraftServerInstance* lpIns) {
         thread tempthread(ProcessServerOutput, lpIns, lpIns->GetServerName(), lpIns->GetRDInfo().hStdOutRead, lpIns->GetThreadHandle());
         tempthread.detach();
@@ -104,40 +103,45 @@ namespace Helium {
         ptr->SetServerStatus(1);
         return 114514;
     }
-}
-#pragma endregion
 
-#pragma region Main
-
-    int main() {
+    void HeliumInitOutput() {
         HeliumEndline hendl;
+        logger << HLL::LL_INFO << PROJECT_NAME_STR << " " << PROJECT_VER_STR << " " << PROJECT_DEVSTAT << hendl;
+        logger << "Copyright(C) 2021-2022 HeliumDevTeam" << hendl;
+        logger << "This program comes with ABSOLUTELY NO WARRANTY;" << hendl;
+        logger << "for details type \'!!hel show w\'." << hendl;
+        logger << "This is free software, and you are welcome to redistribute it";
+        logger << "under certain conditions; type \'!!hel show c\' for details." << hendl;
+
+        return;
+    }
+    int HeliumEnvInit() {
         SetConsoleTitleA(PROJECT_NAME_STR);
         ios::sync_with_stdio(false);
         cin.tie(0);
-        spdlog::set_level(spdlog::level::info);
-
-        logger << HLL::LL_INFO << PROJECT_NAME_STR << " " << PROJECT_VER_STR << " " << PROJECT_DEVSTAT << hendl;
-        logger << "Copyright(C) 2021-2022 HeliumDevTeam" << hendl;
-        logger << "This program comes with ABSOLUTELY NO WARRANTY; for details type \'show w\'." << hendl;
-        logger << "This is free software, and you are welcome to redistribute it";
-        logger << "under certain conditions; type \'show c\' for details." << hendl;
-
 #ifdef NOT_STABLE
         spdlog::set_level(spdlog::level::debug);
-        logger << HLL::LL_WARN << "This is a early version of Helium, don't use this in a productive environment." << hendl;
-        logger << HLL::LL_WARN << "You can report any bugs you find by sending informations to our E-mail : helium_devteam@outlook.com" << hendl;
+#else
+        spdlog::set_level(spdlog::level::info);
 #endif
-        logger << HLL::LL_DBG << "Start adding dirs" << hendl;
-        AddHeliumDirectory("./extensions", "The \"extension\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
-        AddHeliumDirectory("./extensions/extconfigs", "The \"extensions/extconfigs\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
-        AddHeliumDirectory("./logs", "The \"logs\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
-        AddHeliumDirectory("./scripts", "The \"scripts\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
-        AddHeliumDirectory("./scripts/initscripts", "The \"scripts/initscripts\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
-        logger << HLL::LL_DBG << "End adding dirs" << hendl;
+        spdlog::flush_every(chrono::seconds(5));
+        return 0;
+    }
+    int HeliumInit() {
+        HeliumEndline hendl;
 
-        if (auto ret = InitHeliumDirectory(); ret != 0) {
-            HeliumErrorExit(true, true, "Failed to initialize directory,exiting...");
-        }
+        logger << HLL::LL_INFO << "Start Helium initialization." << hendl;
+        //logger << HLL::LL_DBG << "Start adding dirs" << hendl;
+        //AddHeliumDirectory("./extensions", "The \"extension\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
+        //AddHeliumDirectory("./extensions/extconfigs", "The \"extensions/extconfigs\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
+        //AddHeliumDirectory("./logs", "The \"logs\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
+        //AddHeliumDirectory("./scripts", "The \"scripts\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
+        //AddHeliumDirectory("./scripts/initscripts", "The \"scripts/initscripts\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
+        //logger << HLL::LL_DBG << "End adding dirs" << hendl;
+
+        //if (auto ret = InitHeliumDirectory(); ret != 0) {
+        //HeliumErrorExit(true, true, "Failed to initialize directory,exiting...");
+        //}
 
         if (auto ret = Config(); ret != 0) {
             HeliumErrorExit(true, true, "Failed to read config,exiting...");
@@ -153,8 +157,11 @@ namespace Helium {
             HeliumErrorExit(true, true, "Failed to read permission file,exiting...");
         }
 
-#undef ins
-
+        logger << HLL::LL_INFO << "Finished Helium initialization." << hendl;
+        return 0;
+    }
+    int HeliumStartServer() {
+        HeliumEndline hendl;
         for (auto ins = serverlist.begin(); ins < serverlist.end(); ins++) {
             int ret;
             if (ins->GetAutoStart()) {
@@ -170,7 +177,10 @@ namespace Helium {
                 logger << HLL::LL_ERR << "Error starting Minecraft server : " << ins->GetServerName() << hendl;
             }
         }
-
+        return 0;
+    }
+    int HeliumFin() {
+        HeliumEndline hendl;
         for (auto ins = serverlist.begin(); ins < serverlist.end(); ins++) {
             ins->StopServer();
         }
@@ -186,8 +196,39 @@ namespace Helium {
         if (auto ret = SavePermissionFile(); ret != 0) {
             logger << HLL::LL_WARN << "Failed to save the permission file, your changes may not be saved." << hendl;
         }
-
-        spdlog::drop_all();
-        system("pause");
+        return 0;
     }
-#pragma endregion
+    int HeliumMain(int argc, char* argv[]) {
+        HeliumEndline hendl;
+        int ret;
+
+        HeliumEnvInit();
+
+        HeliumInitOutput();
+
+        try {
+            ret = HeliumInit();
+        }
+        catch (...) {
+            logger << HLL::LL_CRIT << "Helium initialization failed with a exception." << hendl;
+            logger << HLL::LL_CRIT << "THIS IS A CRASH, report it to us by : helium_devteam@outlook.com" << hendl;
+            ret = -1;
+        }
+
+        if (ret == 0) {
+            HeliumStartServer();
+        }
+        else {
+            logger << HLL::LL_WARN << "Helium initialization failed, skip starting server." << hendl;
+
+        }
+
+        HeliumFin();
+
+        return 0;
+    }
+}
+
+int main(int argc, char* argv[]) {
+    return HeliumMain(argc, argv);
+}
