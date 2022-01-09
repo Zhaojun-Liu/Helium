@@ -65,7 +65,6 @@ namespace Helium {
 
 	extern tree<_BasicHeliumCommand*> HeliumCommandTree;
 
-	bool CheckCommandValidance(tree<_BasicHeliumCommand*>::iterator cmdit);
 	int InitShellEnv();
 	int InitShell(string prompt);
 	int FinShell();
@@ -89,6 +88,8 @@ namespace Helium {
 	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommand(tree<_BasicHeliumCommand*>::pre_order_iterator it, _BasicHeliumCommand* cmd);
 	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommandTree(GUID guid, tree<_BasicHeliumCommand*> subtree);
 	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator it, tree<_BasicHeliumCommand*> subtree);
+
+	int ExecuteCommand(string rawcmd);
 
 #pragma region CommandClassBase
 	class _BasicHeliumCommand {
