@@ -34,6 +34,7 @@
 #include<map>
 #include<string>
 #include<functional>
+#include<guiddef.h>
 
 #include"tree.hh/tree.hh"
 #define REPLXX_STATIC
@@ -66,10 +67,28 @@ namespace Helium {
 
 	bool CheckCommandValidance(tree<_BasicHeliumCommand*>::iterator cmdit);
 	int InitShellEnv();
+	int InitShell(string prompt);
+	int FinShell();
+	int InitBuiltinCommandTree();
 	Replxx::hints_t HintCallBack(string const& context, int& len, Replxx::Color& color);
 	Replxx::completions_t CompletionCallBack(string const& context, int& len);
 	void ColorCallBack(string const& str, Replxx::colors_t& colors);
 	Replxx::ACTION_RESULT KeyMessage(Replxx& replxx, std::string s, char32_t);
+
+	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommand(_BasicHeliumCommand* cmd, GUID parentguid);
+	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommand(_BasicHeliumCommand* cmd, tree<_BasicHeliumCommand*>::pre_order_iterator parentit);
+	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommandTree(tree<_BasicHeliumCommand*> subtree, GUID parentguid);
+	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommandTree(tree<_BasicHeliumCommand*> subtree, tree<_BasicHeliumCommand*>::pre_order_iterator parentit);
+	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommand(GUID guid);
+	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommand(tree<_BasicHeliumCommand*>::pre_order_iterator it);
+	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommandTree(GUID guid);
+	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator it);
+	tree<_BasicHeliumCommand*>::pre_order_iterator QueryCommand(GUID guid, tree<_BasicHeliumCommand*>::pre_order_iterator = HeliumCommandTree.begin());
+	tree<_BasicHeliumCommand*>::pre_order_iterator QueryCommand(string commandstr, tree<_BasicHeliumCommand*>::pre_order_iterator = HeliumCommandTree.begin());
+	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommand(GUID guid, _BasicHeliumCommand* cmd);
+	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommand(tree<_BasicHeliumCommand*>::pre_order_iterator it, _BasicHeliumCommand* cmd);
+	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommandTree(GUID guid, tree<_BasicHeliumCommand*> subtree);
+	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator it, tree<_BasicHeliumCommand*> subtree);
 
 #pragma region CommandClassBase
 	class _BasicHeliumCommand {
@@ -82,6 +101,8 @@ namespace Helium {
 		bool exec;
 		bool hint;
 		bool autocomp;
+
+		GUID guid;
 	public:
 		virtual _BasicHeliumCommand* GetCommandClassType();
 	};

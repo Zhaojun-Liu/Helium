@@ -35,6 +35,9 @@ namespace Helium {
 	bool CheckCommandValidance(tree<_BasicHeliumCommand*>::iterator cmdit) {
 		return false;
 	}
+	int InitBuiltinCommandTree() {
+		return 0;
+	}
 	int InitShellEnv() {
 		rx.install_window_change_handler();
 		rx.history_load("./commands_history");
@@ -138,6 +141,27 @@ namespace Helium {
 		rx.bind_key(Replxx::KEY::shift(Replxx::KEY::DOWN), std::bind(&KeyMessage, std::ref(rx), "<S-Down>", _1));
 		return 0;
 	}
+	int InitShell(string prompt) {
+		for (;;) {
+			char const* cinput{ nullptr };
+
+			do {
+				cinput = rx.input(prompt);
+			} while (cinput == nullptr && errno == EAGAIN);
+
+			string input(cinput);
+			if (input.empty()) continue;
+
+			//add input function call here
+
+			rx.history_add(input);
+		}
+		return 0;
+	}
+	int FinShell() {
+		rx.history_sync("./command_history");
+		return 0;
+	}
 	Replxx::hints_t HintCallBack(string const& context, int& len, Replxx::Color& color) {
 
 	}
@@ -196,4 +220,53 @@ namespace Helium {
 		return this;
 	}
 #pragma endregion
+
+#pragma region CommandTreeOps
+	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommand(_BasicHeliumCommand* cmd, GUID parentguid) {
+
+	}
+	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommand(_BasicHeliumCommand* cmd, tree<_BasicHeliumCommand*>::pre_order_iterator parentit) {
+
+	}
+	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommandTree(tree<_BasicHeliumCommand*> subtree, GUID parentguid) {
+
+	}
+	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommandTree(tree<_BasicHeliumCommand*> subtree, tree<_BasicHeliumCommand*>::pre_order_iterator parentit) {
+
+	}
+	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommand(GUID guid) {
+
+	}
+	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommand(tree<_BasicHeliumCommand*>::pre_order_iterator it) {
+
+	}
+	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommandTree(GUID guid) {
+
+	}
+	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator it) {
+
+	}
+	tree<_BasicHeliumCommand*>::pre_order_iterator QueryCommand(GUID guid, tree<_BasicHeliumCommand*>::pre_order_iterator = HeliumCommandTree.begin()) {
+
+	}
+	tree<_BasicHeliumCommand*>::pre_order_iterator QueryCommand(string commandstr, tree<_BasicHeliumCommand*>::pre_order_iterator = HeliumCommandTree.begin()) {
+
+	}
+	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommand(GUID guid, _BasicHeliumCommand* cmd) {
+
+	}
+	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommand(tree<_BasicHeliumCommand*>::pre_order_iterator it, _BasicHeliumCommand* cmd) {
+
+	}
+	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommandTree(GUID guid, tree<_BasicHeliumCommand*> subtree) {
+
+	}
+	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator it, tree<_BasicHeliumCommand*> subtree) {
+
+	}
+#pragma endregion
+
+	int ExecuteCommand(string rawcmd) {
+		return 0;
+	}
 }

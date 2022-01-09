@@ -220,8 +220,12 @@ namespace Helium {
         }
         else {
             logger << HLL::LL_WARN << "Helium initialization failed, skip starting server." << hendl;
-
         }
+
+        InitBuiltinCommandTree();
+        InitShellEnv();
+        InitShell("Helium");
+        FinShell();
 
         HeliumFin();
 
