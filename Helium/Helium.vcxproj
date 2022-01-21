@@ -182,6 +182,7 @@
     <ClCompile Include="extension.cpp" />
     <ClCompile Include="permissions.cpp" />
     <ClCompile Include="commands.cpp" />
+    <ClCompile Include="versioncontrol.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="commandqueue.h" />
@@ -216,6 +217,7 @@
     <ClInclude Include="permissions.h" />
     <ClInclude Include="events.h" />
     <ClInclude Include="commands.h" />
+    <ClInclude Include="versioncontrol.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="HeliumConfig.xml" />

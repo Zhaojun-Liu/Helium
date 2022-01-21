@@ -52,6 +52,7 @@
 #include"permissions.h"
 #include"initdir.h"
 #include"errorexit.h"
+#include"versioncontrol.h"
 
 namespace Helium {
 /*
