@@ -34,7 +34,8 @@
 #include<map>
 #include<string>
 #include<functional>
-#include<guiddef.h>
+#include<boost/multiprecision/gmp.hpp>
+#include<boost/uuid/uuid.hpp>
 
 #include"tree.hh/tree.hh"
 #define REPLXX_STATIC
@@ -43,6 +44,7 @@ namespace Helium {
 	using namespace std;
 	using namespace replxx;
 	using namespace placeholders;
+	using namespace boost::uuids;
 	//fully rewrited command module during the 72th national day xd
 
 	class _BasicHeliumCommand;
@@ -74,19 +76,19 @@ namespace Helium {
 	void ColorCallBack(string const& str, Replxx::colors_t& colors);
 	Replxx::ACTION_RESULT KeyMessage(Replxx& replxx, std::string s, char32_t);
 
-	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommand(_BasicHeliumCommand* cmd, GUID parentguid);
+	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommand(_BasicHeliumCommand* cmd, uuid parentuuid);
 	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommand(_BasicHeliumCommand* cmd, tree<_BasicHeliumCommand*>::pre_order_iterator parentit);
-	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommandTree(tree<_BasicHeliumCommand*> subtree, GUID parentguid);
+	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommandTree(tree<_BasicHeliumCommand*> subtree, uuid parentuuid);
 	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommandTree(tree<_BasicHeliumCommand*> subtree, tree<_BasicHeliumCommand*>::pre_order_iterator parentit);
-	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommand(GUID guid);
+	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommand(uuid uuid);
 	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommand(tree<_BasicHeliumCommand*>::pre_order_iterator it);
-	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommandTree(GUID guid);
+	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommandTree(uuid uuid);
 	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator it);
-	tree<_BasicHeliumCommand*>::pre_order_iterator QueryCommand(GUID guid, tree<_BasicHeliumCommand*>::pre_order_iterator = HeliumCommandTree.begin());
+	tree<_BasicHeliumCommand*>::pre_order_iterator QueryCommand(uuid uuid, tree<_BasicHeliumCommand*>::pre_order_iterator = HeliumCommandTree.begin());
 	tree<_BasicHeliumCommand*>::pre_order_iterator QueryCommand(string commandstr, tree<_BasicHeliumCommand*>::pre_order_iterator = HeliumCommandTree.begin());
-	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommand(GUID guid, _BasicHeliumCommand* cmd);
+	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommand(uuid uuid, _BasicHeliumCommand* cmd);
 	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommand(tree<_BasicHeliumCommand*>::pre_order_iterator it, _BasicHeliumCommand* cmd);
-	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommandTree(GUID guid, tree<_BasicHeliumCommand*> subtree);
+	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommandTree(uuid uuid, tree<_BasicHeliumCommand*> subtree);
 	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator it, tree<_BasicHeliumCommand*> subtree);
 
 	int ExecuteCommand(string rawcmd);
@@ -103,15 +105,46 @@ namespace Helium {
 		bool hint;
 		bool autocomp;
 
-		GUID guid;
+		uuid uuid;
 	public:
+		virtual _BasicHeliumCommand operator()(string desc, string str, bool callback = true, bool list = true, bool exec = true, bool hint = true, bool autocomp = true);
+
+		virtual bool IsCallbackable();
+		virtual bool EnableCallback();
+		virtual bool DisableCallback();
+
+		virtual bool IsListable();
+		virtual bool EnableList();
+		virtual bool DisableList();
+
+		virtual bool IsExecutable();
+		virtual bool EnableExecute();
+		virtual bool DisableExecute();
+
+		virtual bool IsHintable();
+		virtual bool EnableHint();
+		virtual bool DisableHint();
+
+		virtual bool IsCompletable();
+		virtual bool EnableCompletion();
+		virtual bool DisableCompletion();
+
 		virtual _BasicHeliumCommand* GetCommandClassType();
+		virtual bool IsVaild();
 	};
 	class _CommandArgument : virtual public _BasicHeliumCommand {
 	protected:
 		bool optional;
 		bool preprocenable;
 	public:
+		virtual bool IsOptional();
+		virtual bool EnableOptional();
+		virtual bool DisableOptional();
+
+		virtual bool IsPreproc();
+		virtual bool EnablePreproc();
+		virtual bool DisablePreproc();
+
 		virtual _CommandArgument* GetCommandClassType();
 		virtual bool EnablePreprocessing();
 		virtual bool DisablePreprocessing();
@@ -134,11 +167,15 @@ namespace Helium {
 		virtual void GetUpperbound() = 0;
 		virtual void GetLowerbound() = 0;
 	protected:
-		bool precheckenable;
 	};
 	class _ArgumentString : public _CommandArgument {
 	public:
 		virtual _ArgumentString* GetCommandClassType();
+		
+		virtual unsigned long GetLengthLimit();
+		virtual unsigned long SetLengthLimit();
+	protected:
+		unsigned long lengthlim;
 	};
 #pragma endregion
 
@@ -177,10 +214,6 @@ namespace Helium {
 	class CommandArgumentGreedyString : public _ArgumentString {
 	public:
 		virtual CommandArgumentGreedyString* GetCommandClassType();
-	};
-	class CommandEntry : virtual public _CommandConstantString {
-	public:
-		virtual CommandEntry* GetCommandClassType();
 	};
 	class CommandBind : virtual public _CommandBind {
 	public:

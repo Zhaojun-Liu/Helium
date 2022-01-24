@@ -38,6 +38,8 @@
 
 #pragma once
 
+#define WIN32_LEAN_AND_MEAN
+
 #include<Windows.h>
 #include<thread>
 #include<strstream>
@@ -71,6 +73,8 @@ namespace Helium {
 #define pass continue;
 
 	using namespace std;
+
+	PTP_POOL heliumtp;
 
 	int ProcessServerOutput(MinecraftServerInstance*, string, HANDLE, HANDLE);
 	int HeliumMain(int argc, char* argv[]);

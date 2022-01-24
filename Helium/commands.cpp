@@ -197,10 +197,6 @@ namespace Helium {
 	_ArgumentString* _ArgumentString::GetCommandClassType() {
 		return this;
 	}
-	CommandEntry* CommandEntry::GetCommandClassType()
-	{
-		return this;
-	}
 	CommandBind* CommandBind::GetCommandClassType() {
 		return this;
 	}
@@ -222,43 +218,43 @@ namespace Helium {
 #pragma endregion
 
 #pragma region CommandTreeOps
-	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommand(_BasicHeliumCommand* cmd, GUID parentguid) {
+	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommand(_BasicHeliumCommand* cmd, uuid parentuuid) {
 
 	}
 	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommand(_BasicHeliumCommand* cmd, tree<_BasicHeliumCommand*>::pre_order_iterator parentit) {
 
 	}
-	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommandTree(tree<_BasicHeliumCommand*> subtree, GUID parentguid) {
+	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommandTree(tree<_BasicHeliumCommand*> subtree, uuid parentuuid) {
 
 	}
 	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommandTree(tree<_BasicHeliumCommand*> subtree, tree<_BasicHeliumCommand*>::pre_order_iterator parentit) {
 
 	}
-	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommand(GUID guid) {
+	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommand(uuid uuid) {
 
 	}
 	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommand(tree<_BasicHeliumCommand*>::pre_order_iterator it) {
 
 	}
-	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommandTree(GUID guid) {
+	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommandTree(uuid uuid) {
 
 	}
 	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator it) {
 
 	}
-	tree<_BasicHeliumCommand*>::pre_order_iterator QueryCommand(GUID guid, tree<_BasicHeliumCommand*>::pre_order_iterator = HeliumCommandTree.begin()) {
+	tree<_BasicHeliumCommand*>::pre_order_iterator QueryCommand(uuid uuid, tree<_BasicHeliumCommand*>::pre_order_iterator = HeliumCommandTree.begin()) {
 
 	}
 	tree<_BasicHeliumCommand*>::pre_order_iterator QueryCommand(string commandstr, tree<_BasicHeliumCommand*>::pre_order_iterator = HeliumCommandTree.begin()) {
 
 	}
-	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommand(GUID guid, _BasicHeliumCommand* cmd) {
+	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommand(uuid uuid, _BasicHeliumCommand* cmd) {
 
 	}
 	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommand(tree<_BasicHeliumCommand*>::pre_order_iterator it, _BasicHeliumCommand* cmd) {
 
 	}
-	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommandTree(GUID guid, tree<_BasicHeliumCommand*> subtree) {
+	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommandTree(uuid uuid, tree<_BasicHeliumCommand*> subtree) {
 
 	}
 	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator it, tree<_BasicHeliumCommand*> subtree) {
@@ -266,7 +262,91 @@ namespace Helium {
 	}
 #pragma endregion
 
-	int ExecuteCommand(string rawcmd) {
+#pragma region Attrs
+	bool _BasicHeliumCommand::IsCallbackable() {
+		return this->callback;
+	}
+	bool _BasicHeliumCommand::EnableCallback() {
+		auto r = this->callback;
+		this->callback = true;
+		return r;
+	}
+	bool _BasicHeliumCommand::DisableCallback() {
+		auto r = this->callback;
+		this->callback = false;
+		return r;
+	}
+
+	bool _BasicHeliumCommand::IsListable() {
+		return this->list;
+	}
+	bool _BasicHeliumCommand::EnableList() {
+		auto r = this->list;
+		this->callback = list;
+		return r;
+	}
+	bool _BasicHeliumCommand::DisableList() {
+		auto r = this->list;
+		this->callback = list;
+		return r;
+	}
+
+	bool _BasicHeliumCommand::IsExecutable() {
+		return this->exec;
+	}
+	bool _BasicHeliumCommand::EnableExecute() {
+		auto r = this->exec;
+		this->callback = exec;
+		return r;
+	}
+	bool _BasicHeliumCommand::DisableExecute() {
+		auto r = this->exec;
+		this->callback = exec;
+		return r;
+	}
+
+	bool _BasicHeliumCommand::IsHintable() {
+		return this->hint;
+	}
+	bool _BasicHeliumCommand::EnableHint() {
+		auto r = this->hint;
+		this->callback = hint;
+		return r;
+	}
+	bool _BasicHeliumCommand::DisableHint() {
+		auto r = this->hint;
+		this->callback = hint;
+		return r;
+	}
+
+	bool _BasicHeliumCommand::IsCompletable() {
+		return this->autocomp;
+	}
+	bool _BasicHeliumCommand::EnableCompletion() {
+		auto r = this->autocomp;
+		this->callback = autocomp;
+		return r;
+	}
+	bool _BasicHeliumCommand::DisableCompletion() {
+		auto r = this->autocomp;
+		this->callback = autocomp;
+		return r;
+	}
+#pragma endregion
+
+	bool _BasicHeliumCommand::IsVaild() {
+		bool ret = true;
+		string wordbreakstr = " \t.,-%!;:=*~^'\"/?<>|[](){}";
+		if (this->commandstr.empty()) ret = false;
+		for(auto i = 0; i < wordbreakstr.length(); i ++)
+			if (this->commandstr.find(wordbreakstr[i]) != string::npos) {
+				ret = false;
+				break;
+			}
+		return ret;
+	}
+
+	int ExecuteCommand(tree<_BasicHeliumCommand*>::pre_order_iterator cmdit) {
 		return 0;
 	}
 }
