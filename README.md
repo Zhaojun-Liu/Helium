@@ -13,3 +13,4 @@ Very very special thank to contributors of the following projects:
 [kpeeters/tree.hh](https://github.com/kpeeters/tree.hh)
 [leethomason/tinyxml2](https://github.com/leethomason/tinyxml2/)
 [jcwangxp/Crossline](https://github.com/jcwangxp/Crossline/)
+[Neargye/semver](https://github.com/Neargye/semver/)

@@ -186,6 +186,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="commandqueue.h" />
+    <ClInclude Include="E:\Internet Download Manager下载\semver.hpp" />
     <ClInclude Include="errorexit.h" />
     <ClInclude Include="exportfunction.h" />
     <ClInclude Include="Helium.h" />
@@ -206,6 +207,7 @@
     <ClInclude Include="replxx\utf8string.hxx" />
     <ClInclude Include="replxx\util.hxx" />
     <ClInclude Include="replxx\windows.hxx" />
+    <ClInclude Include="semver\semver.hpp" />
     <ClInclude Include="tinyxml2\tinyxml2.h" />
     <ClInclude Include="tree.hh\tree.hh" />
     <ClInclude Include="utils.h" />
