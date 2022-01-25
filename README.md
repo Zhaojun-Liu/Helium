@@ -1,4 +1,5 @@
 # Helium
+[zh_CN/中文](https://github.com/Helium-DevTeam/Helium/readme_cn.md)
 Helium is a customizable extension system for Minecraft server which is written in C++.
 This project is inspired by the [Fallen-Breath/MCDReforged](https://github.com/Fallen-Breath/MCDReforged).
 We target to provide a liter, faster, and more customizable choice.
