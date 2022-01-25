@@ -106,7 +106,13 @@ namespace Helium {
 
     void HeliumInitOutput() {
         HeliumEndline hendl;
-        logger << HLL::LL_INFO << PROJECT_NAME_STR << " " << PROJECT_VER_STR << " " << PROJECT_DEVSTAT << hendl;
+        logger << HLL::LL_INFO << "  _   _      _ _"\
+            " | | | | ___| (_)_   _ _ __ ___"\
+            " | |_| |/ _ \\ | | | | | '_ ` _ \\"\
+            " |  _  |  __/ | | |_| | | | | | |"\
+            " |_| |_|\\___|_|_|\\__,_|_| |_| |_|";
+        logger << hendl << hendl;
+        logger << PROJECT_NAME_STR << " " << PROJECT_VER_STR << " " << PROJECT_DEVSTAT << hendl;
         logger << "Copyright(C) 2021-2022 HeliumDevTeam" << hendl;
         logger << "This program comes with ABSOLUTELY NO WARRANTY;" << hendl;
         logger << "for details type \'!!hel show w\'." << hendl;

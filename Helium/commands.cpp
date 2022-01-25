@@ -218,47 +218,116 @@ namespace Helium {
 #pragma endregion
 
 #pragma region CommandTreeOps
-	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommand(_BasicHeliumCommand* cmd, uuid parentuuid) {
-
+	tree<_BasicHeliumCommand*>::pre_order_iterator 
+		AddCommand(_BasicHeliumCommand* cmd, uuid parentuuid) {
+		for (auto tit = HeliumCommandTree.begin(); tit != HeliumCommandTree.end(); tit++) {
+			if (parentuuid == (**tit).CommandUUID()) {
+				if (!HeliumCommandTree.is_valid(tit) && cmd->IsVaild())
+					return HeliumCommandTree.end();
+				return HeliumCommandTree.append_child(tit, cmd);;
+			}
+		}
 	}
-	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommand(_BasicHeliumCommand* cmd, tree<_BasicHeliumCommand*>::pre_order_iterator parentit) {
-
+	tree<_BasicHeliumCommand*>::pre_order_iterator 
+		AddCommand(_BasicHeliumCommand* cmd, tree<_BasicHeliumCommand*>::pre_order_iterator parentit) {
+		if (HeliumCommandTree.is_valid(parentit) && cmd->IsVaild())
+			return HeliumCommandTree.append_child(parentit, cmd);
+		return HeliumCommandTree.end();
 	}
-	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommandTree(tree<_BasicHeliumCommand*> subtree, uuid parentuuid) {
-
+	tree<_BasicHeliumCommand*>::pre_order_iterator 
+		AddCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator subtree, uuid parentuuid) {
+		for (auto tit = HeliumCommandTree.begin(); tit != HeliumCommandTree.end(); tit++) {
+			if (parentuuid == (**tit).CommandUUID()) {
+				if (!HeliumCommandTree.is_valid(tit))
+					return HeliumCommandTree.end();
+				return HeliumCommandTree.insert_subtree_after(tit, subtree);;
+			}
+		}
 	}
-	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommandTree(tree<_BasicHeliumCommand*> subtree, tree<_BasicHeliumCommand*>::pre_order_iterator parentit) {
-
+	tree<_BasicHeliumCommand*>::pre_order_iterator 
+		AddCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator subtree, tree<_BasicHeliumCommand*>::pre_order_iterator parentit) {
+		if (!HeliumCommandTree.is_valid(parentit))
+			return HeliumCommandTree.end();
+		return HeliumCommandTree.insert_subtree_after(parentit, subtree);
 	}
-	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommand(uuid uuid) {
-
+	tree<_BasicHeliumCommand*>::pre_order_iterator 
+		DeleteCommand(uuid uuid) {
+		for (auto tit = HeliumCommandTree.begin(); tit != HeliumCommandTree.end(); tit++) {
+			if ((**tit).CommandUUID() == uuid) {
+				return HeliumCommandTree.erase(tit);
+			}
+		}
 	}
-	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommand(tree<_BasicHeliumCommand*>::pre_order_iterator it) {
-
+	tree<_BasicHeliumCommand*>::pre_order_iterator 
+		DeleteCommand(tree<_BasicHeliumCommand*>::pre_order_iterator it) {
+		if (HeliumCommandTree.is_valid(it)) {
+			return HeliumCommandTree.erase(it);
+		}
+		return HeliumCommandTree.end();
 	}
-	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommandTree(uuid uuid) {
-
+	tree<_BasicHeliumCommand*>::pre_order_iterator 
+		DeleteCommandTree(uuid uuid) {
+		for (auto tit = HeliumCommandTree.begin(); tit != HeliumCommandTree.end(); tit++) {
+			if ((**tit).CommandUUID() == uuid) {
+				HeliumCommandTree.erase_children(tit);
+				return HeliumCommandTree.erase(tit);
+			}
+		}
 	}
-	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator it) {
-
+	tree<_BasicHeliumCommand*>::pre_order_iterator 
+		DeleteCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator it) {
+		if (HeliumCommandTree.is_valid(it)) {
+			HeliumCommandTree.erase_children(it);
+			return HeliumCommandTree.erase(it);
+		}
+		return HeliumCommandTree.end();
 	}
-	tree<_BasicHeliumCommand*>::pre_order_iterator QueryCommand(uuid uuid, tree<_BasicHeliumCommand*>::pre_order_iterator = HeliumCommandTree.begin()) {
-
+	tree<_BasicHeliumCommand*>::pre_order_iterator
+		QueryCommand(uuid uuid, tree<_BasicHeliumCommand*>::pre_order_iterator it) {
+		if (!HeliumCommandTree.is_valid(it)) return it.end();
+		for (auto tit = it.begin(); tit != it.end(); tit++) {
+			if ((**tit).CommandUUID() == uuid)
+				return tit;
+		}
+		return it.end();
 	}
-	tree<_BasicHeliumCommand*>::pre_order_iterator QueryCommand(string commandstr, tree<_BasicHeliumCommand*>::pre_order_iterator = HeliumCommandTree.begin()) {
-
+	tree<_BasicHeliumCommand*>::pre_order_iterator 
+		QueryCommand(string commandstr, tree<_BasicHeliumCommand*>::pre_order_iterator it) {
+			if (!HeliumCommandTree.is_valid(it)) return it.end();
+			for (auto tit = it.begin(); tit != it.end(); tit++) {
+				if ((**tit).GetCommandString() == commandstr)
+					return tit;
+			}
+			return it.end();
 	}
-	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommand(uuid uuid, _BasicHeliumCommand* cmd) {
-
+	tree<_BasicHeliumCommand*>::pre_order_iterator 
+		ReplaceCommand(uuid uuid, _BasicHeliumCommand* cmd) {
+		auto tit = QueryCommand(uuid);
+		if (HeliumCommandTree.end() != tit) {
+			return HeliumCommandTree.replace(tit, cmd);
+		}
+		return HeliumCommandTree.end();
 	}
-	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommand(tree<_BasicHeliumCommand*>::pre_order_iterator it, _BasicHeliumCommand* cmd) {
-
+	tree<_BasicHeliumCommand*>::pre_order_iterator 
+		ReplaceCommand(tree<_BasicHeliumCommand*>::pre_order_iterator it, _BasicHeliumCommand* cmd) {
+		if (HeliumCommandTree.is_valid(it) && cmd->IsVaild()) {
+			return HeliumCommandTree.replace(it, cmd);
+		}
 	}
-	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommandTree(uuid uuid, tree<_BasicHeliumCommand*> subtree) {
-
+	tree<_BasicHeliumCommand*>::pre_order_iterator 
+		ReplaceCommandTree(uuid uuid, tree<_BasicHeliumCommand*>::pre_order_iterator subtree) {
+		auto tit = QueryCommand(uuid);
+		if (HeliumCommandTree.end() != tit) {
+			return HeliumCommandTree.replace(tit, subtree);
+		}
+		return HeliumCommandTree.end();
 	}
-	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator it, tree<_BasicHeliumCommand*> subtree) {
-
+	tree<_BasicHeliumCommand*>::pre_order_iterator 
+		ReplaceCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator it, tree<_BasicHeliumCommand*>::pre_order_iterator subtree) {
+		if (HeliumCommandTree.is_valid(it)) {
+			return HeliumCommandTree.replace(it, subtree);
+		}
+		return HeliumCommandTree.end();
 	}
 #pragma endregion
 
@@ -331,6 +400,28 @@ namespace Helium {
 		auto r = this->autocomp;
 		this->callback = autocomp;
 		return r;
+	}
+
+	uuid _BasicHeliumCommand::CommandUUID() {
+		return this->cmduuid;
+	}
+
+	string _BasicHeliumCommand::GetCommandString() {
+		return this->commandstr;
+	}
+	string _BasicHeliumCommand::SetCommandString(string cmd) {
+		string tempstr = this->commandstr;
+		this->commandstr = cmd;
+		return tempstr;
+	}
+
+	string _BasicHeliumCommand::GetCommandHint() {
+		return this->commanddesc;
+	}
+	string _BasicHeliumCommand::SetCommandHint(string hint) {
+		string tempstr = this->commanddesc;
+		this->commanddesc = hint;
+		return tempstr;
 	}
 #pragma endregion
 

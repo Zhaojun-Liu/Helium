@@ -34,7 +34,9 @@
 #include<map>
 #include<string>
 #include<functional>
-#include<boost/multiprecision/gmp.hpp>
+//#include<boost/multiprecision/cpp_int.hpp>
+//#include<boost/multiprecision/cpp_dec_float.hpp>
+//#include<boost/multiprecision/gmp.hpp>
 #include<boost/uuid/uuid.hpp>
 
 #include"tree.hh/tree.hh"
@@ -78,8 +80,8 @@ namespace Helium {
 
 	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommand(_BasicHeliumCommand* cmd, uuid parentuuid);
 	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommand(_BasicHeliumCommand* cmd, tree<_BasicHeliumCommand*>::pre_order_iterator parentit);
-	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommandTree(tree<_BasicHeliumCommand*> subtree, uuid parentuuid);
-	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommandTree(tree<_BasicHeliumCommand*> subtree, tree<_BasicHeliumCommand*>::pre_order_iterator parentit);
+	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator subtree, uuid parentuuid);
+	tree<_BasicHeliumCommand*>::pre_order_iterator AddCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator subtree, tree<_BasicHeliumCommand*>::pre_order_iterator parentit);
 	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommand(uuid uuid);
 	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommand(tree<_BasicHeliumCommand*>::pre_order_iterator it);
 	tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommandTree(uuid uuid);
@@ -88,8 +90,8 @@ namespace Helium {
 	tree<_BasicHeliumCommand*>::pre_order_iterator QueryCommand(string commandstr, tree<_BasicHeliumCommand*>::pre_order_iterator = HeliumCommandTree.begin());
 	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommand(uuid uuid, _BasicHeliumCommand* cmd);
 	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommand(tree<_BasicHeliumCommand*>::pre_order_iterator it, _BasicHeliumCommand* cmd);
-	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommandTree(uuid uuid, tree<_BasicHeliumCommand*> subtree);
-	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator it, tree<_BasicHeliumCommand*> subtree);
+	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommandTree(uuid uuid, tree<_BasicHeliumCommand*>::pre_order_iterator subtree);
+	tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator it, tree<_BasicHeliumCommand*>::pre_order_iterator subtree);
 
 	int ExecuteCommand(string rawcmd);
 
@@ -105,7 +107,7 @@ namespace Helium {
 		bool hint;
 		bool autocomp;
 
-		uuid uuid;
+		uuid cmduuid;
 	public:
 		virtual _BasicHeliumCommand operator()(string desc, string str, bool callback = true, bool list = true, bool exec = true, bool hint = true, bool autocomp = true);
 
@@ -128,6 +130,14 @@ namespace Helium {
 		virtual bool IsCompletable();
 		virtual bool EnableCompletion();
 		virtual bool DisableCompletion();
+
+		virtual uuid CommandUUID();
+
+		virtual string GetCommandString();
+		virtual string SetCommandString(string cmd);
+
+		virtual string GetCommandHint();
+		virtual string SetCommandHint(string hint);
 
 		virtual _BasicHeliumCommand* GetCommandClassType();
 		virtual bool IsVaild();
