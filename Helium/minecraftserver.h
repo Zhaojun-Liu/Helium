@@ -209,7 +209,6 @@ namespace Helium {
 		bool visi;
 		bool autostart;
 
-		thread stdoutthread;
 		HANDLE hProc;
 		DWORD  dwPid;
 		DWORD  dwReturnValue;
@@ -226,13 +225,30 @@ namespace Helium {
 
 		string GetServerStartCommand();
 		string SetServerStartCommand();
+
+		int GetServerType();
+		int SetServerType(int type);
+
+		int GetServerStat();
+
+		uuid GetServerUUID();
+
+		DWORD GetServerPID();
+
+		HANDLE GetServerHandle();
+		HANDLE SetServerHandle();
+
+		DWORD GetServerRetValue();
+
+		RedirectInformation GetServerRedir();
+		RedirectInformation SetServerRedir(RedirectInformation* redir);
 	};
 
-	int _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread, HANDLE hproc);
+	int ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread, HANDLE hproc);
 
-	int _stdcall ReadServerFile();
-	int _stdcall SaveServerFile();
-	int _stdcall CreateServerFile();
+	int ReadServerFile();
+	int SaveServerFile();
+	int CreateServerFile();
 
 	extern vector<MinecraftServerInstance> serverlist;
 }
