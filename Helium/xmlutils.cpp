@@ -40,36 +40,33 @@
 namespace Helium {
 	bool _stdcall GetNodePointerByName(tinyxml2::XMLElement* pRootEle, const char* strNodeName, tinyxml2::XMLElement*& Node)
 	{
-		if (0 == strcmp(strNodeName, pRootEle->Value()))
-		{
+		if (0 == strcmp(strNodeName, pRootEle->Value())) {
 			Node = pRootEle;
 			return true;
 		}
 
 		tinyxml2::XMLElement* pEle = pRootEle;
-		for (pEle = pRootEle->FirstChildElement(); pEle; pEle = pEle->NextSiblingElement())
-		{
-			if (0 != strcmp(pEle->Name(), strNodeName))
-			{
+		for (pEle = pRootEle->FirstChildElement(); pEle; pEle = pEle->NextSiblingElement()) {
+			if (0 != strcmp(pEle->Name(), strNodeName)) {
 				GetNodePointerByName(pEle, strNodeName, Node);
 			}
-			else
-			{
+			else {
 				Node = pEle;
 				return true;
 			}
 		}
 
 		return false;
-	}//https://blog.csdn.net/masikkk/article/details/14191933?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.add_param_isCf&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.add_param_isCf
+	}//https://blog.csdn.net/masikkk/article/details/14191933
 
-	string _stdcall GetNodeStringByName(tinyxml2::XMLElement* pRootEle, string strNodeName)
-	{
+	string _stdcall GetNodeStringByName(tinyxml2::XMLElement* pRootEle, string strNodeName) {
 		tinyxml2::XMLElement* pReadEle;
 		if (GetNodePointerByName(pRootEle, strNodeName.c_str(), pReadEle))
-			return pReadEle->GetText();
-		else
-		{
+			if (!pReadEle->GetText())
+				return pReadEle->GetText();
+			else
+				return "";
+		else {
 			string v1;
 			v1 = "";
 			return v1;

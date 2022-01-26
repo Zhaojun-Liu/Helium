@@ -1,5 +1,5 @@
 /*
-* Helium Pre-Alpha 0.6.1
+* Helium
 * Copyright (C) 2021-2022 HeliumDevTeam
 *
 * Helium is a customizable extension system for Minecraft server which is written in C++.
@@ -50,13 +50,14 @@
 #include<Windows.h>
 #include<guiddef.h>
 #include<spdlog/spdlog.h>
+#include<boost/uuid/uuid.hpp>
 
 #include"utils.h"
 #include"commands.h"
 #include"tinyxml2/tinyxml2.h"
 #include"logger.h"
 namespace Helium {
-
+	using namespace boost::uuids;
 	using namespace std;
 
 #define SERVER_STATUS_RUNNING		0
@@ -194,6 +195,37 @@ namespace Helium {
 		int    _stdcall RestartServer();
 		void   _stdcall Print();
 		RedirectInformation _stdcall GetRDInfo() { return this->redir; }
+	};
+
+	class HeliumMinecraftServer {
+	protected:
+		string name;
+		string dir;
+		string startcommand;
+
+		int type;
+		int stat;
+
+		bool visi;
+		bool autostart;
+
+		thread stdoutthread;
+		HANDLE hProc;
+		DWORD  dwPid;
+		DWORD  dwReturnValue;
+
+		RedirectInformation redir;
+
+		uuid serveruuid;
+	public:
+		string GetServerName();
+		string SetServerName(string name);
+
+		string GetServerDirectory();
+		string SetServerDirectory(string dir);
+
+		string GetServerStartCommand();
+		string SetServerStartCommand();
 	};
 
 	int _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread, HANDLE hproc);
