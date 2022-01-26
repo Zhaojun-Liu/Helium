@@ -12,7 +12,7 @@
 
 namespace Helium {
 	using namespace semver;
-	constexpr version HeliumVersion{ HELIUM_MAJORVER, HELIUM_MINORVER, HELIUM_PATCHVER, HELIUM_DEVSTAT};
+	constexpr version HeliumVersion{ HELIUM_MAJORVER, HELIUM_MINORVER, HELIUM_PATCHVER, HELIUM_DEVSTAT, 1};
 	constexpr version MiniumAPIVersion{ 0, 1, 0, prerelease::alpha };
 }
 #endif // !_H_VERSIONCONTROL

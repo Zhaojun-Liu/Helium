@@ -21,8 +21,6 @@ must not be misrepresented as being the original software.
 distribution.
 */
 
-#define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
-
 #ifndef TINYXML2_INCLUDED
 #define TINYXML2_INCLUDED
 

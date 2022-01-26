@@ -158,6 +158,7 @@
     <ClCompile Include="errorexit.cpp" />
     <ClCompile Include="events.cpp" />
     <ClCompile Include="exportfunction.cpp" />
+    <ClCompile Include="heliumconfig.cpp" />
     <ClCompile Include="initdir.cpp" />
     <ClCompile Include="logger.cpp" />
     <ClCompile Include="Helium.cpp" />
@@ -182,14 +183,13 @@
     <ClCompile Include="extension.cpp" />
     <ClCompile Include="permissions.cpp" />
     <ClCompile Include="commands.cpp" />
-    <ClCompile Include="versioncontrol.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="commandqueue.h" />
-    <ClInclude Include="E:\Internet Download Manager下载\semver.hpp" />
     <ClInclude Include="errorexit.h" />
     <ClInclude Include="exportfunction.h" />
     <ClInclude Include="Helium.h" />
+    <ClInclude Include="heliumconfig.h" />
     <ClInclude Include="initdir.h" />
     <ClInclude Include="logger.h" />
     <ClInclude Include="parse.h" />
@@ -224,7 +224,6 @@
   <ItemGroup>
     <Xml Include="HeliumConfig.xml" />
     <Xml Include="permission.xml" />
-    <Xml Include="server.xml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
