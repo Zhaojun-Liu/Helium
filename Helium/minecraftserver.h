@@ -198,6 +198,8 @@ namespace Helium {
 	};
 
 	class HeliumMinecraftServer {
+		friend int ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread, HANDLE hproc);
+
 	protected:
 		string name;
 		string dir;
@@ -224,7 +226,15 @@ namespace Helium {
 		string SetServerDirectory(string dir);
 
 		string GetServerStartCommand();
-		string SetServerStartCommand();
+		string SetServerStartCommand(string cmd);
+
+		bool IsAutoStart();
+		bool EnableAutoStart();
+		bool DisableAutoStart();
+
+		bool IsOutputVisible();
+		bool EnableOutputVisibility();
+		bool DisableOutputVisibility();
 
 		int GetServerType();
 		int SetServerType(int type);
@@ -242,6 +252,8 @@ namespace Helium {
 
 		RedirectInformation GetServerRedir();
 		RedirectInformation SetServerRedir(RedirectInformation* redir);
+		
+		uuid GenServerUUID();
 	};
 
 	int ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread, HANDLE hproc);
@@ -249,7 +261,5 @@ namespace Helium {
 	int ReadServerFile();
 	int SaveServerFile();
 	int CreateServerFile();
-
-	extern vector<MinecraftServerInstance> serverlist;
 }
 #endif // !_H_MINECRAFTSERVER

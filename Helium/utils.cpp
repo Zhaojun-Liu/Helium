@@ -38,7 +38,7 @@
 
 #include"utils.h"
 namespace Helium {
-    bool _stdcall Split(const std::string& str, std::map<size_t, std::string>& ret, std::string sep) { // https://blog.csdn.net/qq_22186119/article/details/110472493
+    bool Split(const std::string& str, std::map<size_t, std::string>& ret, std::string sep) { // https://blog.csdn.net/qq_22186119/article/details/110472493
         if (str.empty()) {
             return false;
         }
@@ -67,7 +67,7 @@ namespace Helium {
         return true;
     }
 
-    string stdfuncallconv _stdcall ReplaceString(string rawstr, string deststr, string repstr)
+    string ReplaceString(string rawstr, string deststr, string repstr)
     {
         string text = rawstr;
         int iter = text.find(deststr);
@@ -75,7 +75,7 @@ namespace Helium {
         return text;
     }
 
-    bool stdfuncallconv _stdcall have(string a, string b)
+    bool have(string a, string b)
     {
         if (a.find(b) != string::npos)
         {
@@ -113,7 +113,7 @@ namespace Helium {
         return resVec;
     }
 
-    vector<string> _stdcall split(string str, const char* pattern)
+    vector<string> split(string str, const char* pattern)
     {
         std::vector<std::string> resVec;
         if ("" == str)
@@ -140,7 +140,7 @@ namespace Helium {
     }
 
 
-    list<string> _stdcall splittolist(const string& str, const string& pattern)
+    list<string> splittolist(const string& str, const string& pattern)
     {
         //const char* convert to char*
         char* strc = new char[strlen(str.c_str()) + 1];
@@ -158,7 +158,7 @@ namespace Helium {
         return resultList;
     }
 
-    string _stdcall makestring(list<string> list_, string spiliter)
+    string makestring(list<string> list_, string spiliter)
     {
         string result;
         for (auto iter = list_.begin(); iter != list_.end(); iter++)
@@ -176,7 +176,7 @@ namespace Helium {
         return result;
     }
 
-    string _stdcall makestring(vector<string> list_, string spiliter)
+    string makestring(vector<string> list_, string spiliter)
     {
         string result;
         for (auto iter = list_.begin(); iter != list_.end(); iter++)
@@ -192,5 +192,49 @@ namespace Helium {
             }
         }
         return result;
+    }
+
+    int ServerTypeStrToID(string str) {
+        if (str == "beta18") return SERVER_TYPE_BETA18;
+        if (str == "bukkit") return SERVER_TYPE_BUKKIT;
+        if (str == "bukkit14") return SERVER_TYPE_BUKKIT14;
+        if (str == "bungeecord") return SERVER_TYPE_BUNGEECORD;
+        if (str == "cat") return SERVER_TYPE_CAT;
+        if (str == "forge") return SERVER_TYPE_FORGE;
+        if (str == "vanilla") return SERVER_TYPE_VANILLA;
+        if (str == "waterfall") return SERVER_TYPE_WATERFALL;
+        return SERVER_TYPE_VANILLA;
+    }
+
+    string ServerTypeIDToType(int id) {
+        switch (id) {
+        case SERVER_TYPE_BETA18:
+            return "beta18";
+            break;
+        case SERVER_TYPE_BUKKIT:
+            return "bukkit";
+            break;
+        case SERVER_TYPE_BUKKIT14:
+            return "bukkit14";
+            break;
+        case SERVER_TYPE_BUNGEECORD:
+            return "bungeecord";
+            break;
+        case SERVER_TYPE_CAT:
+            return "cat";
+            break;
+        case SERVER_TYPE_FORGE:
+            return "forge";
+            break;
+        case SERVER_TYPE_VANILLA:
+            return "vanilla";
+            break;
+        case SERVER_TYPE_WATERFALL:
+            return "waterfall";
+            break;
+        default:
+            return "vanilla";
+            break;
+        }
     }
 }

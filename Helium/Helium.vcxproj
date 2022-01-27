@@ -181,7 +181,6 @@
     <ClCompile Include="xmlutils.cpp" />
     <ClCompile Include="minecraftserver.cpp" />
     <ClCompile Include="extension.cpp" />
-    <ClCompile Include="permissions.cpp" />
     <ClCompile Include="commands.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -216,7 +215,6 @@
     <ClInclude Include="xmlutils.h" />
     <ClInclude Include="minecraftserver.h" />
     <ClInclude Include="extension.h" />
-    <ClInclude Include="permissions.h" />
     <ClInclude Include="events.h" />
     <ClInclude Include="commands.h" />
     <ClInclude Include="versioncontrol.h" />

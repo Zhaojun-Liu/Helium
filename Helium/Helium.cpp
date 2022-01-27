@@ -45,7 +45,7 @@ namespace Helium {
 
     HeliumLogger logger("HeliumMain");
     map<string, HeliumExtension> extensions;
-    vector<MinecraftServerInstance> serverlist;
+    extern vector<MinecraftServerInstance> serverlist;
 
     int StartInfoThread(MinecraftServerInstance* lpIns) {
         thread tempthread(ProcessServerOutput, lpIns, lpIns->GetServerName(), lpIns->GetRDInfo().hStdOutRead, lpIns->GetThreadHandle());
@@ -149,18 +149,11 @@ namespace Helium {
         //HeliumErrorExit(true, true, "Failed to initialize directory,exiting...");
         //}
 
-        if (auto ret = Config(); ret != 0) {
-            HeliumErrorExit(true, true, "Failed to read config,exiting...");
-        }
-
-        if (auto ret = ReadServerFile(); ret != 0) {
-            CreateServerFile();
-            HeliumErrorExit(true, true, "Failed to read global server config,exiting...");
-        }
-
-        if (auto ret = ReadPermissionFile(); ret != 0) {
-            CreatePermissionFile();
-            HeliumErrorExit(true, true, "Failed to read permission file,exiting...");
+        if (auto ret = ReadHeliumConfig(); ret != XMLError::XML_SUCCESS) {
+            if (auto iret = CreateHeliumConfig(); ret != XMLError::XML_SUCCESS) {
+                HeliumErrorExit(true, true, "Failed to create the helium config file.");
+            }
+            HeliumErrorExit(true, true, "Failed to read helium config file, the file is created automatically.");
         }
 
         logger << HLL::LL_INFO << "Finished Helium initialization." << hendl;
@@ -191,17 +184,6 @@ namespace Helium {
             ins->StopServer();
         }
 
-        if (auto ret = SaveConfigFile(); ret != 0) {
-            logger << HLL::LL_WARN << "Failed to save the config file, your changes may not be saved." << hendl;
-        }
-
-        if (auto ret = SaveServerFile(); ret != 0) {
-            logger << HLL::LL_WARN << "Failed to save the global server config file, your changes may not be saved." << hendl;
-        }
-
-        if (auto ret = SavePermissionFile(); ret != 0) {
-            logger << HLL::LL_WARN << "Failed to save the permission file, your changes may not be saved." << hendl;
-        }
         return 0;
     }
     int HeliumMain(int argc, char* argv[]) {

@@ -51,10 +51,10 @@
 #include"config.h"
 #include"minecraftserver.h"
 #include"extension.h"
-#include"permissions.h"
 #include"initdir.h"
 #include"errorexit.h"
 #include"versioncontrol.h"
+#include"heliumconfig.h"
 
 namespace Helium {
 /*

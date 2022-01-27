@@ -11,8 +11,11 @@
 
 #include"tinyxml2/tinyxml2.h"
 #include"boost/uuid/uuid.hpp"
+
 #include"logger.h"
 #include"xmlutils.h"
+#include"minecraftserver.h"
+#include"utils.h"
 
 namespace Helium {
 	using namespace tinyxml2;
@@ -46,13 +49,7 @@ namespace Helium {
 		vector<pair<string, int>> permissions;
 	};
 
-	HeliumSetting Settings;
-	PermissionNamespace Permissions;
-
-	int HeliumConfig();
-
 	int ReadHeliumConfig();
-	int SaveHeliumConfig();
 	int CreateHeliumConfig();
 }
 

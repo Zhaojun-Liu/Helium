@@ -38,7 +38,8 @@
 
 #include"minecraftserver.h"
 namespace Helium {
-
+    vector<MinecraftServerInstance> serverlist;
+    vector<HeliumMinecraftServer> heliumservers;
     CRITICAL_SECTION cs;
     static bool isinit = false;
     HeliumLogger msl("HeliumServerConfig");

@@ -163,13 +163,15 @@ namespace Helium {
 		return 0;
 	}
 	Replxx::hints_t HintCallBack(string const& context, int& len, Replxx::Color& color) {
-
+		Replxx::hints_t h;
+		return h;
 	}
 	Replxx::completions_t CompletionCallBack(string const& context, int& len) {
-
+		Replxx::completions_t c;
+		return c;
 	}
 	void ColorCallBack(string const& str, Replxx::colors_t& colors) {
-
+		return;
 	}
 	Replxx::ACTION_RESULT KeyMessage(Replxx& replxx, std::string s, char32_t) {
 		replxx.invoke(Replxx::ACTION::CLEAR_SELF, 0);
