@@ -109,96 +109,8 @@ namespace Helium {
 			}
 		}
 	};
-
-	class MinecraftServerInstance {
-
-		friend int _stdcall ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread, HANDLE hproc);
-	protected:
-		string servername;
-		string jvmdirectory;
-		string serverfilename;
-		string jvmoption;
-		string serverdirectory;
-		string minmem;
-		string maxmem;
-
-		int    serverstartuptype;
-		int	   servertype;
-		int	   serverstatus;
-
-		bool   outputvisibility;
-		bool   autostart;
-
-		thread stdoutthread;
-		HANDLE hProc;
-		DWORD  dwPid;
-		DWORD  dwReturnValue;
-
-		GUID   serverguid;
-
-		RedirectInformation redir;
-	public:
-		_stdcall MinecraftServerInstance();
-		_stdcall MinecraftServerInstance(const MinecraftServerInstance* ins);
-		_stdcall MinecraftServerInstance(const MinecraftServerInstance& ins);
-
-		void _stdcall operator=(const MinecraftServerInstance&& ins);
-
-		_stdcall ~MinecraftServerInstance();
-
-		string _stdcall SetServerName(string servername);
-		string _stdcall GetServerName();
-
-		string _stdcall SetJVMDirectory(string dir);
-		string _stdcall GetJVMDirectory();
-
-		string _stdcall SetServerFileName(string name);
-		string _stdcall GetServerFileName();
-
-		string _stdcall SetJVMOption(string option);
-		string _stdcall GetJVMOption();
-
-		string _stdcall SetServerDirectory(string dir);
-		string _stdcall GetServerDirectory();
-
-		string _stdcall SetMaxmem(string mem);
-		string _stdcall SetMinmem(string mem);
-		string _stdcall GetMaxmem();
-		string _stdcall GetMinmem();
-
-		int    _stdcall SetStartupType(int type);
-		int    _stdcall GetStartupType();
-
-		int    _stdcall SetServerType(int type);
-		int    _stdcall GetServerType();
-
-		int    _stdcall SetServerStatus(int stat);
-		int    _stdcall GetServerStatus();
-
-		bool   _stdcall SetVisibility(bool vis);
-		bool   _stdcall GetVisibility();
-
-		bool   _stdcall SetAutoStart(bool start);
-		bool   _stdcall GetAutoStart();
-
-		int    _stdcall SetServerReturnValue(DWORD wdnmd);
-		int    _stdcall GetServerReturnValue(LPDWORD wdnmd);
-
-		int    _stdcall SetServerGUID(LPCGUID guid);
-		int    _stdcall GetServerGUID(LPGUID guid);
-		DWORD  _stdcall GerServerPid();
-		bool   _stdcall GetOutputVis();
-		HANDLE _stdcall GetThreadHandle();
-		PHANDLE WINAPI GetThreadPHandle() { return &(this->hProc); }
-		int    _stdcall StartServer();
-		int    _stdcall StopServer();
-		int    _stdcall RestartServer();
-		void   _stdcall Print();
-		RedirectInformation _stdcall GetRDInfo() { return this->redir; }
-	};
-
 	class HeliumMinecraftServer {
-		friend int ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread, HANDLE hproc);
+		friend int ProcessServerOutput(HeliumMinecraftServer* ptr, string servername, HANDLE stdread, HANDLE hproc);
 
 	protected:
 		string name;
@@ -256,10 +168,6 @@ namespace Helium {
 		uuid GenServerUUID();
 	};
 
-	int ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread, HANDLE hproc);
-
-	int ReadServerFile();
-	int SaveServerFile();
-	int CreateServerFile();
+	int ProcessServerOutput(HeliumMinecraftServer* ptr, string servername, HANDLE stdread, HANDLE hproc);
 }
 #endif // !_H_MINECRAFTSERVER

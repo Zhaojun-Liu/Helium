@@ -45,7 +45,7 @@ namespace Helium {
 
     HeliumLogger logger("HeliumMain");
     map<string, HeliumExtension> extensions;
-    extern vector<MinecraftServerInstance> serverlist;
+    extern vector<HeliumMinecraftServer> heliumservers;
 
     int StartInfoThread(MinecraftServerInstance* lpIns) {
         thread tempthread(ProcessServerOutput, lpIns, lpIns->GetServerName(), lpIns->GetRDInfo().hStdOutRead, lpIns->GetThreadHandle());
