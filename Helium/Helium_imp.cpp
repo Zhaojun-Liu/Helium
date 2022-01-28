@@ -54,64 +54,14 @@ namespace Helium {
 
         return lpIns->GetServerPID();
     }
-    int ProcessServerOutput(HeliumMinecraftServer* ptr, string servername, HANDLE stdread, HANDLE hProc) {
-        HeliumEndline hendl;
-        logger << HLL::LL_INFO << servername << " server started at PID : " << (long)ptr->GetServerPID() << hendl;
-        char out_buffer[BUFSIZE];
-        DWORD dwRead;
-        bool ret = FALSE;
-        DWORD dwCode = 0;
-        string read;
-        while (true) {
-            ZeroMemory(out_buffer, BUFSIZE);
-            //用WriteFile，从hStdOutRead读出子进程stdout输出的数据，数据结果在out_buffer中，长度为dwRead
-
-            char ch;
-            if (stdread == INVALID_HANDLE_VALUE || stdread == NULL)
-                break;
-            if (ReadFile(stdread, &ch, 1, &dwRead, NULL) == false)
-                break;
-            if (dwRead == 0)
-                continue;
-            if (ch != '\n') {
-                read += ch;
-                continue;
-            }
-            else {
-                if (ptr->IsOutputVisible()) {
-                    cout << servername << "->" << read << endl;
-                }
-                read = "";
-            }
-
-            MSG msg;
-            DWORD dwRet = MsgWaitForMultipleObjects(1, ptr->GetServerHandle(), FALSE, 20, QS_ALLINPUT);
-            switch (dwRet) {
-            case WAIT_OBJECT_0:
-                break;
-            case WAIT_OBJECT_0 + 1:
-                PeekMessage(&msg, NULL, 0, 0, PM_REMOVE);
-                DispatchMessage(&msg);
-                continue;
-            default:
-                break;
-            }
-        }
-
-        logger << HLL::LL_INFO << "Server " << servername << " exited." << hendl;
-        ptr->SetServerReturnValue(dwCode);
-        ptr->SetServerStatus(1);
-        return 114514;
-    }
 
     void HeliumInitOutput() {
         HeliumEndline hendl;
-        logger << HLL::LL_INFO << "  _   _      _ _"\
-            " | | | | ___| (_)_   _ _ __ ___"\
-            " | |_| |/ _ \\ | | | | | '_ ` _ \\"\
-            " |  _  |  __/ | | |_| | | | | | |"\
-            " |_| |_|\\___|_|_|\\__,_|_| |_| |_|";
-        logger << hendl << hendl;
+        logger << HLL::LL_INFO << "  _   _      _ _" << hendl;
+        logger << " | | | | ___| (_)_   _ _ __ ___" << hendl;
+        logger << " | |_| |/ _ \\ | | | | | '_ ` _ \\" << hendl;
+        logger << " |  _  |  __/ | | |_| | | | | | |" << hendl;
+        logger << " |_| |_|\\___|_|_|\\__,_|_| |_| |_|" << hendl;
         //logger << HeliumVersion.to_string() << hendl;
         logger << "Copyright(C) 2021-2022 HeliumDevTeam" << hendl;
         logger << "This program comes with ABSOLUTELY NO WARRANTY;" << hendl;
@@ -162,10 +112,10 @@ namespace Helium {
     int HeliumStartServer() {
         HeliumEndline hendl;
         for (auto ins = heliumservers.begin(); ins < heliumservers.end(); ins++) {
-            int ret;
-            if (ins->GetAutoStart()) {
+            int ret = 0;
+            if (ins->IsAutoStart()) {
                 logger << HLL::LL_INFO << "Starting Minecraft server : " << ins->GetServerName() << hendl;
-                ret = ins->StartServer();
+                //ret = ins->StartServer();
                 logger << HLL::LL_INFO << "Minecraft Server started with return code : " << ret << hendl;
                 StartInfoThread(&(*ins));
             }
@@ -183,7 +133,7 @@ namespace Helium {
 
         FinShell();
         for (auto ins = heliumservers.begin(); ins < heliumservers.end(); ins++) {
-            ins->StopServer();
+            ;//ins->StopServer();
         }
 
         return 0;

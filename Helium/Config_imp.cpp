@@ -47,9 +47,11 @@ using namespace boost::uuids;
 import Helium.Logger;
 import Helium.XMLUtils;
 import Helium.Utils;
+import Helium.MinecraftServer;
 
 namespace Helium {
 	HeliumLogger cfgl("HeliumConfigReader");
+	vector<HeliumMinecraftServer> heliumservers;
 
 	int ReadHeliumConfig() {
 		XMLDocument cfg;

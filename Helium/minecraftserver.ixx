@@ -148,6 +148,6 @@ export{
 
 		int ProcessServerOutput(HeliumMinecraftServer* ptr, string servername, HANDLE stdread, HANDLE hproc);
 
-		vector<HeliumMinecraftServer> heliumservers;
+		extern vector<HeliumMinecraftServer> heliumservers{};
 	}
 }

@@ -26,6 +26,7 @@ module;
 
 #include<windows.h>
 #include<boost/uuid/uuid.hpp>
+#include<vector>
 
 module Helium.MinecraftServer;
 
@@ -36,6 +37,7 @@ using namespace std;
 using namespace boost::uuids;
 
 namespace Helium {
+	//vector<HeliumMinecraftServer> heliumservers();
 	CRITICAL_SECTION cs;
 	static bool isinit = false;
 	HeliumLogger msl("HeliumServerManager");

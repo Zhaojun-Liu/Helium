@@ -27,6 +27,7 @@ module;
 #include<functional>
 #include<boost/uuid/uuid.hpp>
 #include"tree.hh/tree.hh"
+#define REPLXX_STATIC
 #include"replxx/replxx.hxx"
 
 module Helium.Commands;
