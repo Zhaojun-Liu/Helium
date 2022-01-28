@@ -125,6 +125,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CallingConvention>StdCall</CallingConvention>
       <DisableSpecificWarnings>4215;4273;4101;26812</DisableSpecificWarnings>
+      <EnableModules>true</EnableModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -155,14 +156,26 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="commandqueue.cpp" />
+    <ClCompile Include="commandqueue.ixx" />
+    <ClCompile Include="commands.ixx" />
     <ClCompile Include="errorexit.cpp" />
+    <ClCompile Include="errorexit.ixx" />
     <ClCompile Include="events.cpp" />
+    <ClCompile Include="events.ixx" />
     <ClCompile Include="exportfunction.cpp" />
+    <ClCompile Include="exportfunction.ixx" />
+    <ClCompile Include="extension.ixx" />
+    <ClCompile Include="Helium.ixx" />
     <ClCompile Include="heliumconfig.cpp" />
+    <ClCompile Include="heliumconfig.ixx" />
     <ClCompile Include="initdir.cpp" />
+    <ClCompile Include="initdir.ixx" />
     <ClCompile Include="logger.cpp" />
     <ClCompile Include="Helium.cpp" />
+    <ClCompile Include="logger.ixx" />
+    <ClCompile Include="minecraftserver.ixx" />
     <ClCompile Include="parse.cpp" />
+    <ClCompile Include="parse.ixx" />
     <ClCompile Include="replxx\conversion.cxx" />
     <ClCompile Include="replxx\ConvertUTF.cpp" />
     <ClCompile Include="replxx\escape.cxx" />
@@ -177,21 +190,17 @@
     <ClCompile Include="tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="config.cpp" />
+    <ClCompile Include="utils.ixx" />
+    <ClCompile Include="versioncontrol.ixx" />
     <ClCompile Include="watchdog.cpp" />
+    <ClCompile Include="watchdog.ixx" />
     <ClCompile Include="xmlutils.cpp" />
     <ClCompile Include="minecraftserver.cpp" />
     <ClCompile Include="extension.cpp" />
     <ClCompile Include="commands.cpp" />
+    <ClCompile Include="xmlutils.ixx" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="commandqueue.h" />
-    <ClInclude Include="errorexit.h" />
-    <ClInclude Include="exportfunction.h" />
-    <ClInclude Include="Helium.h" />
-    <ClInclude Include="heliumconfig.h" />
-    <ClInclude Include="initdir.h" />
-    <ClInclude Include="logger.h" />
-    <ClInclude Include="parse.h" />
     <ClInclude Include="replxx\conversion.hxx" />
     <ClInclude Include="replxx\ConvertUTF.h" />
     <ClInclude Include="replxx\escape.hxx" />
@@ -209,15 +218,8 @@
     <ClInclude Include="semver\semver.hpp" />
     <ClInclude Include="tinyxml2\tinyxml2.h" />
     <ClInclude Include="tree.hh\tree.hh" />
-    <ClInclude Include="utils.h" />
     <ClInclude Include="config.h" />
-    <ClInclude Include="watchdog.h" />
-    <ClInclude Include="xmlutils.h" />
     <ClInclude Include="minecraftserver.h" />
-    <ClInclude Include="extension.h" />
-    <ClInclude Include="events.h" />
-    <ClInclude Include="commands.h" />
-    <ClInclude Include="versioncontrol.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="HeliumConfig.xml" />

@@ -47,16 +47,16 @@ namespace Helium {
     map<string, HeliumExtension> extensions;
     extern vector<HeliumMinecraftServer> heliumservers;
 
-    int StartInfoThread(MinecraftServerInstance* lpIns) {
-        thread tempthread(ProcessServerOutput, lpIns, lpIns->GetServerName(), lpIns->GetRDInfo().hStdOutRead, lpIns->GetThreadHandle());
+    int StartInfoThread(HeliumMinecraftServer* lpIns) {
+        thread tempthread(ProcessServerOutput, lpIns, lpIns->GetServerName(), lpIns->GetServerRedir().hStdOutRead, lpIns->GetServerHandle());
         tempthread.detach();
         this_thread::yield();
 
-        return lpIns->GerServerPid();
+        return lpIns->GetServerPID();
     }
-    int ProcessServerOutput(MinecraftServerInstance* ptr, string servername, HANDLE stdread, HANDLE hProc) {
+    int ProcessServerOutput(HeliumMinecraftServer* ptr, string servername, HANDLE stdread, HANDLE hProc) {
         HeliumEndline hendl;
-        logger << HLL::LL_INFO << servername << " server started at PID : " << (long)ptr->GerServerPid() << hendl;
+        logger << HLL::LL_INFO << servername << " server started at PID : " << (long)ptr->GetServerPID() << hendl;
         char out_buffer[BUFSIZE];
         DWORD dwRead;
         bool ret = FALSE;
@@ -78,7 +78,7 @@ namespace Helium {
                 pass;
             }
             else {
-                if (ptr->GetVisibility()) {
+                if (ptr->IsOutputVisible()) {
                     cout << servername << "->" << read << endl;
                 }
                 read = "";
@@ -180,6 +180,8 @@ namespace Helium {
     }
     int HeliumFin() {
         HeliumEndline hendl;
+
+        FinShell();
         for (auto ins = serverlist.begin(); ins < serverlist.end(); ins++) {
             ins->StopServer();
         }
@@ -214,7 +216,6 @@ namespace Helium {
         }
 
         InitShell("Helium");
-        FinShell();
 
         HeliumFin();
 
