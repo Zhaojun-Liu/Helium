@@ -189,7 +189,6 @@
     <ClCompile Include="replxx\windows.cxx" />
     <ClCompile Include="tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="utils.cpp" />
-    <ClCompile Include="config.cpp" />
     <ClCompile Include="utils.ixx" />
     <ClCompile Include="versioncontrol.ixx" />
     <ClCompile Include="watchdog.cpp" />
@@ -218,8 +217,6 @@
     <ClInclude Include="semver\semver.hpp" />
     <ClInclude Include="tinyxml2\tinyxml2.h" />
     <ClInclude Include="tree.hh\tree.hh" />
-    <ClInclude Include="config.h" />
-    <ClInclude Include="minecraftserver.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="HeliumConfig.xml" />
