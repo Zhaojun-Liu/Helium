@@ -204,7 +204,3 @@ namespace Helium {
         return 0;
     }
 }
-
-int main(int argc, char* argv[]) {
-    return HeliumMain(argc, argv);
-}

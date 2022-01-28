@@ -33,6 +33,9 @@ module;
 
 export module Helium.InitDirectory;
 
+import Helium.Logger;
+import Helium.ErrorExit;
+
 using namespace std;
 
 export{

@@ -22,7 +22,12 @@
 * ----------------------------------------------------------------------------------------
 */
 
+#include"tree.hh/tree.hh"
+#include"replxx/replxx.hxx"
+
 module Helium.Commands;
+
+using namespace replxx;
 
 namespace Helium {
 	tree<_BasicHeliumCommand*> HeliumCommandTree;

@@ -28,9 +28,9 @@ module;
 #include<spdlog/spdlog.h>
 #include<iostream>
 
-#include"logger.h"
-
 export module Helium.ErrorExit;
+
+import Helium.Logger;
 
 using namespace std;
 
