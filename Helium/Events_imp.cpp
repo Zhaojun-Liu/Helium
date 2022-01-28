@@ -22,11 +22,17 @@
 * ----------------------------------------------------------------------------------------
 */
 
-#include"events.h"
-namespace Helium {
-    deque<HeliumEventInstance*> eventsqueue;
-    map<int, HeliumEvent*> eventmap;
+module;
 
+#include<map>
+
+#include<guiddef.h>
+
+module Helium.Events;
+
+using namespace std;
+
+namespace Helium {
     int RegisterHeliumEvent(HeliumEvent* event, int eventnum)
     {
         return 0;

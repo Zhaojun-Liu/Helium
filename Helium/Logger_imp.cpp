@@ -22,8 +22,21 @@
 * ----------------------------------------------------------------------------------------
 */
 
-#include"logger.h"
+module;
+
+#include<iostream>
+
 #include<spdlog/fmt/fmt.h>
+#include<spdlog/spdlog.h>
+#include<spdlog/sinks/daily_file_sink.h>
+#include<spdlog/sinks/stdout_color_sinks.h>
+
+module Helium.Logger;
+
+import <string>;
+
+using namespace std;
+
 namespace Helium {
 	auto heliumdailysink = make_shared<spdlog::sinks::daily_file_sink_mt>("./logs/helium-log.log", 23, 59);
 	auto heliumconsolesink = make_shared<spdlog::sinks::stdout_color_sink_mt>(spdlog::color_mode::automatic);

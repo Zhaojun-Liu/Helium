@@ -22,7 +22,17 @@
 * ----------------------------------------------------------------------------------------
 */
 
-module Helium.Extensions;
+module;
+
+#include"tinyxml2/tinyxml2.h"
+
+module Helium.Extension;
+
+import <string>;
+import Helium.Logger;
+
+using namespace tinyxml2;
+using namespace std;
 
 namespace Helium {
 	HeliumLogger extlog("HeliumExtension");

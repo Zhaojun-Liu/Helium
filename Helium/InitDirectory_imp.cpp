@@ -22,7 +22,20 @@
 * ----------------------------------------------------------------------------------------
 */
 
-#include"initdir.h"
+module;
+
+#include<list>
+#include<map>
+#include<io.h>
+#include<direct.h>
+
+module Helium.InitDirectory;
+
+import <string>;
+import Helium.Logger;
+import Helium.ErrorExit;
+
+using namespace std;
 
 namespace Helium {
 	list<HeliumDirectory> heliumdir;

@@ -31,12 +31,11 @@ module;
 #include<spdlog/spdlog.h>
 #include<boost/dll.hpp>
 
-#include"xmlutils.h"
-#include"events.h"
 #include"tinyxml2/tinyxml2.h"
-#include"logger.h"
 
 export module Helium.Extension;
+
+import Helium.Events;
 
 using namespace std;
 

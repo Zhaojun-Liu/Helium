@@ -32,17 +32,14 @@ module;
 #include<iostream>
 #include<spdlog/spdlog.h>
 
-#include"logger.h"
-#include"parse.h"
-#include"config.h"
-#include"minecraftserver.h"
-#include"extension.h"
-#include"initdir.h"
-#include"errorexit.h"
-#include"versioncontrol.h"
-#include"heliumconfig.h"
+#include"semver/semver.hpp"
 
 export module Helium;
+
+#define HELIUM_MAJORVER 0
+#define HELIUM_MINORVER 6
+#define HELIUM_PATCHVER 2
+#define HELIUM_DEVSTAT prerelease::alpha
 
 export import Helium.CommandQueue;
 export import Helium.Commands;
@@ -56,16 +53,16 @@ export import Helium.Logger;
 export import Helium.MinecraftServer;
 export import Helium.Parser;
 export import Helium.Utils;
-export import Helium.VersionControl;
 export import Helium.XMLUtils;
 
 using namespace std;
+using namespace semver;
 
 export{
 	namespace Helium {
 		PTP_POOL heliumtp;
 
-		int ProcessServerOutput(MinecraftServerInstance*, string, HANDLE, HANDLE);
+		int ProcessServerOutput(HeliumMinecraftServer*, string, HANDLE, HANDLE);
 		int HeliumMain(int argc, char* argv[]);
 		void HeliumInitOutput();
 		int HeliumInit();

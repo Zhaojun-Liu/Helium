@@ -27,6 +27,13 @@ module;
 export module Helium.Config;
 
 #define CFG_FILENAME "HeliumConfig.xml"
+#define en_US 0
+#define zh_CN 1
+#define PERMISSION_LEVEL_GUEST 0
+#define PERMISSION_LEVEL_USER 1
+#define PERMISSION_LEVEL_ADMIN 2
+#define PERMISSION_LEVEL_SERVEROWNER 3
+#define PERMISSION_LEVEL_HELIUMOWNER 4
 
 import <string>;
 import <vector>;
@@ -35,14 +42,11 @@ import <strstream>;
 import "tinyxml2/tinyxml2.h";
 import "boost/uuid/uuid.hpp";
 
-import "logger.h";
-import "xmlutils.h";
-import "minecraftserver.h";
-import "utils.h";
-
 using namespace std;
 using namespace tinyxml2;
 using namespace boost::uuids;
+
+import Helium.MinecraftServer;
 
 export{
 	namespace Helium {
@@ -66,5 +70,10 @@ export{
 
 		int ReadHeliumConfig();
 		int CreateHeliumConfig();
+
+		const char* permdescstr[] = { "Guest", "User", "Admin", "ServerOwner", "HeliumOwner" };
+		HeliumSetting Settings;
+		vector<PermissionNamespace> Permissions;
+		extern vector<HeliumMinecraftServer> heliumservers;
 	}
 }

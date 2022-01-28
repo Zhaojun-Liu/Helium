@@ -22,9 +22,14 @@
 * ----------------------------------------------------------------------------------------
 */
 
+module;
+
 module Helium.ExportFunction;
 
+import <string>;
+
 using namespace std;
+
 namespace Helium {
 	map<string, void*> HeliumExportFunctionMap;
 

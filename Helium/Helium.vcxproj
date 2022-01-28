@@ -118,14 +118,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_SILENCE_CXX17_STRSTREAM_DEPRECATION_WARNING;_HAS_DEPRECATED_RESULT_OF;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;_HAS_STD_BYTE=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir)readline\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CallingConvention>StdCall</CallingConvention>
-      <DisableSpecificWarnings>4215;4273;4101;26812</DisableSpecificWarnings>
-      <EnableModules>true</EnableModules>
+      <DisableSpecificWarnings>4215;4273;4101;26812;4005</DisableSpecificWarnings>
+      <EnableModules>false</EnableModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -166,8 +166,8 @@
     <ClCompile Include="ExportFunction.ixx" />
     <ClCompile Include="Extension.ixx" />
     <ClCompile Include="Helium.ixx" />
-    <ClCompile Include="HeliumConfig_imp.cpp" />
-    <ClCompile Include="HeliumConfig.ixx" />
+    <ClCompile Include="Config_imp.cpp" />
+    <ClCompile Include="Config.ixx" />
     <ClCompile Include="InitDirectory_imp.cpp" />
     <ClCompile Include="InitDirectory.ixx" />
     <ClCompile Include="Logger_imp.cpp" />
@@ -191,7 +191,6 @@
     <ClCompile Include="tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="Utils_imp.cpp" />
     <ClCompile Include="Utils.ixx" />
-    <ClCompile Include="VersionControl.ixx" />
     <ClCompile Include="Watchdog_imp.cpp" />
     <ClCompile Include="Watchdog.ixx" />
     <ClCompile Include="XMLUtils_imp.cpp" />

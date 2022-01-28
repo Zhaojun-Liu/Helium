@@ -25,7 +25,6 @@
 module;
 
 #include<string>
-#include<spdlog/spdlog.h>
 #include<iostream>
 
 export module Helium.ErrorExit;

@@ -22,7 +22,14 @@
 * ----------------------------------------------------------------------------------------
 */
 
-#include"xmlutils.h"
+module;
+
+module Helium.XMLUtils;
+
+import <string>;
+
+using namespace std;
+
 namespace Helium {
 	bool _stdcall GetNodePointerByName(tinyxml2::XMLElement* pRootEle, const char* strNodeName, tinyxml2::XMLElement*& Node)
 	{

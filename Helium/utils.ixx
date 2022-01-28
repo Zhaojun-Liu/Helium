@@ -31,8 +31,6 @@ module;
 #include<list>
 #include<strstream>
 
-#include"minecraftserver.h"
-
 export module Helium.Utils;
 
 using namespace std;

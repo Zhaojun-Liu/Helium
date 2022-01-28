@@ -28,9 +28,6 @@ module;
 #include<map>
 #include<string>
 
-#include"logger.h"
-#include"errorexit.h"
-
 export module Helium.InitDirectory;
 
 import Helium.Logger;

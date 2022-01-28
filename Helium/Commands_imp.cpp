@@ -22,12 +22,19 @@
 * ----------------------------------------------------------------------------------------
 */
 
+module;
+
+#include<functional>
+#include<boost/uuid/uuid.hpp>
 #include"tree.hh/tree.hh"
 #include"replxx/replxx.hxx"
 
 module Helium.Commands;
 
+using namespace std;
 using namespace replxx;
+using namespace placeholders;
+using namespace boost::uuids;
 
 namespace Helium {
 	tree<_BasicHeliumCommand*> HeliumCommandTree;

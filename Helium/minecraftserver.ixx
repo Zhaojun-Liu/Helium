@@ -33,10 +33,7 @@ module;
 #include<spdlog/spdlog.h>
 #include<boost/uuid/uuid.hpp>
 
-#include"utils.h"
-#include"commands.h"
 #include"tinyxml2/tinyxml2.h"
-#include"logger.h"
 
 export module Helium.MinecraftServer;
 
@@ -150,5 +147,7 @@ export{
 		};
 
 		int ProcessServerOutput(HeliumMinecraftServer* ptr, string servername, HANDLE stdread, HANDLE hproc);
+
+		vector<HeliumMinecraftServer> heliumservers;
 	}
 }

@@ -22,7 +22,24 @@
 * ----------------------------------------------------------------------------------------
 */
 
-#include"utils.h"
+module;
+
+#define SERVER_TYPE_VANILLA		0
+#define SERVER_TYPE_FORGE		1
+#define SERVER_TYPE_BUKKIT		2
+#define SERVER_TYPE_BUKKIT14	3
+#define SERVER_TYPE_BUNGEECORD	4
+#define SERVER_TYPE_WATERFALL	5
+#define SERVER_TYPE_CAT			6
+#define SERVER_TYPE_BETA18		7
+
+module Helium.Utils;
+
+import <string>;
+import Helium.MinecraftServer;
+
+using namespace std;
+
 namespace Helium {
     bool Split(const std::string& str, std::map<size_t, std::string>& ret, std::string sep) { // https://blog.csdn.net/qq_22186119/article/details/110472493
         if (str.empty()) {

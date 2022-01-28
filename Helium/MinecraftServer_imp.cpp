@@ -22,9 +22,20 @@
 * ----------------------------------------------------------------------------------------
 */
 
-#include"minecraftserver.h"
+module;
+
+#include<windows.h>
+#include<boost/uuid/uuid.hpp>
+
+module Helium.MinecraftServer;
+
+import <string>;
+import Helium.Logger;
+
+using namespace std;
+using namespace boost::uuids;
+
 namespace Helium {
-	vector<HeliumMinecraftServer> heliumservers;
 	CRITICAL_SECTION cs;
 	static bool isinit = false;
 	HeliumLogger msl("HeliumServerManager");

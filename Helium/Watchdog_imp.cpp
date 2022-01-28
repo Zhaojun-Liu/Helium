@@ -22,7 +22,9 @@
 * ----------------------------------------------------------------------------------------
 */
 
-#include"watchdog.h"
+module;
+
+module Helium.Watchdog;
 
 namespace Helium {
 

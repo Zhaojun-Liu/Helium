@@ -22,7 +22,16 @@
 * ----------------------------------------------------------------------------------------
 */
 
+module;
+
+#include<string>
+#include<iostream>
+#include<cstdarg>
+#include<spdlog/spdlog.h>
+
 module Helium.ErrorExit;
+
+using namespace std;
 
 namespace Helium {
 	void HeliumErrorExit(bool ispause, bool uselogger, string str, ...) {

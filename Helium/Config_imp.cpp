@@ -22,14 +22,34 @@
 * ----------------------------------------------------------------------------------------
 */
 
+module;
+
+#include<strstream>
+#include<boost/uuid/uuid.hpp>
+
+#include"tinyxml2/tinyxml2.h"
+
+#define CFG_FILENAME "HeliumConfig.xml"
+#define en_US 0
+#define zh_CN 1
+#define PERMISSION_LEVEL_GUEST 0
+#define PERMISSION_LEVEL_USER 1
+#define PERMISSION_LEVEL_ADMIN 2
+#define PERMISSION_LEVEL_SERVEROWNER 3
+#define PERMISSION_LEVEL_HELIUMOWNER 4
+
 module Helium.Config;
+
+using namespace tinyxml2;
+using namespace std;
+using namespace boost::uuids;
+
+import Helium.Logger;
+import Helium.XMLUtils;
+import Helium.Utils;
 
 namespace Helium {
 	HeliumLogger cfgl("HeliumConfigReader");
-	const char* permdescstr[] = { "Guest", "User", "Admin", "ServerOwner", "HeliumOwner" };
-	HeliumSetting Settings;
-	vector<PermissionNamespace> Permissions;
-	extern vector<HeliumMinecraftServer> heliumservers;
 
 	int ReadHeliumConfig() {
 		XMLDocument cfg;
@@ -187,7 +207,6 @@ namespace Helium {
 
 		while (true) {
 			PermissionNamespace tempns;
-			ZeroMemory(&tempns, sizeof(tempns));
 			string tempstr;
 
 			tinyxml2::XMLAttribute* attr = const_cast<tinyxml2::XMLAttribute*>(permns->FindAttribute("server"));

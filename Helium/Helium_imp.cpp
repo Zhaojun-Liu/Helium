@@ -21,8 +21,27 @@
 * along with Helium.  If not, see <https://www.gnu.org/licenses/>.
 * ----------------------------------------------------------------------------------------
 */
+module;
+
+#define WIN32_LEAN_AND_MEAN
+#define BUFSIZE 8192
+
+#include<map>
+#include<thread>
+#include<iostream>
+#include<spdlog/spdlog.h>
+#include<windows.h>
+#include"tinyxml2/tinyxml2.h"
 
 module Helium;
+
+import <string>;
+
+import Helium.Extension;
+import Helium.MinecraftServer;
+
+using namespace std;
+using namespace tinyxml2;
 
 namespace Helium {
     HeliumLogger logger("HeliumMain");
@@ -54,10 +73,10 @@ namespace Helium {
             if (ReadFile(stdread, &ch, 1, &dwRead, NULL) == false)
                 break;
             if (dwRead == 0)
-                pass;
+                continue;
             if (ch != '\n') {
                 read += ch;
-                pass;
+                continue;
             }
             else {
                 if (ptr->IsOutputVisible()) {
@@ -67,7 +86,7 @@ namespace Helium {
             }
 
             MSG msg;
-            DWORD dwRet = MsgWaitForMultipleObjects(1, ptr->GetThreadPHandle(), FALSE, 20, QS_ALLINPUT);
+            DWORD dwRet = MsgWaitForMultipleObjects(1, ptr->GetServerHandle(), FALSE, 20, QS_ALLINPUT);
             switch (dwRet) {
             case WAIT_OBJECT_0:
                 break;
@@ -94,7 +113,7 @@ namespace Helium {
             " |  _  |  __/ | | |_| | | | | | |"\
             " |_| |_|\\___|_|_|\\__,_|_| |_| |_|";
         logger << hendl << hendl;
-        logger << HeliumVersion.to_string() << hendl;
+        //logger << HeliumVersion.to_string() << hendl;
         logger << "Copyright(C) 2021-2022 HeliumDevTeam" << hendl;
         logger << "This program comes with ABSOLUTELY NO WARRANTY;" << hendl;
         logger << "for details type \'!!hel show w\'." << hendl;
@@ -104,7 +123,7 @@ namespace Helium {
         return;
     }
     int HeliumEnvInit() {
-        SetConsoleTitleA(PROJECT_NAME_STR);
+        SetConsoleTitleA("Helium");
         ios::sync_with_stdio(false);
         cin.tie(0);
 #ifdef NOT_STABLE
@@ -143,7 +162,7 @@ namespace Helium {
     }
     int HeliumStartServer() {
         HeliumEndline hendl;
-        for (auto ins = serverlist.begin(); ins < serverlist.end(); ins++) {
+        for (auto ins = heliumservers.begin(); ins < heliumservers.end(); ins++) {
             int ret;
             if (ins->GetAutoStart()) {
                 logger << HLL::LL_INFO << "Starting Minecraft server : " << ins->GetServerName() << hendl;
@@ -164,7 +183,7 @@ namespace Helium {
         HeliumEndline hendl;
 
         FinShell();
-        for (auto ins = serverlist.begin(); ins < serverlist.end(); ins++) {
+        for (auto ins = heliumservers.begin(); ins < heliumservers.end(); ins++) {
             ins->StopServer();
         }
 
