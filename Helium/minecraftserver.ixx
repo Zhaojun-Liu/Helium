@@ -101,9 +101,9 @@ export{
 			bool visi;
 			bool autostart;
 
-			HANDLE hProc;
-			DWORD  dwPid;
-			DWORD  dwReturnValue;
+			HANDLE proc;
+			DWORD  pid;
+			DWORD  retv;
 
 			RedirectInformation redir;
 
@@ -136,7 +136,7 @@ export{
 			DWORD GetServerPID();
 
 			HANDLE GetServerHandle();
-			HANDLE SetServerHandle();
+			void SetServerHandle(HANDLE han);
 
 			DWORD GetServerRetValue();
 

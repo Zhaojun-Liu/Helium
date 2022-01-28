@@ -46,7 +46,6 @@ using namespace tinyxml2;
 namespace Helium {
     HeliumLogger logger("HeliumMain");
     map<string, HeliumExtension> extensions;
-    extern vector<HeliumMinecraftServer> heliumservers;
 
     int StartInfoThread(HeliumMinecraftServer* lpIns) {
         thread tempthread(ProcessServerOutput, lpIns, lpIns->GetServerName(), lpIns->GetServerRedir().hStdOutRead, lpIns->GetServerHandle());

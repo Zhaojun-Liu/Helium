@@ -41,87 +41,106 @@ namespace Helium {
 	HeliumLogger msl("HeliumServerManager");
 
 	string HeliumMinecraftServer::GetServerName() {
-
+		return this->name;
 	}
 	string HeliumMinecraftServer::SetServerName(string name) {
-
+		string temps = this->name;
+		this->name = name;
+		return temps;
 	}
 
 	string HeliumMinecraftServer::GetServerDirectory() {
-
+		return this->dir;
 	}
 	string HeliumMinecraftServer::SetServerDirectory(string dir) {
-
+		string temps = this->dir;
+		this->dir = dir;
+		return temps;
 	}
 
 	string HeliumMinecraftServer::GetServerStartCommand() {
-
+		return this->startcommand;
 	}
 	string HeliumMinecraftServer::SetServerStartCommand(string cmd) {
-
+		string temps = this->startcommand;
+		this->startcommand = cmd;
+		return temps;
 	}
 
 	bool HeliumMinecraftServer::IsAutoStart() {
-
+		return this->autostart;
 	}
 	bool HeliumMinecraftServer::EnableAutoStart() {
-
+		bool t = this->autostart;
+		this->autostart = true;
+		return t;
 	}
 	bool HeliumMinecraftServer::DisableAutoStart() {
-
+		bool t = this->autostart;
+		this->autostart = false;
+		return t;
 	}
 
 	bool HeliumMinecraftServer::IsOutputVisible() {
-
+		return this->visi;
 	}
 	bool HeliumMinecraftServer::EnableOutputVisibility() {
-
+		bool t = this->visi;
+		this->visi = true;
+		return t;
 	}
 	bool HeliumMinecraftServer::DisableOutputVisibility() {
-
+		bool t = this->visi;
+		this->visi = false;
+		return t;
 	}
 
 	int HeliumMinecraftServer::GetServerType() {
-
+		return this->type;
 	}
 	int HeliumMinecraftServer::SetServerType(int type) {
-
+		int t = this->type;
+		this->type = type;
+		return t;
 	}
 
 	int HeliumMinecraftServer::GetServerStat() {
-
+		return this->stat;
 	}
 
 	uuid HeliumMinecraftServer::GetServerUUID() {
-
+		return this->serveruuid;
 	}
 
 	DWORD HeliumMinecraftServer::GetServerPID() {
-
+		return this->pid;
 	}
 
 	HANDLE HeliumMinecraftServer::GetServerHandle() {
-
+		return this->proc;
 	}
-	HANDLE HeliumMinecraftServer::SetServerHandle() {
-
+	void HeliumMinecraftServer::SetServerHandle(HANDLE han) {
+		this->proc = han;
 	}
 
 	DWORD HeliumMinecraftServer::GetServerRetValue() {
+		return this->retv;
 	}
 
 	RedirectInformation HeliumMinecraftServer::GetServerRedir() {
-
+		return this->redir;
 	}
 	RedirectInformation HeliumMinecraftServer::SetServerRedir(RedirectInformation* redir) {
-
+		RedirectInformation r = this->redir;
+		this->redir = *redir;
+		return r;
 	}
 
 	uuid HeliumMinecraftServer::GenServerUUID() {
-
+		return this->serveruuid;
 	}
 
 	int ProcessServerOutput(HeliumMinecraftServer* ptr, string servername, HANDLE stdread, HANDLE hproc) {
-
+		return 0;
 	}
 }
