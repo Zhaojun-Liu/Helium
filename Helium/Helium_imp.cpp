@@ -25,6 +25,7 @@ module;
 
 #define WIN32_LEAN_AND_MEAN
 #define BUFSIZE 8192
+#define NOT_STABLE
 
 #include<map>
 #include<thread>
@@ -87,17 +88,17 @@ namespace Helium {
         HeliumEndline hendl;
 
         logger << HLL::LL_INFO << "Start Helium initialization." << hendl;
-        //logger << HLL::LL_DBG << "Start adding dirs" << hendl;
-        //AddHeliumDirectory("./extensions", "The \"extension\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
-        //AddHeliumDirectory("./extensions/extconfigs", "The \"extensions/extconfigs\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
-        //AddHeliumDirectory("./logs", "The \"logs\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
-        //AddHeliumDirectory("./scripts", "The \"scripts\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
-        //AddHeliumDirectory("./scripts/initscripts", "The \"scripts/initscripts\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
-        //logger << HLL::LL_DBG << "End adding dirs" << hendl;
+        logger << HLL::LL_DBG << "Start adding dirs" << hendl;
+        AddHeliumDirectory("./extensions", "The \"extension\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
+        AddHeliumDirectory("./extensions/extconfigs", "The \"extensions/extconfigs\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
+        AddHeliumDirectory("./logs", "The \"logs\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
+        AddHeliumDirectory("./scripts", "The \"scripts\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
+        AddHeliumDirectory("./scripts/initscripts", "The \"scripts/initscripts\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
+        logger << HLL::LL_DBG << "End adding dirs" << hendl;
 
-        //if (auto ret = InitHeliumDirectory(); ret != 0) {
-        //HeliumErrorExit(true, true, "Failed to initialize directory,exiting...");
-        //}
+        if (auto ret = InitHeliumDirectory(); ret != 0) {
+            HeliumErrorExit(true, true, "Failed to initialize directory,exiting...");
+        }
 
         if (auto ret = ReadHeliumConfig(); ret != XMLError::XML_SUCCESS) {
             if (auto iret = CreateHeliumConfig(); ret != XMLError::XML_SUCCESS) {
