@@ -88,6 +88,7 @@ namespace Helium {
         HeliumEndline hendl;
 
         logger << HLL::LL_INFO << "Start Helium initialization." << hendl;
+
         logger << HLL::LL_DBG << "Start adding dirs" << hendl;
         AddHeliumDirectory("./extensions", "The \"extension\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
         AddHeliumDirectory("./extensions/extconfigs", "The \"extensions/extconfigs\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
