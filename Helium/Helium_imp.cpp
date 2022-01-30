@@ -67,7 +67,7 @@ namespace Helium {
         logger << "Copyright(C) 2021-2022 HeliumDevTeam" << hendl;
         logger << "This program comes with ABSOLUTELY NO WARRANTY;" << hendl;
         logger << "for details type \'!!hel show w\'." << hendl;
-        logger << "This is free software, and you are welcome to redistribute it";
+        logger << "This is free software, and you are welcome to redistribute it" << hendl;
         logger << "under certain conditions; type \'!!hel show c\' for details." << hendl;
 
         return;

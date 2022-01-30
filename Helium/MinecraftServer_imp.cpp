@@ -138,6 +138,38 @@ namespace Helium {
 		return r;
 	}
 
+	bool HeliumMinecraftServer::IsRCONEnabled() {
+		return this->rcon.isenabled;
+	}
+	bool HeliumMinecraftServer::EnableRCON() {
+		auto r = this->rcon.isenabled;
+		this->rcon.isenabled = true;
+		return r;
+	}
+	bool HeliumMinecraftServer::DisableRCON() {
+		auto r = this->rcon.isenabled;
+		this->rcon.isenabled = false;
+		return r;
+	}
+
+	int HeliumMinecraftServer::GetRCONPort() {
+		return this->rcon.port;
+	}
+	int HeliumMinecraftServer::SetRCONPort(int port) {
+		auto r = this->rcon.port;
+		this->rcon.port = port;
+		return r;
+	}
+
+	string HeliumMinecraftServer::GetRCONPassword() {
+		return this->rcon.pwd;
+	}
+	string HeliumMinecraftServer::SetRCONPassword(string pwd) {
+		auto r = this->rcon.pwd;
+		this->rcon.pwd = pwd;
+		return r;
+	}
+
 	uuid HeliumMinecraftServer::GenServerUUID() {
 		return this->serveruuid;
 	}

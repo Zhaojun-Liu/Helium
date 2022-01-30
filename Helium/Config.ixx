@@ -55,9 +55,6 @@ export{
 			string Encoding;
 			string ExtDir;
 			string ScrDir;
-			bool rconEnable;
-			int rconPort;
-			string rconPassword;
 			bool AutoUpdate;
 		};
 
@@ -71,9 +68,14 @@ export{
 		int ReadHeliumConfig();
 		int CreateHeliumConfig();
 
-		const char* permdescstr[] = { "Guest", "User", "Admin", "ServerOwner", "HeliumOwner" };
-		HeliumSetting Settings;
-		vector<PermissionNamespace> Permissions;
-		extern vector<HeliumMinecraftServer> heliumservers;
+		int GetLanguage();
+		string GetEncoding();
+		string GetExtensionDirectory();
+		string GetScriptDirectory();
+		bool IsAutoUpdate();
+		int QueryPermission(string server, string name);
+		int QueryPermission(uuid server, string name);
+		int QueryDefaultPermission(string server);
+		int QuertDefaultPermission(uuid server);
 	}
 }

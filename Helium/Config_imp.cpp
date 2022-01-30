@@ -29,6 +29,7 @@ module;
 
 #include"tinyxml2/tinyxml2.h"
 
+
 #define CFG_FILENAME "HeliumConfig.xml"
 #define en_US 0
 #define zh_CN 1
@@ -49,6 +50,10 @@ import Helium.XMLUtils;
 import Helium.Utils;
 import Helium.MinecraftServer;
 
+HeliumSetting Settings;
+vector<PermissionNamespace> Permissions;
+const char* permdescstr[] = { "Guest", "User", "Admin", "ServerOwner", "HeliumOwner" };
+
 namespace Helium {
 	HeliumLogger cfgl("HeliumConfigReader");
 	vector<HeliumMinecraftServer> heliumservers;
@@ -59,7 +64,6 @@ namespace Helium {
 		XMLElement* set;
 		XMLElement* perm;
 		XMLElement* server;
-		XMLElement* rcon;
 		XMLElement* servernode;
 		XMLElement* permns;
 		HeliumEndline hendl;
@@ -99,12 +103,6 @@ namespace Helium {
 			return cfg.ErrorID();
 		}
 
-		if (rcon = set->FirstChildElement("rcon"); rcon == NULL) {
-			cfgl << HLL::LL_ERR << "Failed to get the rcon element of helium config file : " << cfg.ErrorID() << "(" << cfg.ErrorName() << ")" << hendl;
-			cfgl << cfg.ErrorStr() << hendl;
-			return cfg.ErrorID();
-		}
-
 		if (servernode = server->FirstChildElement("MinecraftServer"); servernode == NULL) {
 			cfgl << HLL::LL_ERR << "Failed to get the MinecraftServer element of helium config file : " << cfg.ErrorID() << "(" << cfg.ErrorName() << ")" << hendl;
 			cfgl << cfg.ErrorStr() << hendl;
@@ -136,21 +134,6 @@ namespace Helium {
 		if (!tempstr.empty())Settings.ScrDir = tempstr;
 		else Settings.ScrDir = "scripts";
 
-		tempstr = GetNodeStringByName(rcon, "Enable");
-		if (tempstr == "true") Settings.rconEnable = true;
-		else Settings.rconEnable = false;
-
-		if (Settings.rconEnable) {
-			tempstr = GetNodeStringByName(rcon, "Port");
-			sstr << tempstr;
-			sstr >> tempi;
-			sstr.clear();
-			Settings.rconPort = tempi;
-
-			tempstr = GetNodeStringByName(rcon, "Password");
-			Settings.rconPassword = tempstr;
-		}
-
 		tempstr = GetNodeStringByName(set, "AutoUpdate");
 		if (tempstr == "true") Settings.AutoUpdate = true;
 		else Settings.AutoUpdate = false;
@@ -158,6 +141,7 @@ namespace Helium {
 		while (servernode) {
 			HeliumMinecraftServer tempins;
 			XMLElement* servernodechild;
+			XMLElement* rcon;
 
 			servernodechild = servernode->FirstChildElement("ServerName");
 			if (servernodechild)
@@ -201,9 +185,27 @@ namespace Helium {
 						tempins.DisableOutputVisibility();
 				}
 
+			rcon = servernode->FirstChildElement("rcon");
+			if (rcon) {
+				tempstr = GetNodeStringByName(rcon, "Enable");
+				if (tempstr == "true") tempins.EnableRCON();
+				else tempins.DisableRCON();
+
+				if (Settings.rconEnable) {
+					tempstr = GetNodeStringByName(rcon, "Port");
+					sstr << tempstr;
+					sstr >> tempi;
+					sstr.clear();
+					tempins.SetRCONPort(tempi);
+
+					tempstr = GetNodeStringByName(rcon, "Password");
+					tempins.SetRCONPassword(tempstr);
+				}
+			}
+
 			tempins.GenServerUUID();
 
-			heliumservers.push_back(tempins);
+			AddServer(tempins);
 			servernode = servernode->NextSiblingElement("MinecraftServer");
 		}
 
@@ -374,11 +376,6 @@ namespace Helium {
 			return doc.ErrorID();
 		}
 
-		doc.InsertEndChild(root);
-		root->InsertEndChild(set);
-		root->InsertEndChild(perm);
-		root->InsertEndChild(server);
-
 		if (auto ele = doc.NewElement("Language"); ele != NULL)
 			set->InsertEndChild(ele);
 		else {
@@ -407,50 +404,116 @@ namespace Helium {
 			cfgl << doc.ErrorStr() << hendl;
 			return doc.ErrorID();
 		}
-		if (auto rcon = doc.NewElement("rcon"); rcon != NULL) {
-			set->InsertEndChild(rcon);
-			if (auto ele = doc.NewElement("Enable"); ele != NULL)
-				rcon->InsertEndChild(ele);
-			else {
-				cfgl << HLL::LL_ERR << "Failed to create element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
-				cfgl << doc.ErrorStr() << hendl;
-				return doc.ErrorID();
-			}
-			if (auto ele = doc.NewElement("Port"); ele != NULL)
-				rcon->InsertEndChild(ele);
-			else {
-				cfgl << HLL::LL_ERR << "Failed to create element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
-				cfgl << doc.ErrorStr() << hendl;
-				return doc.ErrorID();
-			}
-			if (auto ele = doc.NewElement("Password"); ele != NULL)
-				rcon->InsertEndChild(ele);
-			else {
-				cfgl << HLL::LL_ERR << "Failed to create element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
-				cfgl << doc.ErrorStr() << hendl;
-				return doc.ErrorID();
-			}
-		}
-		else {
-			cfgl << HLL::LL_ERR << "Failed to create element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
-			cfgl << doc.ErrorStr() << hendl;
-			return doc.ErrorID();
-		}
-		if (auto ele = doc.NewE,lement("AutoUpdate"); ele != NULL)
+		if (auto ele = doc.NewElement("AutoUpdate"); ele != NULL)
 			set->InsertEndChild(ele);
 		else {
 			cfgl << HLL::LL_ERR << "Failed to create element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
 			cfgl << doc.ErrorStr() << hendl;
 			return doc.ErrorID();
 		}
+		root->InsertEndChild(set);
 
 		if (auto ele = doc.NewElement("PermissionNamespace"); ele != NULL) {
+			if (auto child = doc.NewElement("Guest"); child != NULL) {
+				if (auto player = doc.NewElement("Player"); player != NULL) {
+					child->InsertEndChild(player);
+					ele->InsertEndChild(child);
+				}
+			}
+			if (auto child = doc.NewElement("User"); child != NULL) {
+				if (auto player = doc.NewElement("Player"); player != NULL) {
+					child->InsertEndChild(player);
+					ele->InsertEndChild(child);
+				}
+			}
+			if (auto child = doc.NewElement("Admin"); child != NULL) {
+				if (auto player = doc.NewElement("Player"); player != NULL) {
+					child->InsertEndChild(player);
+					ele->InsertEndChild(child);
+				}
+			}
+			if (auto child = doc.NewElement("ServerOwner"); child != NULL) {
+				if (auto player = doc.NewElement("Player"); player != NULL) {
+					child->InsertEndChild(player);
+					ele->InsertEndChild(child);
+				}
+			}
+			if (auto child = doc.NewElement("HeliumOwner"); child != NULL) {
+				if (auto player = doc.NewElement("Player"); player != NULL) {
+					child->InsertEndChild(player);
+					ele->InsertEndChild(child);
+				}
+			}
 			perm->InsertEndChild(ele);
+			root->InsertEndChild(perm);
 		}
 		else {
 			cfgl << HLL::LL_ERR << "Failed to create element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
 			cfgl << doc.ErrorStr() << hendl;
 			return doc.ErrorID();
 		}
+
+		if (auto ele = doc.NewElement("ServerName"); ele != NULL) {
+			if (auto s = doc.NewElement("ServerType"); s != NULL) ele->InsertEndChild(s);
+			if (auto s = doc.NewElement("AutoStart"); s != NULL) ele->InsertEndChild(s);
+			if (auto s = doc.NewElement("OutputVisible"); s != NULL) ele->InsertEndChild(s);
+			if (auto s = doc.NewElement("ServerUUID"); s != NULL) ele->InsertEndChild(s);
+			if (auto rcon = doc.NewElement("rcon"); rcon != NULL) {
+				auto e = doc.NewElement("Enable");
+				auto p = doc.NewElement("Port");
+				auto a = doc.NewElement("Password");
+				if (e != NULL && p != NULL && a != NULL) {
+					rcon->InsertEndChild(e);
+					rcon->InsertEndChild(p);
+					rcon->InsertEndChild(a);
+					ele->InsertEndChild(rcon);
+				}
+			}
+			server->InsertEndChild(ele);
+			root->InsertEndChild(server);
+		}
+		else {
+			cfgl << HLL::LL_ERR << "Failed to create element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
+			cfgl << doc.ErrorStr() << hendl;
+			return doc.ErrorID();
+		}
+
+		doc.InsertEndChild(root);
+
+		if (auto ret = doc.SaveFile(CFG_FILENAME); ret != XMLError::XML_SUCCESS) {
+			cfgl << HLL::LL_ERR << "Failed to create helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
+			cfgl << doc.ErrorStr() << hendl;
+			return doc.ErrorID();
+		}
+		
+		return XMLError::XML_SUCCESS;
+	}
+
+	int GetLanguage() {
+		return Settings.Language;
+	}
+	string GetEncoding() {
+		return Settings.Encoding;
+	}
+	string GetExtensionDirectory() {
+		return Settings.ExtDir;
+	}
+	string GetScriptDirectory() {
+		return Settings.ScrDir;
+	}
+	bool IsAutoUpdate() {
+		return Settings.AutoUpdate;
+	}
+	int QueryPermission(string server, string name) {
+
+	}
+	int QueryPermission(uuid server, string name) {
+
+	}
+	int QueryDefaultPermission(string server) {
+
+	}
+	int QuertDefaultPermission(uuid server) {
+
 	}
 }

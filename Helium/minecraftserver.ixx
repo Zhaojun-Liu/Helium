@@ -87,6 +87,13 @@ export{
 				}
 			}
 		};
+		
+		struct RCONInfo {
+			bool isenabled;
+			int port;
+			string pwd;
+		};
+
 		class HeliumMinecraftServer {
 			friend int ProcessServerOutput(HeliumMinecraftServer* ptr, string servername, HANDLE stdread, HANDLE hproc);
 
@@ -108,6 +115,8 @@ export{
 			RedirectInformation redir;
 
 			uuid serveruuid;
+
+			RCONInfo rcon;
 		public:
 			string GetServerName();
 			string SetServerName(string name);
@@ -143,11 +152,53 @@ export{
 			RedirectInformation GetServerRedir();
 			RedirectInformation SetServerRedir(RedirectInformation* redir);
 
+			bool IsRCONEnabled();
+			bool EnableRCON();
+			bool DisableRCON();
+
+			int GetRCONPort();
+			int SetRCONPort(int port);
+
+			string GetRCONPassword();
+			string SetRCONPassword(string pwd);
+
 			uuid GenServerUUID();
 		};
 
 		int ProcessServerOutput(HeliumMinecraftServer* ptr, string servername, HANDLE stdread, HANDLE hproc);
 
-		extern vector<HeliumMinecraftServer> heliumservers{};
+		void AddServer(HeliumMinecraftServer* server);
+		int StartServer(string name);
+		int StartServer(uuid server);
+		int StartServer();
+		int StartAllServer();
+
+		int AutoStartServer(string name);
+		int AutoStartServer(uuid server);
+		int AutoStartServer();
+		int AutoStartAllServer();
+
+		int StopServer(string name);
+		int StopServer(uuid server);
+		int StopServer();
+		int StopAllServer();
+
+		int PauseServer(string name);
+		int PauseServer(uuid server);
+		int PauseServer();
+		int PauseAllServer();
+
+		int ResumeServer(string name);
+		int ResumeServer(uuid server);
+		int ResumeServer();
+		int ResumeAllServer();
+
+		int DeleteServer(string name);
+		int DeleteServer(uuid server);
+		int DeleteSerevr(int stat);
+		void ClearServerList();
+
+		HeliumMinecraftServer QueryServer(string servername);
+		HeliumMinecraftServer QueryServer(uuid server);
 	}
 }
