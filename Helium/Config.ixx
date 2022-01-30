@@ -79,3 +79,11 @@ export{
 		int QuertDefaultPermission(uuid server);
 	}
 }
+
+module : private;
+
+namespace Helium {
+	HeliumSetting Settings;
+	vector<PermissionNamespace> Permissions;
+	const char* permdescstr[] = { "Guest", "User", "Admin", "ServerOwner", "HeliumOwner" };
+}

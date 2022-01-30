@@ -50,10 +50,6 @@ import Helium.XMLUtils;
 import Helium.Utils;
 import Helium.MinecraftServer;
 
-HeliumSetting Settings;
-vector<PermissionNamespace> Permissions;
-const char* permdescstr[] = { "Guest", "User", "Admin", "ServerOwner", "HeliumOwner" };
-
 namespace Helium {
 	HeliumLogger cfgl("HeliumConfigReader");
 	vector<HeliumMinecraftServer> heliumservers;
@@ -191,7 +187,7 @@ namespace Helium {
 				if (tempstr == "true") tempins.EnableRCON();
 				else tempins.DisableRCON();
 
-				if (Settings.rconEnable) {
+				if (tempins.IsRCONEnabled()) {
 					tempstr = GetNodeStringByName(rcon, "Port");
 					sstr << tempstr;
 					sstr >> tempi;
