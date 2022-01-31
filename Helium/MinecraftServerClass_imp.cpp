@@ -200,4 +200,30 @@ namespace Helium {
 	int ProcessServerOutput(HeliumMinecraftServer* ptr, string servername, HANDLE stdread, HANDLE hproc) {
 		return 0;
 	}
+
+	bool HeliumMinecraftServer::IsValid() {
+		bool ret = true;
+		return ret;
+	}
+
+	int HeliumMinecraftServer::StartServer() {
+		int ret = 0;
+		return ret;
+	}
+	int HeliumMinecraftServer::StopServer() {
+		int ret = 0;
+		return ret;
+	}
+	int HeliumMinecraftServer::PauseServer() {
+		int ret = 0;
+		return ret;
+	}
+	int HeliumMinecraftServer::ResumeServer() {
+		int ret = 0;
+		return ret;
+	}
+
+	void HeliumMinecraftServer::operator = (HeliumMinecraftServer server) {
+
+	}
 }

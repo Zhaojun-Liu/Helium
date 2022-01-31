@@ -38,7 +38,7 @@ export module Helium;
 
 #define HELIUM_MAJORVER 0
 #define HELIUM_MINORVER 6
-#define HELIUM_PATCHVER 3
+#define HELIUM_PATCHVER 4
 #define HELIUM_DEVSTAT prerelease::alpha
 
 export import Helium.CommandQueue;

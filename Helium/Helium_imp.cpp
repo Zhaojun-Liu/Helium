@@ -113,30 +113,13 @@ namespace Helium {
     }
     int HeliumStartServer() {
         HeliumEndline hendl;
-        for (auto ins = heliumservers.begin(); ins < heliumservers.end(); ins++) {
-            int ret = 0;
-            if (ins->IsAutoStart()) {
-                logger << HLL::LL_INFO << "Starting Minecraft server : " << ins->GetServerName() << hendl;
-                //ret = ins->StartServer();
-                logger << HLL::LL_INFO << "Minecraft Server started with return code : " << ret << hendl;
-                StartInfoThread(&(*ins));
-            }
-            else {
-                continue;
-            }
-            if (ret != 0) {
-                logger << HLL::LL_ERR << "Error starting Minecraft server : " << ins->GetServerName() << hendl;
-            }
-        }
-        return 0;
+        return AutoStartAllServer();
     }
     int HeliumFin() {
         HeliumEndline hendl;
 
         FinShell();
-        for (auto ins = heliumservers.begin(); ins < heliumservers.end(); ins++) {
-            ;//ins->StopServer();
-        }
+        StopAllServer();
 
         return 0;
     }

@@ -27,13 +27,6 @@ module;
 export module Helium.Config;
 
 #define CFG_FILENAME "HeliumConfig.xml"
-#define en_US 0
-#define zh_CN 1
-#define PERMISSION_LEVEL_GUEST 0
-#define PERMISSION_LEVEL_USER 1
-#define PERMISSION_LEVEL_ADMIN 2
-#define PERMISSION_LEVEL_SERVEROWNER 3
-#define PERMISSION_LEVEL_HELIUMOWNER 4
 
 import <string>;
 import <vector>;
@@ -50,6 +43,19 @@ import Helium.MinecraftServer;
 
 export{
 	namespace Helium {
+		enum HeliumLanguage {
+			en_US,
+			zh_CN
+		};
+
+		enum HeliumPermissionLevel {
+			GUEST,
+			USER,
+			ADMIN,
+			SERVEROWNER,
+			HELIUMOWNER
+		};
+
 		struct HeliumSetting {
 			int Language;
 			string Encoding;
@@ -76,7 +82,7 @@ export{
 		int QueryPermission(string server, string name);
 		int QueryPermission(uuid server, string name);
 		int QueryDefaultPermission(string server);
-		int QuertDefaultPermission(uuid server);
+		int QueryDefaultPermission(uuid server);
 	}
 }
 

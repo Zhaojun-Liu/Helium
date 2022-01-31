@@ -25,13 +25,3 @@
 export module Helium.MinecraftServer;
 export import :API;
 export import :Class;
-
-import <vector>;
-
-using namespace std;
-
-module : private;
-
-namespace Helium {
-	vector<HeliumMinecraftServer> heliumservers;
-}

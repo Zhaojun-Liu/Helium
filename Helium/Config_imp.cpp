@@ -31,13 +31,6 @@ module;
 
 
 #define CFG_FILENAME "HeliumConfig.xml"
-#define en_US 0
-#define zh_CN 1
-#define PERMISSION_LEVEL_GUEST 0
-#define PERMISSION_LEVEL_USER 1
-#define PERMISSION_LEVEL_ADMIN 2
-#define PERMISSION_LEVEL_SERVEROWNER 3
-#define PERMISSION_LEVEL_HELIUMOWNER 4
 
 module Helium.Config;
 
@@ -52,7 +45,6 @@ import Helium.MinecraftServer;
 
 namespace Helium {
 	HeliumLogger cfgl("HeliumConfigReader");
-	vector<HeliumMinecraftServer> heliumservers;
 
 	int ReadHeliumConfig() {
 		XMLDocument cfg;
@@ -113,11 +105,11 @@ namespace Helium {
 
 		tempstr = GetNodeStringByName(set, "Language");
 		if (tempstr == "en-US")
-			Settings.Language = en_US;
+			Settings.Language = HeliumLanguage::en_US;
 		else if (tempstr == "zh-CN")
-			Settings.Language = zh_CN;
+			Settings.Language = HeliumLanguage::zh_CN;
 		else
-			Settings.Language = en_US;
+			Settings.Language = HeliumLanguage::en_US;
 
 		tempstr = GetNodeStringByName(set, "Encoding");
 		Settings.Encoding = tempstr;
@@ -212,10 +204,10 @@ namespace Helium {
 			tinyxml2::XMLAttribute* attr = const_cast<tinyxml2::XMLAttribute*>(permns->FindAttribute("server"));
 			if (attr->Value()) {
 				string tempstr = attr->Value();
-				for (auto& server : heliumservers) {
-					if (server.GetServerName() == tempstr) {
+				for (auto it = ServerListBegin(); it < ServerListEnd(); it ++) {
+					if (it->GetServerName() == tempstr) {
 						uuid suuid;
-						suuid = server.GetServerUUID();
+						suuid = it->GetServerUUID();
 						tempns.serveruuid = suuid;
 					}
 				}
@@ -228,17 +220,17 @@ namespace Helium {
 
 			attr = const_cast<tinyxml2::XMLAttribute*>(permns->FindAttribute("default"));
 			if (attr->Value()) {
-				tempns.defaultpermission = PERMISSION_LEVEL_GUEST;
+				tempns.defaultpermission = HeliumPermissionLevel::GUEST;
 				string tempstr = attr->Value();
-				if (tempstr == permdescstr[PERMISSION_LEVEL_GUEST]) tempns.defaultpermission = PERMISSION_LEVEL_GUEST;
-				if (tempstr == permdescstr[PERMISSION_LEVEL_USER]) tempns.defaultpermission = PERMISSION_LEVEL_USER;
-				if (tempstr == permdescstr[PERMISSION_LEVEL_ADMIN]) tempns.defaultpermission = PERMISSION_LEVEL_ADMIN;
-				if (tempstr == permdescstr[PERMISSION_LEVEL_SERVEROWNER]) tempns.defaultpermission = PERMISSION_LEVEL_SERVEROWNER;
-				if (tempstr == permdescstr[PERMISSION_LEVEL_HELIUMOWNER]) tempns.defaultpermission = PERMISSION_LEVEL_HELIUMOWNER;
+				if (tempstr == permdescstr[HeliumPermissionLevel::GUEST]) tempns.defaultpermission = HeliumPermissionLevel::GUEST;
+				if (tempstr == permdescstr[HeliumPermissionLevel::USER]) tempns.defaultpermission = HeliumPermissionLevel::USER;
+				if (tempstr == permdescstr[HeliumPermissionLevel::ADMIN]) tempns.defaultpermission = HeliumPermissionLevel::ADMIN;
+				if (tempstr == permdescstr[HeliumPermissionLevel::SERVEROWNER]) tempns.defaultpermission = HeliumPermissionLevel::SERVEROWNER;
+				if (tempstr == permdescstr[HeliumPermissionLevel::HELIUMOWNER]) tempns.defaultpermission = HeliumPermissionLevel::HELIUMOWNER;
 			}
 			else {
 				cfgl << HLL::LL_ERR << "Failed to read the \"default\" attribute, setting the default permission level to guest" << hendl;
-				tempns.defaultpermission = PERMISSION_LEVEL_GUEST;
+				tempns.defaultpermission = HeliumPermissionLevel::GUEST;
 			}
 
 			tinyxml2::XMLElement* permlevel = permns->FirstChildElement("HeliumOwner");
@@ -247,7 +239,7 @@ namespace Helium {
 				if (player != NULL) {
 					while (true) {
 						if (player->GetText()) {
-							tempns.permissions.push_back(make_pair<string, int>(player->GetText(), PERMISSION_LEVEL_SERVEROWNER));
+							tempns.permissions.push_back(make_pair<string, int>(player->GetText(), HeliumPermissionLevel::SERVEROWNER));
 						}
 
 						player = permlevel->NextSiblingElement("Player");
@@ -263,7 +255,7 @@ namespace Helium {
 				if (player != NULL) {
 					while (true) {
 						if (player->GetText()) {
-							tempns.permissions.push_back(make_pair<string, int>(player->GetText(), PERMISSION_LEVEL_SERVEROWNER));
+							tempns.permissions.push_back(make_pair<string, int>(player->GetText(), HeliumPermissionLevel::SERVEROWNER));
 						}
 
 						player = permlevel->NextSiblingElement("Player");
@@ -279,7 +271,7 @@ namespace Helium {
 				if (player != NULL) {
 					while (true) {
 						if (player->GetText()) {
-							tempns.permissions.push_back(make_pair<string, int>(player->GetText(), PERMISSION_LEVEL_ADMIN));
+							tempns.permissions.push_back(make_pair<string, int>(player->GetText(), HeliumPermissionLevel::ADMIN));
 						}
 
 						player = permlevel->NextSiblingElement("Player");
@@ -295,7 +287,7 @@ namespace Helium {
 				if (player != NULL) {
 					while (true) {
 						if (player->GetText()) {
-							tempns.permissions.push_back(make_pair<string, int>(player->GetText(), PERMISSION_LEVEL_USER));
+							tempns.permissions.push_back(make_pair<string, int>(player->GetText(), HeliumPermissionLevel::USER));
 						}
 
 						player = permlevel->NextSiblingElement("Player");
@@ -311,7 +303,7 @@ namespace Helium {
 				if (player != NULL) {
 					while (true) {
 						if (player->GetText()) {
-							tempns.permissions.push_back(make_pair<string, int>(player->GetText(), PERMISSION_LEVEL_GUEST));
+							tempns.permissions.push_back(make_pair<string, int>(player->GetText(), HeliumPermissionLevel::GUEST));
 						}
 
 						player = permlevel->NextSiblingElement("Player");
@@ -501,15 +493,37 @@ namespace Helium {
 		return Settings.AutoUpdate;
 	}
 	int QueryPermission(string server, string name) {
-
+		for (auto it = Permissions.begin(); it < Permissions.end(); it++) {
+			if (it->servername == server) {
+				for (auto pit = it->permissions.begin(); pit < it->permissions.end(); pit++)
+					if (pit->first == name) return pit->second;
+			}
+		}
+		return HeliumPermissionLevel::GUEST;
 	}
 	int QueryPermission(uuid server, string name) {
-
+		for (auto it = Permissions.begin(); it < Permissions.end(); it++) {
+			if (it->serveruuid == server) {
+				for (auto pit = it->permissions.begin(); pit < it->permissions.end(); pit++)
+					if (pit->first == name) return pit->second;
+			}
+		}
+		return HeliumPermissionLevel::GUEST;
 	}
 	int QueryDefaultPermission(string server) {
-
+		for (auto it = Permissions.begin(); it < Permissions.end(); it++) {
+			if (it->servername == server) {
+				return it->defaultpermission;
+			}
+		}
+		return HeliumPermissionLevel::GUEST;
 	}
-	int QuertDefaultPermission(uuid server) {
-
+	int QueryDefaultPermission(uuid server) {
+		for (auto it = Permissions.begin(); it < Permissions.end(); it++) {
+			if (it->serveruuid == server) {
+				return it->defaultpermission;
+			}
+		}
+		return HeliumPermissionLevel::GUEST;
 	}
 }

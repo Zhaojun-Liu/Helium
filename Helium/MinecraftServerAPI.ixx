@@ -33,6 +33,7 @@ export module Helium.MinecraftServer:API;
 
 import :Class;
 import <string>;
+import <vector>;
 
 using namespace std;
 using namespace boost::uuids;
@@ -69,10 +70,12 @@ export {
 
 		int DeleteServer(string name);
 		int DeleteServer(uuid server);
-		int DeleteSerevr(int stat);
+		int DeleteServer(int stat);
 		void ClearServerList();
 
-		auto QueryServer(string servername);
-		auto QueryServer(uuid server);
+		vector<HeliumMinecraftServer>::iterator QueryServer(string servername);
+		vector<HeliumMinecraftServer>::iterator QueryServer(uuid server);
+		vector<HeliumMinecraftServer>::iterator ServerListBegin();
+		vector<HeliumMinecraftServer>::iterator ServerListEnd();
 	}
 }

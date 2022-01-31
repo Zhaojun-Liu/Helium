@@ -162,7 +162,16 @@ export {
 			string GetRCONPassword();
 			string SetRCONPassword(string pwd);
 
+			bool IsValid();
+
 			uuid GenServerUUID();
+
+			int StartServer();
+			int StopServer();
+			int PauseServer();
+			int ResumeServer();
+
+			void operator=(HeliumMinecraftServer server);
 		};
 	}
 }
