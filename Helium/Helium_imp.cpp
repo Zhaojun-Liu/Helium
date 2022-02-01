@@ -29,7 +29,6 @@ module;
 
 #include<map>
 #include<thread>
-#include<iostream>
 #include<spdlog/spdlog.h>
 #include<windows.h>
 #include"tinyxml2/tinyxml2.h"
@@ -74,8 +73,6 @@ namespace Helium {
     }
     int HeliumEnvInit() {
         SetConsoleTitleA("Helium");
-        ios::sync_with_stdio(false);
-        cin.tie(0);
 #ifdef NOT_STABLE
         spdlog::set_level(spdlog::level::debug);
 #else

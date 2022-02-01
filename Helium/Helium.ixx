@@ -29,7 +29,6 @@ module;
 #include<Windows.h>
 #include<thread>
 #include<strstream>
-#include<iostream>
 #include<spdlog/spdlog.h>
 
 #include"semver/semver.hpp"

@@ -50,13 +50,15 @@ module;
 
 #include<windows.h>
 #include<boost/uuid/uuid.hpp>
-#include<vector>
+#include<boost/uuid/uuid_io.hpp>
+#include<boost/uuid/uuid_generators.hpp>
 
 module Helium.MinecraftServer:Class;
 
 import <string>;
+import <vector>;
 import Helium.Logger;
-import Helium.Parse;
+import Helium.Parser;
 
 using namespace std;
 using namespace boost::uuids;
@@ -214,7 +216,7 @@ namespace Helium {
 	}
 
 	int HeliumMinecraftServer::StartServer() {
-		HeliumEndlind hendl;
+		HeliumEndline hendl;
 		
 		lg << "Starting server " << this->name << "(" << to_string(this->serveruuid) << ")" << hendl;
 		lg << "Start command : " << this->startcommand << hendl;
@@ -231,10 +233,10 @@ namespace Helium {
 
 		SECURITY_ATTRIBUTES sa;
 		PROCESS_INFORMATION pi;
-		STARTUPINFO si;
+		STARTUPINFOA si;
 
 		sa.nLength = sizeof(SECURITY_ATTRIBUTES);
-		sa.bInheritHandles = true;
+		sa.bInheritHandle = true;
 		sa.lpSecurityDescriptor = NULL;
 
 		ZeroMemory(&pi, sizeof(PROCESS_INFORMATION));
@@ -243,22 +245,22 @@ namespace Helium {
 		si.cb = sizeof(STARTUPINFO);
 
 		if (!CreatePipe(&this->redir.hStdOutRead, &this->redir.hStdOutWrite, &sa, 0)) {
-			lg << "Failed to create STDOut pipe for server " << this->name << " with error code : " << GetLastError() << hendl;
+			lg << "Failed to create STDOut pipe for server " << this->name << " with error code : " << (long)GetLastError() << hendl;
 			return GetLastError();
 		}
 
 		if (!CreatePipe(&this->redir.hStdInRead, &this->redir.hStdInWrite, &sa, 0)) {
-			lg << "Failed to create STDIn pipe for server " << this->name << " with error code : " << GetLastError() << hendl;
+			lg << "Failed to create STDIn pipe for server " << this->name << " with error code : " << (long)GetLastError() << hendl;
 			return GetLastError();
 		}
 
 		if (!SetHandleInformation(this->redir.hStdOutRead, HANDLE_FLAG_INHERIT, 0)) {
-			lg << "Failed to SetHandleInformation() for STDOut for server " << this->name << " with error code : " << GetLastError() << hendl;
+			lg << "Failed to SetHandleInformation() for STDOut for server " << this->name << " with error code : " << (long)GetLastError() << hendl;
 			return GetLastError();
 		}
 
 		if (!SetHandleInformation(this->redir.hStdInWrite, HANDLE_FLAG_INHERIT, 0)) {
-			lg << "Failed to SetHandleInformation() for STDIn for server " << this->name << " with error code : " << GetLastError() << hendl;
+			lg << "Failed to SetHandleInformation() for STDIn for server " << this->name << " with error code : " << (long)GetLastError() << hendl;
 			return GetLastError();
 		}
 
@@ -267,8 +269,8 @@ namespace Helium {
 		si.hStdInput = this->redir.hStdInRead;
 		si.dwFlags |= STARTF_USESTDHANDLES;
 
-		if (auto suc = CreateProcess(NULL,
-			this->startcommand.c_str(),
+		if (auto suc = CreateProcessA(NULL,
+			const_cast<char*>(this->startcommand.c_str()),
 			NULL,
 			NULL,
 			true,
@@ -277,7 +279,7 @@ namespace Helium {
 			NULL,
 			&si,
 			&pi); !suc) {
-			lg << "Failed to create process for server " << this->name << " with error code : " << GetLastError() << hendl;
+			lg << "Failed to create process for server " << this->name << " with error code : " << (long)GetLastError() << hendl;
 			return GetLastError();
 		}
 		else {
@@ -290,8 +292,9 @@ namespace Helium {
 			this->stat = HeliumServerStat::PAUSED;
 
 			lg << "Successfully started server " << this->name << "(" << to_string(this->serveruuid) << ")" << hendl;
-			lg << "Server running on PID " << pi.dwProcessId << hendl;
+			lg << "Server running on PID " << (long)pi.dwProcessId << hendl;
 		}
+
 		return 0;
 	}
 	int HeliumMinecraftServer::StopServer() {
@@ -304,7 +307,8 @@ namespace Helium {
 	}
 	int HeliumMinecraftServer::ResumeServer() {
 		int ret = 0;
-		
+		HeliumEndline hendl;
+
 		if (!this->IsValid()) {
 			lg << "Someone are trying to start a invalid server : " << this->name << "(" << to_string(this->serveruuid) << ")" << hendl;
 			return -1;
@@ -316,7 +320,7 @@ namespace Helium {
 		}
 
 		if (ret = ResumeThread(this->thread); ret == -1) {
-			lg << "Failed to resume process for server " << this->name << " with error code : " << GetLastError() << hendl;
+			lg << "Failed to resume process for server " << this->name << " with error code : " << (long)GetLastError() << hendl;
 			return GetLastError();
 		}
 
@@ -324,6 +328,13 @@ namespace Helium {
 	}
 
 	void HeliumMinecraftServer::operator = (HeliumMinecraftServer server) {
+
+	}
+
+	HeliumMinecraftServer::HeliumMinecraftServer() {
+
+	}
+	HeliumMinecraftServer::~HeliumMinecraftServer() {
 
 	}
 }

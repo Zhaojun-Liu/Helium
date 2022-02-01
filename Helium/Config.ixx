@@ -26,6 +26,7 @@ module;
 
 export module Helium.Config;
 
+#define _HAS_CXX20
 #define CFG_FILENAME "HeliumConfig.xml"
 
 import <string>;

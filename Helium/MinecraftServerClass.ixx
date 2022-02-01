@@ -28,13 +28,14 @@ module;
 
 #include<string>
 #include<thread>
-#include<iostream>
 
 #include<Windows.h>
 #include<spdlog/spdlog.h>
 #include<boost/uuid/uuid.hpp>
 
 export module Helium.MinecraftServer:Class;
+
+import Helium.Logger;
 
 using namespace std;
 using namespace boost::uuids;
@@ -176,7 +177,8 @@ export {
 			int PauseServer();
 			int ResumeServer();
 
-			void operator=(HeliumMinecraftServer server);
+			void operator=(HeliumMinecraftServer server);			
 		};
+		HeliumLogger lg("HeliumServer");
 	}
 }

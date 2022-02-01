@@ -28,7 +28,6 @@ module;
 #include<spdlog/sinks/stdout_color_sinks.h>
 #include<spdlog/sinks/daily_file_sink.h>
 #include<string>
-#include<iostream>
 #include<sstream>
 
 export module Helium.Logger;
