@@ -109,6 +109,7 @@ export {
 			bool autostart;
 
 			HANDLE proc;
+			HANDLE thread;
 			DWORD  pid;
 			DWORD  retv;
 
@@ -118,6 +119,9 @@ export {
 
 			RCONInfo rcon;
 		public:
+			HeliumMinecraftServer();
+			~HeliumMinecraftServer();
+
 			string GetServerName();
 			string SetServerName(string name);
 
@@ -145,7 +149,8 @@ export {
 			DWORD GetServerPID();
 
 			HANDLE GetServerHandle();
-			void SetServerHandle(HANDLE han);
+
+			HANDLE GetServerThreadHandle();
 
 			DWORD GetServerRetValue();
 

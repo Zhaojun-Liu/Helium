@@ -25,3 +25,7 @@
 export module Helium.MinecraftServer;
 export import :API;
 export import :Class;
+
+import Helium.Logger;
+
+HeliumLogger lg("HeliumServer");

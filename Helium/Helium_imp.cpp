@@ -113,7 +113,9 @@ namespace Helium {
     }
     int HeliumStartServer() {
         HeliumEndline hendl;
-        return AutoStartAllServer();
+        auto ret = AutoStartAllServer();
+        ResumeAllServer();
+        return ret;
     }
     int HeliumFin() {
         HeliumEndline hendl;

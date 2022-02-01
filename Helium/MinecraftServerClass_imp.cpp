@@ -56,6 +56,7 @@ module Helium.MinecraftServer:Class;
 
 import <string>;
 import Helium.Logger;
+import Helium.Parse;
 
 using namespace std;
 using namespace boost::uuids;
@@ -144,8 +145,8 @@ namespace Helium {
 	HANDLE HeliumMinecraftServer::GetServerHandle() {
 		return this->proc;
 	}
-	void HeliumMinecraftServer::SetServerHandle(HANDLE han) {
-		this->proc = han;
+	HANDLE HeliumMinecraftServer::GetServerThreadHandle() {
+		return this->thread;
 	}
 
 	DWORD HeliumMinecraftServer::GetServerRetValue() {
@@ -194,6 +195,12 @@ namespace Helium {
 	}
 
 	uuid HeliumMinecraftServer::GenServerUUID() {
+		uuid serveruuid = random_generator()();
+		string uuidstr = to_string(serveruuid);
+		HeliumEndline hendl;
+		lg << "Successfully generated UUID of server : " << this->name << hendl;
+		lg << "UUID : " << uuidstr << hendl;
+		this->serveruuid = serveruuid;
 		return this->serveruuid;
 	}
 
@@ -207,8 +214,85 @@ namespace Helium {
 	}
 
 	int HeliumMinecraftServer::StartServer() {
-		int ret = 0;
-		return ret;
+		HeliumEndlind hendl;
+		
+		lg << "Starting server " << this->name << "(" << to_string(this->serveruuid) << ")" << hendl;
+		lg << "Start command : " << this->startcommand << hendl;
+
+		if (this->stat != HeliumServerStat::TERMINATED) {
+			lg << "Someone are trying to start a non-terminated server : " << this->name << "(" << to_string(this->serveruuid) << ")" << hendl;
+			return -1;
+		}
+
+		if (!this->IsValid()) {
+			lg << "Someone are trying to start a invalid server : " << this->name << "(" << to_string(this->serveruuid) << ")" << hendl;
+			return -1;
+		}
+
+		SECURITY_ATTRIBUTES sa;
+		PROCESS_INFORMATION pi;
+		STARTUPINFO si;
+
+		sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+		sa.bInheritHandles = true;
+		sa.lpSecurityDescriptor = NULL;
+
+		ZeroMemory(&pi, sizeof(PROCESS_INFORMATION));
+
+		ZeroMemory(&si, sizeof(STARTUPINFO));
+		si.cb = sizeof(STARTUPINFO);
+
+		if (!CreatePipe(&this->redir.hStdOutRead, &this->redir.hStdOutWrite, &sa, 0)) {
+			lg << "Failed to create STDOut pipe for server " << this->name << " with error code : " << GetLastError() << hendl;
+			return GetLastError();
+		}
+
+		if (!CreatePipe(&this->redir.hStdInRead, &this->redir.hStdInWrite, &sa, 0)) {
+			lg << "Failed to create STDIn pipe for server " << this->name << " with error code : " << GetLastError() << hendl;
+			return GetLastError();
+		}
+
+		if (!SetHandleInformation(this->redir.hStdOutRead, HANDLE_FLAG_INHERIT, 0)) {
+			lg << "Failed to SetHandleInformation() for STDOut for server " << this->name << " with error code : " << GetLastError() << hendl;
+			return GetLastError();
+		}
+
+		if (!SetHandleInformation(this->redir.hStdInWrite, HANDLE_FLAG_INHERIT, 0)) {
+			lg << "Failed to SetHandleInformation() for STDIn for server " << this->name << " with error code : " << GetLastError() << hendl;
+			return GetLastError();
+		}
+
+		si.hStdError = this->redir.hStdOutWrite;
+		si.hStdOutput = this->redir.hStdOutWrite;
+		si.hStdInput = this->redir.hStdInRead;
+		si.dwFlags |= STARTF_USESTDHANDLES;
+
+		if (auto suc = CreateProcess(NULL,
+			this->startcommand.c_str(),
+			NULL,
+			NULL,
+			true,
+			CREATE_SUSPENDED|CREATE_NO_WINDOW,
+			NULL,
+			NULL,
+			&si,
+			&pi); !suc) {
+			lg << "Failed to create process for server " << this->name << " with error code : " << GetLastError() << hendl;
+			return GetLastError();
+		}
+		else {
+			CloseHandle(this->redir.hStdOutWrite);
+			CloseHandle(this->redir.hStdInRead);
+
+			this->proc = pi.hProcess;
+			this->thread = pi.hThread;
+
+			this->stat = HeliumServerStat::PAUSED;
+
+			lg << "Successfully started server " << this->name << "(" << to_string(this->serveruuid) << ")" << hendl;
+			lg << "Server running on PID " << pi.dwProcessId << hendl;
+		}
+		return 0;
 	}
 	int HeliumMinecraftServer::StopServer() {
 		int ret = 0;
@@ -220,6 +304,22 @@ namespace Helium {
 	}
 	int HeliumMinecraftServer::ResumeServer() {
 		int ret = 0;
+		
+		if (!this->IsValid()) {
+			lg << "Someone are trying to start a invalid server : " << this->name << "(" << to_string(this->serveruuid) << ")" << hendl;
+			return -1;
+		}
+
+		if (this->stat != HeliumServerStat::PAUSED) {
+			lg << "Someone are trying to start a non-paused server : " << this->name << "(" << to_string(this->serveruuid) << ")" << hendl;
+			return -1;
+		}
+
+		if (ret = ResumeThread(this->thread); ret == -1) {
+			lg << "Failed to resume process for server " << this->name << " with error code : " << GetLastError() << hendl;
+			return GetLastError();
+		}
+
 		return ret;
 	}
 
