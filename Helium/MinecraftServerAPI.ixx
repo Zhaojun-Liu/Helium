@@ -40,8 +40,6 @@ using namespace boost::uuids;
 
 export {
 	namespace Helium {
-		int ProcessServerOutput(HeliumMinecraftServer* ptr, string servername, HANDLE stdread, HANDLE hproc);
-
 		void AddServer(HeliumMinecraftServer server);
 		int StartServer(string name);
 		int StartServer(uuid server);

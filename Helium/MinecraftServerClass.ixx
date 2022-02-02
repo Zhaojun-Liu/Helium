@@ -26,7 +26,6 @@ module;
 
 #define WIN32_LEAN_AND_MEAN
 
-#include<string>
 #include<thread>
 
 #include<Windows.h>
@@ -36,6 +35,7 @@ module;
 export module Helium.MinecraftServer:Class;
 
 import Helium.Logger;
+import <string>;
 
 using namespace std;
 using namespace boost::uuids;
@@ -180,5 +180,10 @@ export {
 			void operator=(HeliumMinecraftServer server);			
 		};
 		HeliumLogger lg("HeliumServer");
+		int ProcessServerOutput(HeliumMinecraftServer* ptr, string servername, HANDLE stdread, HANDLE hproc);
 	}
+}
+
+namespace Helium {
+	vector<thread> outputthread;
 }

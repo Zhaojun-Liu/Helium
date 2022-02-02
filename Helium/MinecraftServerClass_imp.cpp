@@ -206,10 +206,6 @@ namespace Helium {
 		return this->serveruuid;
 	}
 
-	int ProcessServerOutput(HeliumMinecraftServer* ptr, string servername, HANDLE stdread, HANDLE hproc) {
-		return 0;
-	}
-
 	bool HeliumMinecraftServer::IsValid() {
 		bool ret = true;
 		return ret;
@@ -336,5 +332,9 @@ namespace Helium {
 	}
 	HeliumMinecraftServer::~HeliumMinecraftServer() {
 
+	}
+
+	int ProcessServerOutput(HeliumMinecraftServer* ptr, string servername, HANDLE stdread, HANDLE hproc) {
+		return 0;
 	}
 }

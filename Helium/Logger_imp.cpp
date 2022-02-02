@@ -46,16 +46,13 @@ namespace Helium {
 		try {
 			string logname = name;
 
-			auto console_sink = make_shared<spdlog::logger>(logname, heliumconsolesink);
+			this->log = make_shared<spdlog::logger>(logname, heliumconsolesink);
 
-			logname.clear();
-			logname.append(name).append("_file");
-			auto file_logger = make_shared<spdlog::logger>(logname, heliumdailysink);
+			logname.append("_file");
+			this->filelog = make_shared<spdlog::logger>(logname, heliumdailysink);
 
-			spdlog::register_logger(console_sink);
-			spdlog::register_logger(file_logger);
-			this->log = console_sink;
-			this->filelog = file_logger;
+			spdlog::register_logger(this->log);
+			spdlog::register_logger(this->filelog);
 		}
 		catch (const spdlog::spdlog_ex& ex) {
 			cout << "Logger initalization failed(" << this->name << "), reason : " << ex.what() << endl;
@@ -87,29 +84,36 @@ namespace Helium {
 		return *this;
 	}
 	HeliumLogger& HeliumLogger::operator<<(HeliumEndline hendl) {
-		switch (this->loglevel) {
-		case HeliumLoggerLevel::LL_DBG:
-			this->log->debug(this->buffer.str());
-			this->filelog->debug(this->buffer.str());
-			break;
-		case HeliumLoggerLevel::LL_INFO:
-			this->log->info(this->buffer.str());
-			this->filelog->info(this->buffer.str());
-			break;
-		case HeliumLoggerLevel::LL_WARN:
-			this->log->warn(this->buffer.str());
-			this->filelog->warn(this->buffer.str());
-			break;
-		case HeliumLoggerLevel::LL_ERR:
-			this->log->error(this->buffer.str());
-			this->filelog->error(this->buffer.str());
-			break;
-		case HeliumLoggerLevel::LL_CRIT:
-			this->log->critical(this->buffer.str());
-			this->filelog->critical(this->buffer.str());
-			break;
-		default:
-			break;
+		string str = this->buffer.str();
+		if (str.empty()) return *this;
+		try {
+			switch (this->loglevel) {
+			case HeliumLoggerLevel::LL_DBG:
+				this->log->debug(str);
+				this->filelog->debug(str);
+				break;
+			case HeliumLoggerLevel::LL_INFO:
+				this->log->info(str);
+				this->filelog->info(str);
+				break;
+			case HeliumLoggerLevel::LL_WARN:
+				this->log->warn(str);
+				this->filelog->warn(str);
+				break;
+			case HeliumLoggerLevel::LL_ERR:
+				this->log->error(str);
+				this->filelog->error(str);
+				break;
+			case HeliumLoggerLevel::LL_CRIT:
+				this->log->critical(str);
+				this->filelog->critical(str);
+				break;
+			default:
+				break;
+			}
+		}
+		catch (...) {
+			cout << "Logging failed" << endl;
 		}
 		this->buffer.str("");
 		return *this;
