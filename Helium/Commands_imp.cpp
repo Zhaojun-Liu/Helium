@@ -27,6 +27,8 @@ module;
 #include<functional>
 #include<iostream>
 #include<boost/uuid/uuid.hpp>
+#include<boost/uuid/uuid_io.hpp>
+#include<boost/uuid/uuid_generators.hpp>
 #include"tree.hh/tree.hh"
 #define REPLXX_STATIC
 #include"replxx/replxx.hxx"
@@ -59,44 +61,45 @@ namespace Helium {
 		}
 	}
 	int InitBuiltinCommandTree() {
+		ConstantString treeroot("Helium Command Tree Root.", "", "", false);
+		HeliumCommandTree.set_head(&treeroot);
+
 		ConstantString* root = new ConstantString("Helium Built-in Command \"#Helium\" command root.", "#Helium", "#Hel", false);
-		ConstantString* help = new ConstantString("Helium Built-in Command \"#Help\" command root.", "#Help");
+		ConstantString help("Helium Built-in Command \"#Help\" command root.", "#Help", "");
 		auto rit = InsertCommand(root);
-		auto hit = InsertCommand(help);
+		auto hit = InsertCommand(&help);
 
-		ConstantString* show = new ConstantString("Helium Built-in Command : \"show\" command.", "show", "sh");
-		ConstantString* conditions = new ConstantString("Helium Built-in Command : \"conditions\" command.", "conditions", "c");
-		ConstantString* warranty = new ConstantString("Helium Built-in Command : \"warranty\" command", "warranty", "w");
+		ConstantString show("Helium Built-in Command : \"show\" command.", "show", "sh");
+		ConstantString conditions("Helium Built-in Command : \"conditions\" command.", "conditions", "c");
+		ConstantString warranty("Helium Built-in Command : \"warranty\" command", "warranty", "w");
 
-		auto showit = AddCommand(show, rit);
-		AddCommand(conditions, showit);
-		AddCommand(warranty, showit);
+		auto showit = AddCommand(&show, rit);
+		AddCommand(&conditions, showit);
+		AddCommand(&warranty, showit);
 
-		ConstantString* command = new ConstantString("Helium Built-in Command : \"Command\" command", "command", "cmd");
-		ConstantString* cmdlist = new ConstantString("Helium Built-in Command : \"list\" command", "list", "lst");
+		ConstantString command("Helium Built-in Command : \"Command\" command", "command", "cmd");
+		ConstantString cmdlist("Helium Built-in Command : \"list\" command", "list", "lst");
 
-		auto cmdit = AddCommand(command, rit);
-		AddCommand(cmdlist, cmdit);
+		auto cmdit = AddCommand(&command, rit);
+		AddCommand(&cmdlist, cmdit);
 
-		ConstantString* server = new ConstantString("Helium Built-in Command : \"server\" command", "server", "svr");
+		ConstantString server("Helium Built-in Command : \"server\" command", "server", "svr");
 
-		auto serverit = AddCommand(server, rit);
+		auto serverit = AddCommand(&server, rit);
 
-		ConstantString* ext = new ConstantString("Helium Built-in Command : \"extension\" command", "extension", "ext");
+		ConstantString ext("Helium Built-in Command : \"extension\" command", "extension", "ext");
 
-		auto extit = AddCommand(ext, rit);
+		auto extit = AddCommand(&ext, rit);
 
-		ConstantString* ent = new ConstantString("Helium Built-in Command : \"event\" command", "event", "ent");
+		ConstantString ent("Helium Built-in Command : \"event\" command", "event", "ent");
 
-		auto entit = AddCommand(ent, rit);
+		auto entit = AddCommand(&ent, rit);
 
 		print_tree(HeliumCommandTree);
+		delete root;
 		return 0;
 	}
 	int InitShellEnv() {
-		ConstantString* root = new ConstantString("Helium Command Tree Root.", "", "", false);
-		HeliumCommandTree.set_head(root);
-
 		rx.install_window_change_handler();
 		rx.history_load("./commands_history");
 		rx.set_max_history_size(256);

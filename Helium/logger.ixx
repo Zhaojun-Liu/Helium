@@ -63,7 +63,7 @@ export{
 			}
 
 			HeliumLogger(string name);
-			~HeliumLogger() {
+			virtual ~HeliumLogger() {
 				this->log->flush();
 			}
 

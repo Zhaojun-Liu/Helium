@@ -121,7 +121,7 @@ export {
 			RCONInfo rcon;
 		public:
 			HeliumMinecraftServer();
-			~HeliumMinecraftServer();
+			virtual ~HeliumMinecraftServer();
 
 			string GetServerName();
 			string SetServerName(string name);

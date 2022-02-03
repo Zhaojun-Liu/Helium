@@ -25,11 +25,14 @@
 module;
 
 #include<map>
+#include<iostream>
 #include<functional>
 //#include<boost/multiprecision/cpp_int.hpp>
 //#include<boost/multiprecision/cpp_dec_float.hpp>
 //#include<boost/multiprecision/gmp.hpp>
 #include<boost/uuid/uuid.hpp>
+#include<boost/uuid/uuid_io.hpp>
+#include<boost/uuid/uuid_generators.hpp>
 
 #include"tree.hh/tree.hh"
 #define REPLXX_STATIC
@@ -99,10 +102,6 @@ export{
 #pragma region CommandClassBase
 		class _BasicHeliumCommand {
 		protected:
-			string commanddesc;
-			string commandstr;
-			string atlas;
-
 			bool callback;
 			bool list;
 			bool exec;
@@ -110,6 +109,10 @@ export{
 			bool autocomp;
 
 			uuid cmduuid;
+
+			string commanddesc;
+			string commandstr;
+			string atlas;
 		public:
 			_BasicHeliumCommand() {
 				this->commanddesc = "Default Command Description";
@@ -119,6 +122,8 @@ export{
 				this->exec = false;
 				this->hint = true;
 				this->autocomp = true;
+				uuid cmduuid = random_generator()();
+				this->cmduuid = cmduuid;
 			}
 			_BasicHeliumCommand(string desc, string str, string atlas = "", bool callback = true, bool list = true, bool exec = true, bool hint = true, bool autocomp = true) {
 				this->commanddesc = desc;
@@ -129,7 +134,10 @@ export{
 				this->exec = exec;
 				this->hint = hint;
 				this->autocomp = autocomp;
+				uuid cmduuid = random_generator()();
+				this->cmduuid = cmduuid;
 			}
+			virtual ~_BasicHeliumCommand() {}
 
 			virtual bool IsCallbackable();
 			virtual bool EnableCallback();
@@ -165,7 +173,7 @@ export{
 			virtual _BasicHeliumCommand* GetCommandClassType();
 			virtual bool IsVaild();
 		};
-		class _CommandArgument : virtual public _BasicHeliumCommand {
+		class _CommandArgument : public _BasicHeliumCommand {
 		protected:
 			bool optional;
 			bool preprocenable;
@@ -182,7 +190,7 @@ export{
 			virtual bool EnablePreprocessing();
 			virtual bool DisablePreprocessing();
 		};
-		class _CommandConstantString : virtual public _BasicHeliumCommand {
+		class _CommandConstantString : public _BasicHeliumCommand {
 		public:
 			_CommandConstantString() {
 				this->commanddesc = "Default Command Description";
@@ -193,6 +201,8 @@ export{
 				this->exec = false;
 				this->hint = true;
 				this->autocomp = true;
+				uuid cmduuid = random_generator()();
+				this->cmduuid = cmduuid;
 			}
 			_CommandConstantString(string desc, string str, string atlas = "", bool callback = true, bool list = true, bool exec = true, bool hint = true, bool autocomp = true) {
 				this->commanddesc = desc;
@@ -203,13 +213,15 @@ export{
 				this->exec = exec;
 				this->hint = hint;
 				this->autocomp = autocomp;
+				uuid cmduuid = random_generator()();
+				this->cmduuid = cmduuid;
 			}
 
 			virtual _CommandConstantString* GetCommandClassType();
 		};
 
 
-		class _CommandBind : virtual public _CommandConstantString {
+		class _CommandBind : public _CommandConstantString {
 		public:
 			virtual _CommandBind* GetCommandClassType();
 		};
@@ -269,11 +281,11 @@ export{
 		public:
 			virtual CommandArgumentGreedyString* GetCommandClassType();
 		};
-		class CommandBind : virtual public _CommandBind {
+		class CommandBind : public _CommandBind {
 		public:
 			virtual CommandBind* GetCommandClassType();
 		};
-		class ConstantString : virtual public _CommandConstantString {
+		class ConstantString : public _CommandConstantString {
 		public:
 			ConstantString() {
 				this->commanddesc = "Default Command Description";
@@ -283,6 +295,8 @@ export{
 				this->exec = false;
 				this->hint = true;
 				this->autocomp = true;
+				uuid cmduuid = random_generator()();
+				this->cmduuid = cmduuid;
 			}
 			ConstantString(string desc, string str, string atlas = "", bool callback = true, bool list = true, bool exec = true, bool hint = true, bool autocomp = true) {
 				this->commanddesc = desc;
@@ -293,6 +307,8 @@ export{
 				this->exec = exec;
 				this->hint = hint;
 				this->autocomp = autocomp;
+				uuid cmduuid = random_generator()();
+				this->cmduuid = cmduuid;
 			}
 
 			virtual ConstantString* GetCommandClassType();
