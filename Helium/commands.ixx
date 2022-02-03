@@ -25,7 +25,6 @@
 module;
 
 #include<map>
-#include<string>
 #include<functional>
 //#include<boost/multiprecision/cpp_int.hpp>
 //#include<boost/multiprecision/cpp_dec_float.hpp>
@@ -38,6 +37,8 @@ module;
 
 export module Helium.Commands;
 
+import <string>;
+
 using namespace std;
 using namespace replxx;
 using namespace placeholders;
@@ -48,6 +49,8 @@ export{
 		class _BasicHeliumCommand;
 		class _CommandConstantString;
 		class _CommandArgument;
+
+		class ConstantString;
 
 		class _ArgumentNumber;
 		class CommandArgumentInt;
@@ -75,15 +78,17 @@ export{
 		Replxx::ACTION_RESULT KeyMessage(Replxx& replxx, std::string s, char32_t);
 
 		tree<_BasicHeliumCommand*>::pre_order_iterator AddCommand(_BasicHeliumCommand* cmd, uuid parentuuid);
-		tree<_BasicHeliumCommand*>::pre_order_iterator AddCommand(_BasicHeliumCommand* cmd, tree<_BasicHeliumCommand*>::pre_order_iterator parentit);
+		tree<_BasicHeliumCommand*>::pre_order_iterator AddCommand(_BasicHeliumCommand* cmd, tree<_BasicHeliumCommand*>::pre_order_iterator parentit = HeliumCommandTree.end());
+		tree<_BasicHeliumCommand*>::pre_order_iterator InsertCommand(_BasicHeliumCommand* cmd, uuid parentuuid);
+		tree<_BasicHeliumCommand*>::pre_order_iterator InsertCommand(_BasicHeliumCommand* cmd, tree<_BasicHeliumCommand*>::pre_order_iterator tit = HeliumCommandTree.end());
 		tree<_BasicHeliumCommand*>::pre_order_iterator AddCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator subtree, uuid parentuuid);
-		tree<_BasicHeliumCommand*>::pre_order_iterator AddCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator subtree, tree<_BasicHeliumCommand*>::pre_order_iterator parentit);
+		tree<_BasicHeliumCommand*>::pre_order_iterator AddCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator subtree, tree<_BasicHeliumCommand*>::pre_order_iterator parentit = HeliumCommandTree.end());
 		tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommand(uuid uuid);
 		tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommand(tree<_BasicHeliumCommand*>::pre_order_iterator it);
 		tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommandTree(uuid uuid);
 		tree<_BasicHeliumCommand*>::pre_order_iterator DeleteCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator it);
-		tree<_BasicHeliumCommand*>::pre_order_iterator QueryCommand(uuid uuid, tree<_BasicHeliumCommand*>::pre_order_iterator = HeliumCommandTree.begin());
-		tree<_BasicHeliumCommand*>::pre_order_iterator QueryCommand(string commandstr, tree<_BasicHeliumCommand*>::pre_order_iterator = HeliumCommandTree.begin());
+		tree<_BasicHeliumCommand*>::pre_order_iterator QueryCommand(uuid uuid, tree<_BasicHeliumCommand*>::pre_order_iterator = HeliumCommandTree.end());
+		tree<_BasicHeliumCommand*>::pre_order_iterator QueryCommand(string commandstr, tree<_BasicHeliumCommand*>::pre_order_iterator = HeliumCommandTree.end());
 		tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommand(uuid uuid, _BasicHeliumCommand* cmd);
 		tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommand(tree<_BasicHeliumCommand*>::pre_order_iterator it, _BasicHeliumCommand* cmd);
 		tree<_BasicHeliumCommand*>::pre_order_iterator ReplaceCommandTree(uuid uuid, tree<_BasicHeliumCommand*>::pre_order_iterator subtree);
@@ -96,6 +101,7 @@ export{
 		protected:
 			string commanddesc;
 			string commandstr;
+			string atlas;
 
 			bool callback;
 			bool list;
@@ -105,7 +111,25 @@ export{
 
 			uuid cmduuid;
 		public:
-			virtual _BasicHeliumCommand operator()(string desc, string str, bool callback = true, bool list = true, bool exec = true, bool hint = true, bool autocomp = true);
+			_BasicHeliumCommand() {
+				this->commanddesc = "Default Command Description";
+				this->commandstr = "DefaultCMD";
+				this->callback = false;
+				this->list = true;
+				this->exec = false;
+				this->hint = true;
+				this->autocomp = true;
+			}
+			_BasicHeliumCommand(string desc, string str, string atlas = "", bool callback = true, bool list = true, bool exec = true, bool hint = true, bool autocomp = true) {
+				this->commanddesc = desc;
+				this->commandstr = str;
+				this->atlas = atlas;
+				this->callback = callback;
+				this->list = list;
+				this->exec = exec;
+				this->hint = hint;
+				this->autocomp = autocomp;
+			}
 
 			virtual bool IsCallbackable();
 			virtual bool EnableCallback();
@@ -132,8 +156,11 @@ export{
 			virtual string GetCommandString();
 			virtual string SetCommandString(string cmd);
 
-			virtual string GetCommandHint();
-			virtual string SetCommandHint(string hint);
+			virtual string GetCommandDesc();
+			virtual string SetCommandDesc(string hint);
+
+			virtual string GetCommandAtlas();
+			virtual string SetCommandAtlas(string atlas);
 
 			virtual _BasicHeliumCommand* GetCommandClassType();
 			virtual bool IsVaild();
@@ -157,6 +184,27 @@ export{
 		};
 		class _CommandConstantString : virtual public _BasicHeliumCommand {
 		public:
+			_CommandConstantString() {
+				this->commanddesc = "Default Command Description";
+				this->commandstr = "DefaultCMD";
+				this->atlas = "DCMD";
+				this->callback = false;
+				this->list = true;
+				this->exec = false;
+				this->hint = true;
+				this->autocomp = true;
+			}
+			_CommandConstantString(string desc, string str, string atlas = "", bool callback = true, bool list = true, bool exec = true, bool hint = true, bool autocomp = true) {
+				this->commanddesc = desc;
+				this->commandstr = str;
+				this->atlas = atlas;
+				this->callback = callback;
+				this->list = list;
+				this->exec = exec;
+				this->hint = hint;
+				this->autocomp = autocomp;
+			}
+
 			virtual _CommandConstantString* GetCommandClassType();
 		};
 
@@ -224,6 +272,30 @@ export{
 		class CommandBind : virtual public _CommandBind {
 		public:
 			virtual CommandBind* GetCommandClassType();
+		};
+		class ConstantString : virtual public _CommandConstantString {
+		public:
+			ConstantString() {
+				this->commanddesc = "Default Command Description";
+				this->commandstr = "DefaultCMD";
+				this->callback = false;
+				this->list = true;
+				this->exec = false;
+				this->hint = true;
+				this->autocomp = true;
+			}
+			ConstantString(string desc, string str, string atlas = "", bool callback = true, bool list = true, bool exec = true, bool hint = true, bool autocomp = true) {
+				this->commanddesc = desc;
+				this->commandstr = str;
+				this->atlas = atlas;
+				this->callback = callback;
+				this->list = list;
+				this->exec = exec;
+				this->hint = hint;
+				this->autocomp = autocomp;
+			}
+
+			virtual ConstantString* GetCommandClassType();
 		};
 	}
 }

@@ -25,6 +25,7 @@
 module;
 
 #include<functional>
+#include<iostream>
 #include<boost/uuid/uuid.hpp>
 #include"tree.hh/tree.hh"
 #define REPLXX_STATIC
@@ -41,13 +42,61 @@ namespace Helium {
 	tree<_BasicHeliumCommand*> HeliumCommandTree;
 	Replxx rx;
 
-	bool CheckCommandValidance(tree<_BasicHeliumCommand*>::iterator cmdit) {
-		return false;
+	void print_tree(const tree<_BasicHeliumCommand*>& tr)
+	{
+		auto it = tr.begin();
+		auto end = tr.end();
+		if (!tr.is_valid(it)) return;
+		int rootdepth = tr.depth(it);
+		while (it != end) {
+			for (int i = 0; i < tr.depth(it) - rootdepth; ++i)
+				cout << "  ";
+			if (!((*it)->GetCommandAtlas().empty()))
+				cout << (*it)->GetCommandString() << "/" << (*it)->GetCommandAtlas() << endl;
+			else
+				cout << (*it)->GetCommandString() << endl;
+			++it;
+		}
 	}
 	int InitBuiltinCommandTree() {
+		ConstantString* root = new ConstantString("Helium Built-in Command \"#Helium\" command root.", "#Helium", "#Hel", false);
+		ConstantString* help = new ConstantString("Helium Built-in Command \"#Help\" command root.", "#Help");
+		auto rit = InsertCommand(root);
+		auto hit = InsertCommand(help);
+
+		ConstantString* show = new ConstantString("Helium Built-in Command : \"show\" command.", "show", "sh");
+		ConstantString* conditions = new ConstantString("Helium Built-in Command : \"conditions\" command.", "conditions", "c");
+		ConstantString* warranty = new ConstantString("Helium Built-in Command : \"warranty\" command", "warranty", "w");
+
+		auto showit = AddCommand(show, rit);
+		AddCommand(conditions, showit);
+		AddCommand(warranty, showit);
+
+		ConstantString* command = new ConstantString("Helium Built-in Command : \"Command\" command", "command", "cmd");
+		ConstantString* cmdlist = new ConstantString("Helium Built-in Command : \"list\" command", "list", "lst");
+
+		auto cmdit = AddCommand(command, rit);
+		AddCommand(cmdlist, cmdit);
+
+		ConstantString* server = new ConstantString("Helium Built-in Command : \"server\" command", "server", "svr");
+
+		auto serverit = AddCommand(server, rit);
+
+		ConstantString* ext = new ConstantString("Helium Built-in Command : \"extension\" command", "extension", "ext");
+
+		auto extit = AddCommand(ext, rit);
+
+		ConstantString* ent = new ConstantString("Helium Built-in Command : \"event\" command", "event", "ent");
+
+		auto entit = AddCommand(ent, rit);
+
+		print_tree(HeliumCommandTree);
 		return 0;
 	}
 	int InitShellEnv() {
+		ConstantString* root = new ConstantString("Helium Command Tree Root.", "", "", false);
+		HeliumCommandTree.set_head(root);
+
 		rx.install_window_change_handler();
 		rx.history_load("./commands_history");
 		rx.set_max_history_size(256);
@@ -55,7 +104,7 @@ namespace Helium {
 		rx.set_completion_callback(&CompletionCallBack);
 		rx.set_hint_callback(&HintCallBack);
 		rx.set_highlighter_callback(&ColorCallBack);
-		rx.set_word_break_characters(" \t.,-%!;:=*~^'\"/?<>|[](){}");
+		rx.set_word_break_characters(" \t");
 		rx.set_completion_count_cutoff(128);
 		rx.set_double_tab_completion(false);
 		rx.set_complete_on_empty(true);
@@ -226,6 +275,9 @@ namespace Helium {
 	CommandArgumentGreedyString* CommandArgumentGreedyString::GetCommandClassType() {
 		return this;
 	}
+	ConstantString* ConstantString::GetCommandClassType() {
+		return this;
+	}
 #pragma endregion
 
 #pragma region CommandTreeOps
@@ -243,6 +295,22 @@ namespace Helium {
 		AddCommand(_BasicHeliumCommand* cmd, tree<_BasicHeliumCommand*>::pre_order_iterator parentit) {
 		if (HeliumCommandTree.is_valid(parentit) && cmd->IsVaild())
 			return HeliumCommandTree.append_child(parentit, cmd);
+		return HeliumCommandTree.end();
+	}
+	tree<_BasicHeliumCommand*>::pre_order_iterator 
+		InsertCommand(_BasicHeliumCommand* cmd, uuid parentuuid) {
+		for (auto tit = HeliumCommandTree.begin(); tit != HeliumCommandTree.end(); tit++) {
+			if (parentuuid == (**tit).CommandUUID()) {
+				if (!cmd->IsVaild())
+					return HeliumCommandTree.end();
+				return HeliumCommandTree.insert(tit, cmd);;
+			}
+		}
+	}
+	tree<_BasicHeliumCommand*>::pre_order_iterator 
+		InsertCommand(_BasicHeliumCommand* cmd, tree<_BasicHeliumCommand*>::pre_order_iterator tit) {
+		if (cmd->IsVaild())
+			return HeliumCommandTree.insert(tit, cmd);
 		return HeliumCommandTree.end();
 	}
 	tree<_BasicHeliumCommand*>::pre_order_iterator 
@@ -426,19 +494,28 @@ namespace Helium {
 		return tempstr;
 	}
 
-	string _BasicHeliumCommand::GetCommandHint() {
+	string _BasicHeliumCommand::GetCommandDesc() {
 		return this->commanddesc;
 	}
-	string _BasicHeliumCommand::SetCommandHint(string hint) {
+	string _BasicHeliumCommand::SetCommandDesc(string hint) {
 		string tempstr = this->commanddesc;
 		this->commanddesc = hint;
+		return tempstr;
+	}
+
+	string _BasicHeliumCommand::GetCommandAtlas() {
+		return this->atlas;
+	}
+	string _BasicHeliumCommand::SetCommandAtlas(string atlas) {
+		string tempstr = this->atlas;
+		this->atlas = atlas;
 		return tempstr;
 	}
 #pragma endregion
 
 	bool _BasicHeliumCommand::IsVaild() {
 		bool ret = true;
-		string wordbreakstr = " \t.,-%!;:=*~^'\"/?<>|[](){}";
+		string wordbreakstr = " \t";
 		if (this->commandstr.empty()) ret = false;
 		for(auto i = 0; i < wordbreakstr.length(); i ++)
 			if (this->commandstr.find(wordbreakstr[i]) != string::npos) {

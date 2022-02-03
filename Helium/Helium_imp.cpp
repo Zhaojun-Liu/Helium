@@ -65,9 +65,9 @@ namespace Helium {
         //logger << HeliumVersion.to_string() << hendl;
         logger << "Copyright(C) 2021-2022 HeliumDevTeam" << hendl;
         logger << "This program comes with ABSOLUTELY NO WARRANTY;" << hendl;
-        logger << "for details type \'!!hel show w\'." << hendl;
+        logger << "for details type \'#Helium show warranty\'." << hendl;
         logger << "This is free software, and you are welcome to redistribute it" << hendl;
-        logger << "under certain conditions; type \'!!hel show c\' for details." << hendl;
+        logger << "under certain conditions; type \'#Helium show conditions\' for details." << hendl;
 
         return;
     }
@@ -78,7 +78,6 @@ namespace Helium {
 #else
         spdlog::set_level(spdlog::level::info);
 #endif
-        spdlog::flush_every(chrono::seconds(5));
         return 0;
     }
     int HeliumInit() {
@@ -128,10 +127,16 @@ namespace Helium {
 
         HeliumEnvInit();
 
-        HeliumInitOutput();
-
         InitBuiltinCommandTree();
         InitShellEnv();
+        InitShell("Helium");
+
+        try {
+            HeliumInitOutput();
+        }
+        catch (...) {
+            HeliumErrorExit(true, true, "Failed to output");
+        }
 
         try {
             ret = HeliumInit();
@@ -149,10 +154,10 @@ namespace Helium {
             logger << HLL::LL_WARN << "Helium initialization failed, skip starting server." << hendl;
         }
 
-        InitShell("Helium");
+        //InitShell("Helium");
 
         HeliumFin();
 
-        return 0;
+        return ret;
     }
 }
