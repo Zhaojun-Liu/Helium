@@ -127,8 +127,8 @@ namespace Helium {
 
         HeliumEnvInit();
 
-        InitBuiltinCommandTree();
         InitShellEnv();
+        InitBuiltinCommandTree();
         InitShell("Helium>");
 
         try {
