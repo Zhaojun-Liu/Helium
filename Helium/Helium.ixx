@@ -54,6 +54,8 @@ export import Helium.Parser;
 export import Helium.Utils;
 export import Helium.XMLUtils;
 
+import <string>;
+
 using namespace std;
 using namespace semver;
 

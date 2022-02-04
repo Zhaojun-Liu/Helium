@@ -26,6 +26,7 @@ module;
 
 #include<functional>
 #include<iostream>
+#include<sstream>
 #include<boost/uuid/uuid.hpp>
 #include<boost/uuid/uuid_io.hpp>
 #include<boost/uuid/uuid_generators.hpp>
@@ -35,6 +36,8 @@ module;
 
 module Helium.Commands;
 
+import Helium.Utils;
+
 using namespace std;
 using namespace replxx;
 using namespace placeholders;
@@ -42,8 +45,43 @@ using namespace boost::uuids;
 
 namespace Helium {
 	tree<_BasicHeliumCommand*> HeliumCommandTree;
+	static tree<_BasicHeliumCommand*>::pre_order_iterator treerootit;
 	Replxx rx;
 
+	Replxx::hints_t HintCallBack(string const& context, int& len, Replxx::Color& color) {
+		Replxx::hints_t h;
+		vector<string> splited;
+		istringstream iss(context);
+		string word;
+		tree<_BasicHeliumCommand*>::pre_order_iterator pit;
+		while (iss >> word) {
+			splited.push_back(word);
+		}
+
+		if (splited.back().length() < 2) return h;
+
+		int depth = 0;
+		pit = CommandTreeRoot();
+		for (auto it = splited.begin(); it < splited.end(); it++) {
+			string currword = *it;
+			for (tree<_BasicHeliumCommand*>::fixed_depth_iterator tit = HeliumCommandTree.begin_fixed(pit, 1); HeliumCommandTree.is_valid(tit); tit++) {
+				string command = (*tit)->GetCommandString();
+				cout << "\t" << command << endl;
+			}
+
+			depth++;
+		}
+		
+		return h;
+	}
+	Replxx::completions_t CompletionCallBack(string const& context, int& len) {
+		Replxx::completions_t c;
+		cout << "\tCompletion : " << context << "(" << len << ")" << endl;
+		return c;
+	}
+	void ColorCallBack(string const& str, Replxx::colors_t& colors) {
+		return;
+	}
 	void print_tree(const tree<_BasicHeliumCommand*>& tr)
 	{
 		auto it = tr.begin();
@@ -62,7 +100,7 @@ namespace Helium {
 	}
 	int InitBuiltinCommandTree() {
 		ConstantString treeroot("Helium Command Tree Root.", "", "", false);
-		HeliumCommandTree.set_head(&treeroot);
+		treerootit = HeliumCommandTree.set_head(&treeroot);
 
 		ConstantString* root = new ConstantString("Helium Built-in Command \"#Helium\" command root.", "#Helium", "#Hel", false);
 		ConstantString help("Helium Built-in Command \"#Help\" command root.", "#Help", "");
@@ -107,7 +145,7 @@ namespace Helium {
 		rx.set_completion_callback(&CompletionCallBack);
 		rx.set_hint_callback(&HintCallBack);
 		rx.set_highlighter_callback(&ColorCallBack);
-		rx.set_word_break_characters(" \t");
+		rx.set_word_break_characters(" ");
 		rx.set_completion_count_cutoff(128);
 		rx.set_double_tab_completion(false);
 		rx.set_complete_on_empty(true);
@@ -210,6 +248,7 @@ namespace Helium {
 				cinput = rx.input(prompt);
 			} while (cinput == nullptr && errno == EAGAIN);
 
+			if (cinput == NULL) continue;
 			string input(cinput);
 			if (input.empty()) continue;
 
@@ -222,17 +261,6 @@ namespace Helium {
 	int FinShell() {
 		rx.history_sync("./command_history");
 		return 0;
-	}
-	Replxx::hints_t HintCallBack(string const& context, int& len, Replxx::Color& color) {
-		Replxx::hints_t h;
-		return h;
-	}
-	Replxx::completions_t CompletionCallBack(string const& context, int& len) {
-		Replxx::completions_t c;
-		return c;
-	}
-	void ColorCallBack(string const& str, Replxx::colors_t& colors) {
-		return;
 	}
 	Replxx::ACTION_RESULT KeyMessage(Replxx& replxx, std::string s, char32_t) {
 		replxx.invoke(Replxx::ACTION::CLEAR_SELF, 0);
@@ -411,6 +439,9 @@ namespace Helium {
 		}
 		return HeliumCommandTree.end();
 	}
+	tree<_BasicHeliumCommand*>::pre_order_iterator CommandTreeRoot() {
+		return treerootit;
+	}
 #pragma endregion
 
 #pragma region Attrs
@@ -518,10 +549,11 @@ namespace Helium {
 
 	bool _BasicHeliumCommand::IsVaild() {
 		bool ret = true;
-		string wordbreakstr = " \t";
+		string wordbreakstr = " ";
 		if (this->commandstr.empty()) ret = false;
 		for(auto i = 0; i < wordbreakstr.length(); i ++)
-			if (this->commandstr.find(wordbreakstr[i]) != string::npos) {
+			if (this->commandstr.find(wordbreakstr[i]) != string::npos
+				|| this->atlas.find(wordbreakstr[i]) != string::npos) {
 				ret = false;
 				break;
 			}
