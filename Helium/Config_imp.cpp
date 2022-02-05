@@ -44,8 +44,6 @@ import Helium.Utils;
 import Helium.MinecraftServer;
 
 namespace Helium {
-	HeliumLogger cfgl("HeliumConfigReader");
-
 	int ReadHeliumConfig() {
 		XMLDocument cfg;
 		XMLElement* root;
@@ -59,47 +57,47 @@ namespace Helium {
 		string tempstr;
 		int tempi;
 
-		cfgl << HLL::LL_INFO << "Reading Helium config file." << hendl;
+		log << HLL::LL_INFO << "Reading Helium config file." << hendl;
 
 		if (auto ret = cfg.LoadFile(CFG_FILENAME); ret != XMLError::XML_SUCCESS) {	//Load config file
-			cfgl << HLL::LL_ERR << "Failed to load helium config file : " << ret << "(" << cfg.ErrorIDToName(ret) << ")" << hendl;
-			cfgl << cfg.ErrorStr() << hendl;
+			log << HLL::LL_ERR << "Failed to load helium config file : " << ret << "(" << cfg.ErrorIDToName(ret) << ")" << hendl;
+			log << cfg.ErrorStr() << hendl;
 			return ret;
 		}
 
 		if (root = cfg.FirstChildElement("HeliumConfig"); root == NULL) {	//Get root element
-			cfgl << HLL::LL_ERR << "Failed to get the root element of helium config file : " << cfg.ErrorID() << "(" << cfg.ErrorName() << ")" << hendl;
-			cfgl << cfg.ErrorStr() << hendl;
+			log << HLL::LL_ERR << "Failed to get the root element of helium config file : " << cfg.ErrorID() << "(" << cfg.ErrorName() << ")" << hendl;
+			log << cfg.ErrorStr() << hendl;
 			return cfg.ErrorID();
 		}
 
 		if (set = root->FirstChildElement("Settings"); set == NULL) {	//Get "Settings" element
-			cfgl << HLL::LL_ERR << "Failed to get the settings element of helium config file : " << cfg.ErrorID() << "(" << cfg.ErrorName() << ")" << hendl;
-			cfgl << cfg.ErrorStr() << hendl;
+			log << HLL::LL_ERR << "Failed to get the settings element of helium config file : " << cfg.ErrorID() << "(" << cfg.ErrorName() << ")" << hendl;
+			log << cfg.ErrorStr() << hendl;
 			return cfg.ErrorID();
 		}
 
 		if (perm = root->FirstChildElement("Permissions"); perm == NULL) {	//Get "Permissions" element
-			cfgl << HLL::LL_ERR << "Failed to get the permissions element of helium config file : " << cfg.ErrorID() << "(" << cfg.ErrorName() << ")" << hendl;
-			cfgl << cfg.ErrorStr() << hendl;
+			log << HLL::LL_ERR << "Failed to get the permissions element of helium config file : " << cfg.ErrorID() << "(" << cfg.ErrorName() << ")" << hendl;
+			log << cfg.ErrorStr() << hendl;
 			return cfg.ErrorID();
 		}
 
 		if (server = root->FirstChildElement("Servers"); server == NULL) {	//Get "Servers" element
-			cfgl << HLL::LL_ERR << "Failed to get the servers element of helium config file : " << cfg.ErrorID() << "(" << cfg.ErrorName() << ")" << hendl;
-			cfgl << cfg.ErrorStr() << hendl;
+			log << HLL::LL_ERR << "Failed to get the servers element of helium config file : " << cfg.ErrorID() << "(" << cfg.ErrorName() << ")" << hendl;
+			log << cfg.ErrorStr() << hendl;
 			return cfg.ErrorID();
 		}
 
 		if (servernode = server->FirstChildElement("MinecraftServer"); servernode == NULL) {
-			cfgl << HLL::LL_ERR << "Failed to get the MinecraftServer element of helium config file : " << cfg.ErrorID() << "(" << cfg.ErrorName() << ")" << hendl;
-			cfgl << cfg.ErrorStr() << hendl;
+			log << HLL::LL_ERR << "Failed to get the MinecraftServer element of helium config file : " << cfg.ErrorID() << "(" << cfg.ErrorName() << ")" << hendl;
+			log << cfg.ErrorStr() << hendl;
 			return cfg.ErrorID();
 		}
 
 		if (permns = perm->FirstChildElement("PermissionNamespace"); permns == NULL) {
-			cfgl << HLL::LL_ERR << "Failed to get the PermissionNamespace element of helium config file : " << cfg.ErrorID() << "(" << cfg.ErrorName() << ")" << hendl;
-			cfgl << cfg.ErrorStr() << hendl;
+			log << HLL::LL_ERR << "Failed to get the PermissionNamespace element of helium config file : " << cfg.ErrorID() << "(" << cfg.ErrorName() << ")" << hendl;
+			log << cfg.ErrorStr() << hendl;
 			return cfg.ErrorID();
 		}
 
@@ -213,8 +211,8 @@ namespace Helium {
 				}
 			}
 			else {
-				cfgl << HLL::LL_ERR << "Failed to read the \"server\" attribute of permission namespace." << hendl;
-				cfgl << cfg.ErrorStr() << hendl;
+				log << HLL::LL_ERR << "Failed to read the \"server\" attribute of permission namespace." << hendl;
+				log << cfg.ErrorStr() << hendl;
 				return cfg.ErrorID();
 			}
 
@@ -229,7 +227,7 @@ namespace Helium {
 				if (tempstr == permdescstr[HeliumPermissionLevel::HELIUMOWNER]) tempns.defaultpermission = HeliumPermissionLevel::HELIUMOWNER;
 			}
 			else {
-				cfgl << HLL::LL_ERR << "Failed to read the \"default\" attribute, setting the default permission level to guest" << hendl;
+				log << HLL::LL_ERR << "Failed to read the \"default\" attribute, setting the default permission level to guest" << hendl;
 				tempns.defaultpermission = HeliumPermissionLevel::GUEST;
 			}
 
@@ -332,71 +330,71 @@ namespace Helium {
 		XMLElement* perm;
 		XMLElement* server;
 
-		cfgl << HLL::LL_INFO << "Creating Helium Config File." << hendl;
+		log << HLL::LL_INFO << "Creating Helium Config File." << hendl;
 
 		if (auto ret = doc.Parse(declaration); ret != XMLError::XML_SUCCESS) {
-			cfgl << HLL::LL_ERR << "Failed to create declaration of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
-			cfgl << doc.ErrorStr() << hendl;
+			log << HLL::LL_ERR << "Failed to create declaration of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
+			log << doc.ErrorStr() << hendl;
 			return ret;
 		}
 
 		if (root = doc.NewElement("HeliumConfig"); root == NULL) {
-			cfgl << HLL::LL_ERR << "Failed to create root element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
-			cfgl << doc.ErrorStr() << hendl;
+			log << HLL::LL_ERR << "Failed to create root element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
+			log << doc.ErrorStr() << hendl;
 			return doc.ErrorID();
 		}
 
 		if (set = doc.NewElement("Settings"); set == NULL) {
-			cfgl << HLL::LL_ERR << "Failed to create Settings element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
-			cfgl << doc.ErrorStr() << hendl;
+			log << HLL::LL_ERR << "Failed to create Settings element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
+			log << doc.ErrorStr() << hendl;
 			return doc.ErrorID();
 		}
 
 		if (perm = doc.NewElement("Permissions"); perm == NULL) {
-			cfgl << HLL::LL_ERR << "Failed to create Permissions element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
-			cfgl << doc.ErrorStr() << hendl;
+			log << HLL::LL_ERR << "Failed to create Permissions element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
+			log << doc.ErrorStr() << hendl;
 			return doc.ErrorID();
 		}
 
 		if (server = doc.NewElement("Servers"); server == NULL) {
-			cfgl << HLL::LL_ERR << "Failed to create Servers element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
-			cfgl << doc.ErrorStr() << hendl;
+			log << HLL::LL_ERR << "Failed to create Servers element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
+			log << doc.ErrorStr() << hendl;
 			return doc.ErrorID();
 		}
 
 		if (auto ele = doc.NewElement("Language"); ele != NULL)
 			set->InsertEndChild(ele);
 		else {
-			cfgl << HLL::LL_ERR << "Failed to create element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
-			cfgl << doc.ErrorStr() << hendl;
+			log << HLL::LL_ERR << "Failed to create element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
+			log << doc.ErrorStr() << hendl;
 			return doc.ErrorID();
 		}
 		if (auto ele = doc.NewElement("Encoding"); ele != NULL)
 			set->InsertEndChild(ele);
 		else {
-			cfgl << HLL::LL_ERR << "Failed to create element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
-			cfgl << doc.ErrorStr() << hendl;
+			log << HLL::LL_ERR << "Failed to create element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
+			log << doc.ErrorStr() << hendl;
 			return doc.ErrorID();
 		}
 		if (auto ele = doc.NewElement("ExtensionDirectory"); ele != NULL)
 			set->InsertEndChild(ele);
 		else {
-			cfgl << HLL::LL_ERR << "Failed to create element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
-			cfgl << doc.ErrorStr() << hendl;
+			log << HLL::LL_ERR << "Failed to create element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
+			log << doc.ErrorStr() << hendl;
 			return doc.ErrorID();
 		}
 		if (auto ele = doc.NewElement("ScriptDirectory"); ele != NULL)
 			set->InsertEndChild(ele);
 		else {
-			cfgl << HLL::LL_ERR << "Failed to create element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
-			cfgl << doc.ErrorStr() << hendl;
+			log << HLL::LL_ERR << "Failed to create element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
+			log << doc.ErrorStr() << hendl;
 			return doc.ErrorID();
 		}
 		if (auto ele = doc.NewElement("AutoUpdate"); ele != NULL)
 			set->InsertEndChild(ele);
 		else {
-			cfgl << HLL::LL_ERR << "Failed to create element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
-			cfgl << doc.ErrorStr() << hendl;
+			log << HLL::LL_ERR << "Failed to create element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
+			log << doc.ErrorStr() << hendl;
 			return doc.ErrorID();
 		}
 		root->InsertEndChild(set);
@@ -436,8 +434,8 @@ namespace Helium {
 			root->InsertEndChild(perm);
 		}
 		else {
-			cfgl << HLL::LL_ERR << "Failed to create element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
-			cfgl << doc.ErrorStr() << hendl;
+			log << HLL::LL_ERR << "Failed to create element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
+			log << doc.ErrorStr() << hendl;
 			return doc.ErrorID();
 		}
 
@@ -461,16 +459,16 @@ namespace Helium {
 			root->InsertEndChild(server);
 		}
 		else {
-			cfgl << HLL::LL_ERR << "Failed to create element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
-			cfgl << doc.ErrorStr() << hendl;
+			log << HLL::LL_ERR << "Failed to create element of helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
+			log << doc.ErrorStr() << hendl;
 			return doc.ErrorID();
 		}
 
 		doc.InsertEndChild(root);
 
 		if (auto ret = doc.SaveFile(CFG_FILENAME); ret != XMLError::XML_SUCCESS) {
-			cfgl << HLL::LL_ERR << "Failed to create helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
-			cfgl << doc.ErrorStr() << hendl;
+			log << HLL::LL_ERR << "Failed to create helium config file : " << doc.ErrorID() << "(" << doc.ErrorName() << ")" << hendl;
+			log << doc.ErrorStr() << hendl;
 			return doc.ErrorID();
 		}
 		

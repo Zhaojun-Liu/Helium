@@ -44,7 +44,6 @@ using namespace std;
 using namespace tinyxml2;
 
 namespace Helium {
-    HeliumLogger logger("HeliumMain");
     map<string, HeliumExtension> extensions;
 
     int StartInfoThread(HeliumMinecraftServer* lpIns) {
@@ -57,17 +56,17 @@ namespace Helium {
 
     void HeliumInitOutput() {
         HeliumEndline hendl;
-        logger << HLL::LL_INFO << "  _   _      _ _" << hendl;
-        logger << " | | | | ___| (_)_   _ _ __ ___" << hendl;
-        logger << " | |_| |/ _ \\ | | | | | '_ ` _ \\" << hendl;
-        logger << " |  _  |  __/ | | |_| | | | | | |" << hendl;
-        logger << " |_| |_|\\___|_|_|\\__,_|_| |_| |_|" << hendl;
-        //logger << HeliumVersion.to_string() << hendl;
-        logger << "Copyright(C) 2021-2022 HeliumDevTeam" << hendl;
-        logger << "This program comes with ABSOLUTELY NO WARRANTY;" << hendl;
-        logger << "for details type \'#Helium show warranty\'." << hendl;
-        logger << "This is free software, and you are welcome to redistribute it" << hendl;
-        logger << "under certain conditions; type \'#Helium show conditions\' for details." << hendl;
+        log << HLL::LL_INFO << "  _   _      _ _" << hendl;
+        log << " | | | | ___| (_)_   _ _ __ ___" << hendl;
+        log << " | |_| |/ _ \\ | | | | | '_ ` _ \\" << hendl;
+        log << " |  _  |  __/ | | |_| | | | | | |" << hendl;
+        log << " |_| |_|\\___|_|_|\\__,_|_| |_| |_|" << hendl;
+        //log << HeliumVersion.to_string() << hendl;
+        log << "Copyright(C) 2021-2022 HeliumDevTeam" << hendl;
+        log << "This program comes with ABSOLUTELY NO WARRANTY;" << hendl;
+        log << "for details type \'#Helium show warranty\'." << hendl;
+        log << "This is free software, and you are welcome to redistribute it" << hendl;
+        log << "under certain conditions; type \'#Helium show conditions\' for details." << hendl;
 
         return;
     }
@@ -83,15 +82,15 @@ namespace Helium {
     int HeliumInit() {
         HeliumEndline hendl;
 
-        logger << HLL::LL_INFO << "Start Helium initialization." << hendl;
+        log << HLL::LL_INFO << "Start Helium initialization." << hendl;
 
-        logger << HLL::LL_DBG << "Start adding dirs" << hendl;
+        log << HLL::LL_DBG << "Start adding dirs" << hendl;
         AddHeliumDirectory("./extensions", "The \"extension\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
         AddHeliumDirectory("./extensions/extconfigs", "The \"extensions/extconfigs\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
         AddHeliumDirectory("./logs", "The \"logs\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
         AddHeliumDirectory("./scripts", "The \"scripts\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
         AddHeliumDirectory("./scripts/initscripts", "The \"scripts/initscripts\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
-        logger << HLL::LL_DBG << "End adding dirs" << hendl;
+        log << HLL::LL_DBG << "End adding dirs" << hendl;
 
         if (auto ret = InitHeliumDirectory(); ret != 0) {
             HeliumErrorExit(true, true, "Failed to initialize directory,exiting...");
@@ -104,7 +103,7 @@ namespace Helium {
             HeliumErrorExit(true, true, "Failed to read helium config file, the file is created automatically.");
         }
 
-        logger << HLL::LL_INFO << "Finished Helium initialization." << hendl;
+        log << HLL::LL_INFO << "Finished Helium initialization." << hendl;
         return 0;
     }
     int HeliumStartServer() {
@@ -129,32 +128,26 @@ namespace Helium {
 
         InitShellEnv();
         InitBuiltinCommandTree();
-        InitShell("Helium>");
 
-        try {
-            HeliumInitOutput();
-        }
-        catch (...) {
-            HeliumErrorExit(true, true, "Failed to output");
-        }
+        HeliumInitOutput();
 
         try {
             ret = HeliumInit();
         }
         catch (...) {
-            logger << HLL::LL_CRIT << "Helium initialization failed with a exception." << hendl;
-            logger << HLL::LL_CRIT << "THIS IS A CRASH, report it to us by : helium_devteam@outlook.com" << hendl;
+            log << HLL::LL_CRIT << "Helium initialization failed with a exception." << hendl;
+            log << HLL::LL_CRIT << "THIS IS A CRASH, report it to us by : helium_devteam@outlook.com" << hendl;
             ret = -1;
         }
+
+        InitShell("Helium>");
 
         if (ret == 0) {
             HeliumStartServer();
         }
         else {
-            logger << HLL::LL_WARN << "Helium initialization failed, skip starting server." << hendl;
+            log << HLL::LL_WARN << "Helium initialization failed, skip starting server." << hendl;
         }
-
-        //InitShell("Helium");
 
         HeliumFin();
 

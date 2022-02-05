@@ -24,6 +24,7 @@
 
 module;
 
+#define REPLXX_STATIC
 #include<functional>
 #include<iostream>
 #include<sstream>
@@ -31,7 +32,6 @@ module;
 #include<boost/uuid/uuid_io.hpp>
 #include<boost/uuid/uuid_generators.hpp>
 #include"tree.hh/tree.hh"
-#define REPLXX_STATIC
 #include"replxx/replxx.hxx"
 
 module Helium.Commands;
@@ -54,12 +54,14 @@ namespace Helium {
 		if (!tr.is_valid(it)) return;
 		int rootdepth = tr.depth(it);
 		while (it != end) {
-			for (int i = 0; i < tr.depth(it) - rootdepth; ++i)
-				cout << "  ";
-			if (!((*it)->GetCommandAtlas().empty()))
-				cout << (*it)->GetCommandString() << "/" << (*it)->GetCommandAtlas() << endl;
-			else
-				cout << (*it)->GetCommandString() << endl;
+			if (typeid((**it)) == typeid(ConstantString)) {
+				for (int i = 0; i < tr.depth(it) - rootdepth; ++i)
+					cout << "  ";
+				if (!(static_cast<ConstantString*>(*it)->GetCommandAtlas().empty()))
+					cout << static_cast<ConstantString*>(*it)->GetCommandString() << "/" << static_cast<ConstantString*>(*it)->GetCommandAtlas() << endl;
+				else
+					cout << static_cast<ConstantString*>(*it)->GetCommandString() << endl;
+			}
 			++it;
 		}
 	}
@@ -92,7 +94,8 @@ namespace Helium {
 				for (tit = HeliumCommandTree.begin_fixed(pit, 1);
 					HeliumCommandTree.is_valid(tit) && (*(HeliumCommandTree.parent(tit)))->CommandUUID() == (*pit)->CommandUUID();
 					tit++) {
-					string command = (*tit)->GetCommandString();
+					if (typeid((**tit)) != typeid(ConstantString)) continue;
+					string command = static_cast<ConstantString*>(*tit)->GetCommandString();
 					if (IsStringEqual(command, currword)) {
 						h.emplace_back(command.c_str());
 					}
@@ -106,13 +109,15 @@ namespace Helium {
 				for (tit = HeliumCommandTree.begin_fixed(pit, 1);
 					HeliumCommandTree.is_valid(tit) && (*(HeliumCommandTree.parent(tit)))->CommandUUID() == (*pit)->CommandUUID();
 					tit++) {
-					string command = (*tit)->GetCommandString();
-					if(*it == (*tit)->GetCommandString()){
+					if (typeid((**tit)) != typeid(ConstantString)) continue;
+					string command = static_cast<ConstantString*>(*tit)->GetCommandString();
+					string atlas = static_cast<ConstantString*>(*tit)->GetCommandAtlas();
+					if(*it == command){
 						pit = tit;
 						find = true;
 						break;
 					}
-					if (*it == (*tit)->GetCommandAtlas()) {
+					if (*it == atlas) {
 						pit = tit;
 						find = true;
 						break;
@@ -130,7 +135,7 @@ namespace Helium {
 		return c;
 	}
 	int InitBuiltinCommandTree() {
-		ConstantString* treeroot = new ConstantString("Helium Command Tree Root.", "HeliumCommandTreeRoot", "HCTR", false, false, false, false, false);
+		_BasicHeliumCommand* treeroot = new _BasicHeliumCommand();
 		HeliumCommandTree.set_head(treeroot);
 
 		ConstantString* root = new ConstantString("Helium Built-in Command \"#Helium\" command root.", "#Helium", "#Hel", false);
@@ -270,7 +275,6 @@ namespace Helium {
 		return 0;
 	}
 	int InitShell(string prompt) {
-		print_tree(HeliumCommandTree);
 		for (;;) {
 			char const* cinput{ nullptr };
 
@@ -350,7 +354,7 @@ namespace Helium {
 		AddCommand(_BasicHeliumCommand* cmd, uuid parentuuid) {
 		for (auto tit = HeliumCommandTree.begin(); tit != HeliumCommandTree.end(); tit++) {
 			if (parentuuid == (**tit).CommandUUID()) {
-				if (!HeliumCommandTree.is_valid(tit) && cmd->IsVaild())
+				if (!HeliumCommandTree.is_valid(tit) && cmd->IsValid())
 					return HeliumCommandTree.end();
 				return HeliumCommandTree.append_child(tit, cmd);;
 			}
@@ -358,7 +362,7 @@ namespace Helium {
 	}
 	tree<_BasicHeliumCommand*>::pre_order_iterator 
 		AddCommand(_BasicHeliumCommand* cmd, tree<_BasicHeliumCommand*>::pre_order_iterator parentit) {
-		if (HeliumCommandTree.is_valid(parentit) && cmd->IsVaild())
+		if (HeliumCommandTree.is_valid(parentit) && cmd->IsValid())
 			return HeliumCommandTree.append_child(parentit, cmd);
 		return HeliumCommandTree.end();
 	}
@@ -366,7 +370,7 @@ namespace Helium {
 		InsertCommand(_BasicHeliumCommand* cmd, uuid parentuuid) {
 		for (auto tit = HeliumCommandTree.begin(); tit != HeliumCommandTree.end(); tit++) {
 			if (parentuuid == (**tit).CommandUUID()) {
-				if (!cmd->IsVaild())
+				if (!cmd->IsValid())
 					return HeliumCommandTree.end();
 				return HeliumCommandTree.insert(tit, cmd);;
 			}
@@ -374,7 +378,7 @@ namespace Helium {
 	}
 	tree<_BasicHeliumCommand*>::pre_order_iterator 
 		InsertCommand(_BasicHeliumCommand* cmd, tree<_BasicHeliumCommand*>::pre_order_iterator tit) {
-		if (cmd->IsVaild())
+		if (cmd->IsValid())
 			return HeliumCommandTree.insert(tit, cmd);
 		return HeliumCommandTree.end();
 	}
@@ -439,7 +443,8 @@ namespace Helium {
 		QueryCommand(string commandstr, tree<_BasicHeliumCommand*>::pre_order_iterator it) {
 			if (!HeliumCommandTree.is_valid(it)) return it.end();
 			for (auto tit = it.begin(); tit != it.end(); tit++) {
-				if ((**tit).GetCommandString() == commandstr)
+				if (typeid((**it)) != typeid(ConstantString)) continue;
+				if (static_cast<ConstantString*>(*tit)->GetCommandString() == commandstr)
 					return tit;
 			}
 			return it.end();
@@ -454,7 +459,7 @@ namespace Helium {
 	}
 	tree<_BasicHeliumCommand*>::pre_order_iterator 
 		ReplaceCommand(tree<_BasicHeliumCommand*>::pre_order_iterator it, _BasicHeliumCommand* cmd) {
-		if (HeliumCommandTree.is_valid(it) && cmd->IsVaild()) {
+		if (HeliumCommandTree.is_valid(it) && cmd->IsValid()) {
 			return HeliumCommandTree.replace(it, cmd);
 		}
 	}
@@ -476,109 +481,207 @@ namespace Helium {
 #pragma endregion
 
 #pragma region Attrs
-	bool _BasicHeliumCommand::IsCallbackable() {
+	uuid _BasicHeliumCommand::CommandUUID() {
+		return this->cmduuid;
+	}
+
+	bool _CommandConstantString::IsCallbackable() {
 		return this->callback;
 	}
-	bool _BasicHeliumCommand::EnableCallback() {
+	bool _CommandConstantString::EnableCallback() {
 		auto r = this->callback;
 		this->callback = true;
 		return r;
 	}
-	bool _BasicHeliumCommand::DisableCallback() {
+	bool _CommandConstantString::DisableCallback() {
 		auto r = this->callback;
 		this->callback = false;
 		return r;
 	}
 
-	bool _BasicHeliumCommand::IsListable() {
+	bool _CommandConstantString::IsListable() {
 		return this->list;
 	}
-	bool _BasicHeliumCommand::EnableList() {
+	bool _CommandConstantString::EnableList() {
 		auto r = this->list;
 		this->callback = list;
 		return r;
 	}
-	bool _BasicHeliumCommand::DisableList() {
+	bool _CommandConstantString::DisableList() {
 		auto r = this->list;
 		this->callback = list;
 		return r;
 	}
 
-	bool _BasicHeliumCommand::IsExecutable() {
+	bool _CommandConstantString::IsExecutable() {
 		return this->exec;
 	}
-	bool _BasicHeliumCommand::EnableExecute() {
+	bool _CommandConstantString::EnableExecute() {
 		auto r = this->exec;
 		this->callback = exec;
 		return r;
 	}
-	bool _BasicHeliumCommand::DisableExecute() {
+	bool _CommandConstantString::DisableExecute() {
 		auto r = this->exec;
 		this->callback = exec;
 		return r;
 	}
 
-	bool _BasicHeliumCommand::IsHintable() {
+	bool _CommandConstantString::IsHintable() {
 		return this->hint;
 	}
-	bool _BasicHeliumCommand::EnableHint() {
+	bool _CommandConstantString::EnableHint() {
 		auto r = this->hint;
 		this->callback = hint;
 		return r;
 	}
-	bool _BasicHeliumCommand::DisableHint() {
+	bool _CommandConstantString::DisableHint() {
 		auto r = this->hint;
 		this->callback = hint;
 		return r;
 	}
 
-	bool _BasicHeliumCommand::IsCompletable() {
+	bool _CommandConstantString::IsCompletable() {
 		return this->autocomp;
 	}
-	bool _BasicHeliumCommand::EnableCompletion() {
+	bool _CommandConstantString::EnableCompletion() {
 		auto r = this->autocomp;
 		this->callback = autocomp;
 		return r;
 	}
-	bool _BasicHeliumCommand::DisableCompletion() {
+	bool _CommandConstantString::DisableCompletion() {
 		auto r = this->autocomp;
 		this->callback = autocomp;
 		return r;
 	}
 
-	uuid _BasicHeliumCommand::CommandUUID() {
-		return this->cmduuid;
-	}
-
-	string _BasicHeliumCommand::GetCommandString() {
+	string _CommandConstantString::GetCommandString() {
 		return this->commandstr;
 	}
-	string _BasicHeliumCommand::SetCommandString(string cmd) {
+	string _CommandConstantString::SetCommandString(string cmd) {
 		string tempstr = this->commandstr;
 		this->commandstr = cmd;
 		return tempstr;
 	}
 
-	string _BasicHeliumCommand::GetCommandDesc() {
+	string _CommandConstantString::GetCommandDesc() {
 		return this->commanddesc;
 	}
-	string _BasicHeliumCommand::SetCommandDesc(string hint) {
+	string _CommandConstantString::SetCommandDesc(string hint) {
 		string tempstr = this->commanddesc;
 		this->commanddesc = hint;
 		return tempstr;
 	}
 
-	string _BasicHeliumCommand::GetCommandAtlas() {
+	string _CommandConstantString::GetCommandAtlas() {
 		return this->atlas;
 	}
-	string _BasicHeliumCommand::SetCommandAtlas(string atlas) {
+	string _CommandConstantString::SetCommandAtlas(string atlas) {
 		string tempstr = this->atlas;
 		this->atlas = atlas;
 		return tempstr;
 	}
-#pragma endregion
 
-	bool _BasicHeliumCommand::IsVaild() {
+	unsigned long _ArgumentString::GetLengthLimit() {
+		return this->lengthlim;
+	}
+	unsigned long _ArgumentString::SetLengthLimit(unsigned long lim) {
+		auto olim = this->lengthlim;
+		this->lengthlim = lim;
+		return olim;
+	}
+	string _ArgumentString::GetValue() {
+		return this->value;
+	}
+	string _ArgumentString::SetValue(string v) {
+		auto ov = this->value;
+		this->value = v;
+		return ov;
+	}
+
+	long CommandArgumentInt::SetUpperbound(long up) {
+		auto oub = this->upperbound;
+		this->upperbound = up;
+		return oub;
+	}
+	long CommandArgumentInt::SetLowerbound(long down) {
+		auto olb = this->lowerbound;
+		this->lowerbound = down;
+		return olb;
+	}
+	long CommandArgumentInt::GetUpperbound() {
+		return this->upperbound;
+	}
+	long CommandArgumentInt::GetLowerbound() {
+		return this->lowerbound;
+	}
+	long CommandArgumentInt::GetValue() {
+		return this->value;
+	}
+	long CommandArgumentInt::SetValue(long v) {
+		auto ov = this->value;
+		this->value = v;
+		return ov;
+	}
+
+	double CommandArgumentFloat::SetUpperbound(double up) {
+		auto oub = this->upperbound;
+		this->upperbound = up;
+		return oub;
+	}
+	double CommandArgumentFloat::SetLowerbound(double down) {
+		auto olb = this->lowerbound;
+		this->lowerbound = down;
+		return olb;
+	}
+	double CommandArgumentFloat::GetUpperbound() {
+		return this->upperbound;
+	}
+	double CommandArgumentFloat::GetLowerbound() {
+		return this->lowerbound;
+	}
+	double CommandArgumentFloat::GetValue() {
+		return this->value;
+	}
+	double CommandArgumentFloat::SetValue(double v) {
+		auto ov = this->value;
+		this->value = v;
+		return ov;
+	}
+
+	bool _CommandArgument::IsOptional() {
+		return this->optional;
+	}
+	bool _CommandArgument::EnableOptional() {
+		auto oopt = this->optional;
+		this->optional = true;
+		return oopt;
+	}
+	bool _CommandArgument::DisableOptional() {
+		auto oopt = this->optional;
+		this->optional = false;
+		return oopt;
+	}
+
+	bool _CommandArgument::IsPreproc() {
+		return this->preprocenable;
+	}
+	bool _CommandArgument::EnablePreproc() {
+		auto opreproc = this->preprocenable;
+		this->preprocenable = true;
+		return opreproc;
+	}
+	bool _CommandArgument::DisablePreproc() {
+		auto opreproc = this->preprocenable;
+		this->preprocenable = false;
+		return opreproc;
+	}
+#pragma endregion
+	bool _BasicHeliumCommand::IsValid() {
+		return true;
+	}
+
+	bool _CommandConstantString::IsValid() {
 		bool ret = true;
 		string wordbreakstr = " ";
 		if (this->commandstr.empty()) ret = false;
@@ -591,7 +694,7 @@ namespace Helium {
 		return ret;
 	}
 
-	int ExecuteCommand(tree<_BasicHeliumCommand*>::pre_order_iterator cmdit) {
+	int ExecuteCommand(string rawcmd) {
 		return 0;
 	}
 }

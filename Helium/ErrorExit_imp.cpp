@@ -38,10 +38,9 @@ namespace Helium {
 		va_list arglist;
 
 		if (uselogger) {
-			HeliumLogger logger("HeliumErrorExit");
 			HeliumEndline hendl;
 			va_start(arglist, str);
-			logger << HLL::LL_CRIT << arglist << hendl;
+			log << HLL::LL_CRIT << arglist << hendl;
 			va_end(arglist);
 		}
 		else {
@@ -59,10 +58,9 @@ namespace Helium {
 		va_list arglist;
 
 		if (uselogger) {
-			HeliumLogger logger("HeliumErrorExit");
 			HeliumEndline hendl;
 			va_start(arglist, str);
-			logger << HLL::LL_CRIT << arglist << hendl;
+			log << HLL::LL_CRIT << arglist << hendl;
 			va_end(arglist);
 		}
 		else {

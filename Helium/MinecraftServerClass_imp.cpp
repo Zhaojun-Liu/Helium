@@ -66,7 +66,6 @@ using namespace boost::uuids;
 namespace Helium {
 	CRITICAL_SECTION cs;
 	static bool isinit = false;
-	HeliumLogger msl("HeliumServerManager");
 
 	string HeliumMinecraftServer::GetServerName() {
 		return this->name;

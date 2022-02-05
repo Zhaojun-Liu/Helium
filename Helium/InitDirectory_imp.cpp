@@ -40,7 +40,6 @@ using namespace std;
 namespace Helium {
 	list<HeliumDirectory> heliumdir;
 	map<HeliumDirectoryInitPolicy, HeliumDirectoryInitPolicy> policystat;
-	HeliumLogger dirlog("HeliumDirectoryInit");
 
 	int InitHeliumDirectory() {
 		HeliumEndline hendl;
@@ -51,14 +50,14 @@ namespace Helium {
 			pol = dir.policy;
 			if (auto it = policystat.find(dir.policy); it != policystat.end())
 				pol = it->second;
-			dirlog << HLL::LL_DBG << dir.dirpath << hendl;
+			log << HLL::LL_DBG << dir.dirpath << hendl;
 			if (_access(dir.dirpath.c_str(), 0) != 0) {
 				switch (pol)
 				{
 				case Helium::HDIP_BLOCKED:
 					break;
 				case Helium::HDIP_CREATE_WARING:
-					dirlog << HLL::LL_WARN << dir.extrahint << hendl;
+					log << HLL::LL_WARN << dir.extrahint << hendl;
 					ret = _mkdir(dir.dirpath.c_str());
 					break;
 				case Helium::HDIP_CREATE_SLIENT:
@@ -69,7 +68,7 @@ namespace Helium {
 					HeliumErrorExit(true, true, dir.extrahint);
 					break;
 				case Helium::HDIP_IGNORE_WARING:
-					dirlog << HLL::LL_WARN << dir.extrahint << hendl;
+					log << HLL::LL_WARN << dir.extrahint << hendl;
 					break;
 				case Helium::HDIP_IGNORE_SLIENT:
 					break;
@@ -85,7 +84,7 @@ namespace Helium {
 	}
 	int AddHeliumDirectory(string path, string hint, HeliumDirectoryInitPolicy policy) {
 		HeliumEndline hendl;
-		dirlog << HLL::LL_DBG << path << hendl;
+		log << HLL::LL_DBG << path << hendl;
 		HeliumDirectory dir{ .dirpath = path, .extrahint = hint, .policy = policy };
 		heliumdir.push_back(dir);
 		return 0;

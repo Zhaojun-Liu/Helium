@@ -35,19 +35,17 @@ using namespace tinyxml2;
 using namespace std;
 
 namespace Helium {
-	HeliumLogger extlog("HeliumExtension");
-
 	int HeliumExtensionConfig::ReadConfig()	{
 		HeliumEndline hendl;
 		tinyxml2::XMLDocument doc;
 		if (auto ret = doc.LoadFile(this->configpath.c_str()); ret != tinyxml2::XMLError::XML_SUCCESS) {
-			extlog << HLL::LL_WARN << "Failed to load extension config file : " << this->configpath << hendl;
+			log << HLL::LL_WARN << "Failed to load extension config file : " << this->configpath << hendl;
 			return -1;
 		}
 
 		tinyxml2::XMLElement* root = doc.RootElement();
 		if (root == NULL) {
-			extlog << HLL::LL_WARN << "Failed to get root element of extension config file : " << this->configpath << hendl;
+			log << HLL::LL_WARN << "Failed to get root element of extension config file : " << this->configpath << hendl;
 			return -1;
 		}
 		return 0;
@@ -57,10 +55,10 @@ namespace Helium {
 		HeliumEndline hendl;
 		this->extstat = EXT_STATUS_EMPTY;
 		this->config.Extconfigpath.append("./extensions/extconfigs").append(cfgname).append(".xml");
-		extlog << HLL::LL_INFO << "Reading extension config file : " << cfgname << ".xml" << hendl;
+		log << HLL::LL_INFO << "Reading extension config file : " << cfgname << ".xml" << hendl;
 		if (auto ret = this->config.ReadConfig(); ret != 0)
 			return ;
-		extlog << HLL::LL_INFO << "Done." << hendl;
+		log << HLL::LL_INFO << "Done." << hendl;
 		this->extstat = EXT_STATUS_UNLOADED;
 		return ;
 	}
