@@ -37,6 +37,7 @@ module;
 module Helium.Commands;
 
 import Helium.Utils;
+import Helium.Logger;
 
 using namespace std;
 using namespace replxx;
@@ -151,7 +152,7 @@ namespace Helium {
 		AddCommand(conditions, showit);
 		AddCommand(warranty, showit);
 
-		ConstantString* command = new ConstantString("Helium Built-in Command : \"Command\" command", "command", "cmd");
+		ConstantString* command = new ConstantString("Helium Built-in Command : \"command\" command", "command", "cmd");
 		ConstantString* cmdlist = new ConstantString("Helium Built-in Command : \"list\" command", "list", "lst");
 
 		auto cmdit = AddCommand(command, rit);
@@ -166,8 +167,14 @@ namespace Helium {
 		auto extit = AddCommand(ext, rit);
 
 		ConstantString* ent = new ConstantString("Helium Built-in Command : \"event\" command", "event", "ent");
+		ConstantString* ent_create = new ConstantString("Helium Built-in Command : \"create\" command", "create", "crt");
+		ConstantString* ent_trace = new ConstantString("Helium Built-in Command : \"trace\" command", "trace", "trc");
+		ConstantString* ent_block = new ConstantString("Helium Built-in Command : \"block\" command", "block", "blk");
 
 		auto entit = AddCommand(ent, rit);
+		AddCommand(ent_create, entit);
+		AddCommand(ent_trace, entit);
+		AddCommand(ent_block, entit);
 
 		print_tree(HeliumCommandTree);
 		return 0;
@@ -275,6 +282,7 @@ namespace Helium {
 		return 0;
 	}
 	int InitShell(string prompt) {
+		HeliumEndline hendl;
 		for (;;) {
 			char const* cinput{ nullptr };
 
@@ -286,7 +294,9 @@ namespace Helium {
 			string input(cinput);
 			if (input.empty()) continue;
 
-			//add input function call here
+			if (auto ret = ExecuteCommand(input); ret != 0) {
+				log << HLL::LL_ERR << "Failed to execute command : " << input << hendl;
+			}
 
 			rx.history_add(input);
 		}
@@ -306,48 +316,6 @@ namespace Helium {
 		replxx.invoke(Replxx::ACTION::REPAINT, 0);
 		return (Replxx::ACTION_RESULT::CONTINUE);
 	}
-
-#pragma region GetCommandClassType
-	_BasicHeliumCommand* _BasicHeliumCommand::GetCommandClassType() {
-		return this;
-	}
-	_CommandArgument* _CommandArgument::GetCommandClassType() {
-		return this;
-	}
-	_CommandBind* _CommandBind::GetCommandClassType() {
-		return this;
-	}
-	_CommandConstantString* _CommandConstantString::GetCommandClassType() {
-		return this;
-	}
-	_ArgumentNumber* _ArgumentNumber::GetCommandClassType() {
-		return this;
-	}
-	_ArgumentString* _ArgumentString::GetCommandClassType() {
-		return this;
-	}
-	CommandBind* CommandBind::GetCommandClassType() {
-		return this;
-	}
-	CommandArgumentInt* CommandArgumentInt::GetCommandClassType() {
-		return this;
-	}
-	CommandArgumentFloat* CommandArgumentFloat::GetCommandClassType() {
-		return this;
-	}
-	CommandArgumentString* CommandArgumentString::GetCommandClassType() {
-		return this;
-	}
-	CommandArgumentQuotableString* CommandArgumentQuotableString::GetCommandClassType() {
-		return this;
-	}
-	CommandArgumentGreedyString* CommandArgumentGreedyString::GetCommandClassType() {
-		return this;
-	}
-	ConstantString* ConstantString::GetCommandClassType() {
-		return this;
-	}
-#pragma endregion
 
 #pragma region CommandTreeOps
 	tree<_BasicHeliumCommand*>::pre_order_iterator 
@@ -676,7 +644,17 @@ namespace Helium {
 		this->preprocenable = false;
 		return opreproc;
 	}
+
+	bool CommandArgumentBool::GetValue() {
+		return this->value;
+	}
+	bool CommandArgumentBool::SetValue(bool v) {
+		auto ov = this->value;
+		this->value = v;
+		return ov;
+	}
 #pragma endregion
+
 	bool _BasicHeliumCommand::IsValid() {
 		return true;
 	}
@@ -695,6 +673,18 @@ namespace Helium {
 	}
 
 	int ExecuteCommand(string rawcmd) {
+		istringstream iss(rawcmd);
+		vector<string> words;
+		string tempstr;
+
+		while (iss >> tempstr) {
+			words.push_back(tempstr);
+		}
+
+		for (auto s : words) {
+
+		}
+
 		return 0;
 	}
 }

@@ -158,7 +158,7 @@ namespace Helium {
 		return -1;
 	}
 	int ResumeServer(uuid server) {
-		for (auto it = heliumservers.begin(); it < heliumservers.end(); it++) {
+		for (auto it = heliumservers.begin(); it < heliumservers.end(); it++) {  
 			if (it->GetServerStat() == HeliumServerStat::PAUSED && it->GetServerUUID() == server) return it->ResumeServer();
 		}
 		return -1;
@@ -173,7 +173,7 @@ namespace Helium {
 		int r = 0;
 		for (auto it = heliumservers.begin(); it < heliumservers.end(); it++) {
 			if (it->GetServerStat() == HeliumServerStat::PAUSED)
-				if (auto ret = it->StopServer(); ret != 0) r = ret;
+				if (auto ret = it->ResumeServer(); ret != 0) r = ret;
 		}
 		return r;
 	}

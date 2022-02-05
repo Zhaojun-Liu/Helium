@@ -46,14 +46,6 @@ using namespace tinyxml2;
 namespace Helium {
     map<string, HeliumExtension> extensions;
 
-    int StartInfoThread(HeliumMinecraftServer* lpIns) {
-        thread tempthread(ProcessServerOutput, lpIns, lpIns->GetServerName(), lpIns->GetServerRedir().hStdOutRead, lpIns->GetServerHandle());
-        tempthread.detach();
-        this_thread::yield();
-
-        return lpIns->GetServerPID();
-    }
-
     void HeliumInitOutput() {
         HeliumEndline hendl;
         log << HLL::LL_INFO << "  _   _      _ _" << hendl;
@@ -140,8 +132,6 @@ namespace Helium {
             ret = -1;
         }
 
-        InitShell("Helium>");
-
         if (ret == 0) {
             HeliumStartServer();
         }
@@ -149,6 +139,7 @@ namespace Helium {
             log << HLL::LL_WARN << "Helium initialization failed, skip starting server." << hendl;
         }
 
+        InitShell("Helium>");
         HeliumFin();
 
         return ret;

@@ -127,8 +127,6 @@ export{
 
 			virtual uuid CommandUUID();
 
-			virtual _BasicHeliumCommand* GetCommandClassType();
-
 			virtual bool IsValid();
 		};
 		class _CommandArgument : public _BasicHeliumCommand {
@@ -203,8 +201,6 @@ export{
 				uuid cmduuid = random_generator()();
 				this->cmduuid = cmduuid;
 			}
-
-			virtual _CommandConstantString* GetCommandClassType();
 		protected:
 			bool callback;
 			bool list;
@@ -219,17 +215,10 @@ export{
 
 
 		class _CommandBind : public _CommandConstantString {
-		public:
-			virtual _CommandBind* GetCommandClassType();
-		};
-		class _ArgumentNumber : public _CommandArgument {
-		public:
-			virtual _ArgumentNumber* GetCommandClassType();
+
 		};
 		class _ArgumentString : public _CommandArgument {
 		public:
-			virtual _ArgumentString* GetCommandClassType();
-
 			virtual unsigned long GetLengthLimit();
 			virtual unsigned long SetLengthLimit(unsigned long lim);
 			virtual string GetValue();
@@ -240,9 +229,8 @@ export{
 		};
 #pragma endregion
 
-		class CommandArgumentInt : public _ArgumentNumber {
+		class CommandArgumentInt : public _CommandArgument {
 		public:
-			virtual CommandArgumentInt* GetCommandClassType();
 			virtual long SetUpperbound(long up);
 			virtual long SetLowerbound(long down);
 			virtual long GetUpperbound();
@@ -254,9 +242,8 @@ export{
 			long lowerbound;
 			long value;
 		};
-		class CommandArgumentFloat : public _ArgumentNumber {
+		class CommandArgumentFloat : public _CommandArgument {
 		public:
-			virtual CommandArgumentFloat* GetCommandClassType();
 			virtual double SetUpperbound(double up);
 			virtual double SetLowerbound(double down);
 			virtual double GetUpperbound();
@@ -268,21 +255,24 @@ export{
 			double lowerbound;
 			double value;
 		};
-		class CommandArgumentString : public _ArgumentString {
+		class CommandArgumentBool : public _CommandArgument {
 		public:
-			virtual CommandArgumentString* GetCommandClassType();
+			virtual bool GetValue();
+			virtual bool SetValue(bool v);
+		protected:
+			bool value;
+		};
+		class CommandArgumentString : public _ArgumentString {
+
 		};
 		class CommandArgumentQuotableString : public _ArgumentString {
-		public:
-			virtual CommandArgumentQuotableString* GetCommandClassType();
+
 		};
 		class CommandArgumentGreedyString : public _ArgumentString {
-		public:
-			virtual CommandArgumentGreedyString* GetCommandClassType();
+
 		};
 		class CommandBind : public _CommandBind {
-		public:
-			virtual CommandBind* GetCommandClassType();
+
 		};
 		class ConstantString : public _CommandConstantString {
 		public:
@@ -309,8 +299,6 @@ export{
 				uuid cmduuid = random_generator()();
 				this->cmduuid = cmduuid;
 			}
-
-			virtual ConstantString* GetCommandClassType();
 		};
 	}
 }

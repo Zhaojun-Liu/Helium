@@ -50,7 +50,6 @@ namespace Helium {
 			pol = dir.policy;
 			if (auto it = policystat.find(dir.policy); it != policystat.end())
 				pol = it->second;
-			log << HLL::LL_DBG << dir.dirpath << hendl;
 			if (_access(dir.dirpath.c_str(), 0) != 0) {
 				switch (pol)
 				{
