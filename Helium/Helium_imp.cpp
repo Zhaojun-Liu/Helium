@@ -95,6 +95,8 @@ namespace Helium {
             HeliumErrorExit(true, true, "Failed to read helium config file, the file is created automatically.");
         }
 
+        InitServerEnv();
+
         log << HLL::LL_INFO << "Finished Helium initialization." << hendl;
         return 0;
     }

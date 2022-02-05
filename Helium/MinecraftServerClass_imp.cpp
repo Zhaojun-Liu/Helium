@@ -48,10 +48,14 @@
 
 module;
 
+#include<thread>
 #include<windows.h>
 #include<boost/uuid/uuid.hpp>
 #include<boost/uuid/uuid_io.hpp>
 #include<boost/uuid/uuid_generators.hpp>
+#include<boost/algorithm/string/classification.hpp>
+#include<boost/algorithm/string/split.hpp>
+#include<iostream>
 
 module Helium.MinecraftServer:Class;
 
@@ -61,12 +65,18 @@ import Helium.Logger;
 import Helium.Parser;
 
 using namespace std;
+using namespace boost;
 using namespace boost::uuids;
 
 namespace Helium {
 	CRITICAL_SECTION cs;
+	vector<thread> outputthreads;
 	static bool isinit = false;
 
+	int InitServerEnv() {
+		InitializeCriticalSection(&cs);
+		return 0;
+	}
 	string HeliumMinecraftServer::GetServerName() {
 		return this->name;
 	}
@@ -231,6 +241,7 @@ namespace Helium {
 		SECURITY_ATTRIBUTES sa;
 		PROCESS_INFORMATION pi;
 		STARTUPINFOA si;
+		string workingdir;
 
 		sa.nLength = sizeof(SECURITY_ATTRIBUTES);
 		sa.bInheritHandle = true;
@@ -240,6 +251,8 @@ namespace Helium {
 
 		ZeroMemory(&si, sizeof(STARTUPINFO));
 		si.cb = sizeof(STARTUPINFO);
+
+		workingdir = this->dir;
 
 		if (!CreatePipe(&this->redir.hStdOutRead, &this->redir.hStdOutWrite, &sa, 0)) {
 			log << HLL::LL_ERR << "Failed to create STDOut pipe for server " << this->name << " with error code : " << (long)GetLastError() << hendl;
@@ -273,7 +286,7 @@ namespace Helium {
 			true,
 			CREATE_SUSPENDED|CREATE_NO_WINDOW,
 			NULL,
-			NULL,
+			workingdir.c_str(),
 			&si,
 			&pi); !suc) {
 			log << HLL::LL_ERR << "Failed to create process for server " << this->name << " with error code : " << (long)GetLastError() << hendl;
@@ -290,6 +303,10 @@ namespace Helium {
 
 			log << "Successfully started server " << this->name << "(" << to_string(this->serveruuid) << ")" << hendl;
 			log << "Server running on PID " << (long)pi.dwProcessId << hendl;
+
+			std::thread outthread(ProcessServerOutput, this, this->name, this->redir.hStdOutRead, this->proc);
+			outputthreads.push_back(std::move(outthread));
+			outputthreads.back().detach();
 		}
 
 		return 0;
@@ -336,6 +353,27 @@ namespace Helium {
 	}
 
 	int ProcessServerOutput(HeliumMinecraftServer* ptr, string servername, HANDLE stdread, HANDLE hproc) {
+		DWORD dwRead, dwWritten;
+		CHAR chBuf[4097];
+		BOOL bSuccess = false;
+
+		for (;;)
+		{
+			bSuccess = ReadFile(stdread, chBuf, 4096, &dwRead, NULL);
+			if (!bSuccess) continue;
+
+			chBuf[dwRead - 1] = '\0';
+			string output(chBuf);
+			vector<string> lines;
+			split(lines, output, is_any_of("\n"), token_compress_on);
+
+			for (auto s : lines) { 
+				EnterCriticalSection(&cs);
+				cout << servername << " > " << s << endl;
+				LeaveCriticalSection(&cs);
+			}
+		}
+
 		return 0;
 	}
 }

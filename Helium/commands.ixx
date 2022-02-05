@@ -40,6 +40,7 @@ module;
 export module Helium.Commands;
 
 import <string>;
+import Helium.Config;
 
 using namespace std;
 using namespace replxx;
@@ -141,8 +142,6 @@ export{
 			virtual bool IsPreproc();
 			virtual bool EnablePreproc();
 			virtual bool DisablePreproc();
-
-			virtual _CommandArgument* GetCommandClassType();
 		};
 		class _CommandConstantString : public _BasicHeliumCommand {
 		public:
@@ -211,6 +210,8 @@ export{
 			string commanddesc;
 			string commandstr;
 			string atlas;
+
+			HeliumPermissionLevel level;
 		};
 
 

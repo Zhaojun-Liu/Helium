@@ -181,6 +181,7 @@ export {
 		};
 		HeliumLogger lg("HeliumServer");
 		int ProcessServerOutput(HeliumMinecraftServer* ptr, string servername, HANDLE stdread, HANDLE hproc);
+		int InitServerEnv();
 	}
 }
 

@@ -38,6 +38,8 @@ module Helium.Commands;
 
 import Helium.Utils;
 import Helium.Logger;
+import Helium.Config;
+import <string>;
 
 using namespace std;
 using namespace replxx;
