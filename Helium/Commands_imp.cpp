@@ -82,13 +82,15 @@ namespace Helium {
 		}
 
 		if (splited.empty()) return h;
+		if (beforeword.length() > 0 && len <= 0)
+			if (beforeword[beforeword.length() - 1] == ' ') return h;
 		if (splited.back().length() < 2) return h;
 
 		for (auto it = splited.begin(); it < splited.end(); it++) {
 			string currword = *it;
-			if (it + 1 == splited.end() && beforeword.find(" ") == string::npos) {
+			if (it + 1 == splited.end()) {
 				for (tit = HeliumCommandTree.begin_fixed(pit, 1);
-					HeliumCommandTree.is_valid(tit) && HeliumCommandTree.parent(tit) == pit;
+					HeliumCommandTree.is_valid(tit) && (*(HeliumCommandTree.parent(tit)))->CommandUUID() == (*pit)->CommandUUID();
 					tit++) {
 					string command = (*tit)->GetCommandString();
 					if (IsStringEqual(command, currword)) {
@@ -102,7 +104,7 @@ namespace Helium {
 			else {
 				bool find = false;
 				for (tit = HeliumCommandTree.begin_fixed(pit, 1);
-					HeliumCommandTree.is_valid(tit) && HeliumCommandTree.parent(tit) == pit;
+					HeliumCommandTree.is_valid(tit) && (*(HeliumCommandTree.parent(tit)))->CommandUUID() == (*pit)->CommandUUID();
 					tit++) {
 					string command = (*tit)->GetCommandString();
 					if(*it == (*tit)->GetCommandString()){
@@ -126,9 +128,6 @@ namespace Helium {
 		Replxx::completions_t c;
 		cout << "\tCompletion : " << context << "(" << len << ")" << endl;
 		return c;
-	}
-	void ColorCallBack(string const& str, Replxx::colors_t& colors) {
-		return;
 	}
 	int InitBuiltinCommandTree() {
 		ConstantString* treeroot = new ConstantString("Helium Command Tree Root.", "HeliumCommandTreeRoot", "HCTR", false, false, false, false, false);
@@ -175,7 +174,6 @@ namespace Helium {
 		rx.set_max_hint_rows(3);
 		rx.set_completion_callback(&CompletionCallBack);
 		rx.set_hint_callback(&HintCallBack);
-		rx.set_highlighter_callback(&ColorCallBack);
 		rx.set_word_break_characters(" ");
 		rx.set_completion_count_cutoff(128);
 		rx.set_double_tab_completion(false);
@@ -280,7 +278,7 @@ namespace Helium {
 				cinput = rx.input(prompt);
 			} while (cinput == nullptr && errno == EAGAIN);
 
-			if (cinput == NULL) continue;
+			if (cinput == NULL) continue; 
 			string input(cinput);
 			if (input.empty()) continue;
 
