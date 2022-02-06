@@ -24,8 +24,15 @@
 
 module;
 
-module Helium.Watchdog;
+#include<boost/uuid/uuid.hpp>
 
-namespace Helium {
+export module Helium.UUIDManager;
 
+using namespace boost::uuids;
+
+export{
+	namespace Helium {
+		bool IsServerUUIDExists(uuid serveruuid);
+		bool IsExtensionUUIDExists(uuid extuuid);
+	}
 }

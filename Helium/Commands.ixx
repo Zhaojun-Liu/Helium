@@ -27,9 +27,8 @@ module;
 #include<map>
 #include<iostream>
 #include<functional>
-//#include<boost/multiprecision/cpp_int.hpp>
-//#include<boost/multiprecision/cpp_dec_float.hpp>
-//#include<boost/multiprecision/gmp.hpp>
+#include<boost/multiprecision/cpp_int.hpp>
+#include<boost/multiprecision/cpp_dec_float.hpp>
 #include<boost/uuid/uuid.hpp>
 #include<boost/uuid/uuid_io.hpp>
 #include<boost/uuid/uuid_generators.hpp>
@@ -41,11 +40,13 @@ module;
 export module Helium.Commands;
 
 import <string>;
+import Helium.Config;
 
 using namespace std;
 using namespace replxx;
 using namespace placeholders;
 using namespace boost::uuids;
+using namespace boost::multiprecision;         
 
 export{
 	namespace Helium {
@@ -117,43 +118,33 @@ export{
 #pragma region CommandClassBase
 		class _BasicHeliumCommand {
 		protected:
-			bool callback;
-			bool list;
-			bool exec;
-			bool hint;
-			bool autocomp;
-
 			uuid cmduuid;
-
-			string commanddesc;
-			string commandstr;
-			string atlas;
 		public:
 			_BasicHeliumCommand() {
-				this->commanddesc = "Default Command Description";
-				this->commandstr = "DefaultCMD";
-				this->callback = false;
-				this->list = true;
-				this->exec = false;
-				this->hint = true;
-				this->autocomp = true;
-				uuid cmduuid = random_generator()();
-				this->cmduuid = cmduuid;
-			}
-			_BasicHeliumCommand(string desc, string str, string atlas = "", bool callback = true, bool list = true, bool exec = true, bool hint = true, bool autocomp = true) {
-				this->commanddesc = desc;
-				this->commandstr = str;
-				this->atlas = atlas;
-				this->callback = callback;
-				this->list = list;
-				this->exec = exec;
-				this->hint = hint;
-				this->autocomp = autocomp;
 				uuid cmduuid = random_generator()();
 				this->cmduuid = cmduuid;
 			}
 			virtual ~_BasicHeliumCommand() {}
 
+			virtual uuid CommandUUID();
+
+			virtual bool IsValid();
+		};
+		class _CommandArgument : public _BasicHeliumCommand {
+		protected:
+			bool optional;
+			bool preprocenable;
+		public:
+			virtual bool IsOptional();
+			virtual bool EnableOptional();
+			virtual bool DisableOptional();
+
+			virtual bool IsPreproc();
+			virtual bool EnablePreproc();
+			virtual bool DisablePreproc();
+		};
+		class _CommandConstantString : public _BasicHeliumCommand {
+		public:
 			virtual bool IsCallbackable();
 			virtual bool EnableCallback();
 			virtual bool DisableCallback();
@@ -174,8 +165,6 @@ export{
 			virtual bool EnableCompletion();
 			virtual bool DisableCompletion();
 
-			virtual uuid CommandUUID();
-
 			virtual string GetCommandString();
 			virtual string SetCommandString(string cmd);
 
@@ -185,28 +174,8 @@ export{
 			virtual string GetCommandAtlas();
 			virtual string SetCommandAtlas(string atlas);
 
-			virtual _BasicHeliumCommand* GetCommandClassType();
-			virtual bool IsVaild();
-		};
-		class _CommandArgument : public _BasicHeliumCommand {
-		protected:
-			bool optional;
-			bool preprocenable;
-		public:
-			virtual bool IsOptional();
-			virtual bool EnableOptional();
-			virtual bool DisableOptional();
+			virtual bool IsValid();
 
-			virtual bool IsPreproc();
-			virtual bool EnablePreproc();
-			virtual bool DisablePreproc();
-
-			virtual _CommandArgument* GetCommandClassType();
-			virtual bool EnablePreprocessing();
-			virtual bool DisablePreprocessing();
-		};
-		class _CommandConstantString : public _BasicHeliumCommand {
-		public:
 			_CommandConstantString() {
 				this->commanddesc = "Default Command Description";
 				this->commandstr = "DefaultCMD";
@@ -231,74 +200,80 @@ export{
 				uuid cmduuid = random_generator()();
 				this->cmduuid = cmduuid;
 			}
+		protected:
+			bool callback;
+			bool list;
+			bool exec;
+			bool hint;
+			bool autocomp;
 
-			virtual _CommandConstantString* GetCommandClassType();
+			string commanddesc;
+			string commandstr;
+			string atlas;
+
+			HeliumPermissionLevel level;
 		};
 
 
 		class _CommandBind : public _CommandConstantString {
-		public:
-			virtual _CommandBind* GetCommandClassType();
-		};
-		class _ArgumentNumber : public _CommandArgument {
-		public:
-			virtual _ArgumentNumber* GetCommandClassType();
-			virtual void SetUpperbound() = 0;
-			virtual void SetLowerbound() = 0;
-			virtual void GetUpperbound() = 0;
-			virtual void GetLowerbound() = 0;
-		protected:
+
 		};
 		class _ArgumentString : public _CommandArgument {
 		public:
-			virtual _ArgumentString* GetCommandClassType();
-
 			virtual unsigned long GetLengthLimit();
-			virtual unsigned long SetLengthLimit();
+			virtual unsigned long SetLengthLimit(unsigned long lim);
+			virtual string GetValue();
+			virtual string SetValue(string v);
 		protected:
 			unsigned long lengthlim;
+			string value;
 		};
 #pragma endregion
 
-
-
-		class CommandArgumentInt : public _ArgumentNumber {
+		class CommandArgumentInt : public _CommandArgument {
 		public:
-			virtual CommandArgumentInt* GetCommandClassType();
-			virtual int SetUpperbound(int up);
-			virtual int SetLowerbound(int down);
-			virtual int GetUpperbound(int up);
-			virtual int GetLowerbound(int down);
+			virtual long SetUpperbound(long up);
+			virtual long SetLowerbound(long down);
+			virtual long GetUpperbound();
+			virtual long GetLowerbound();
+			virtual long GetValue();
+			virtual long SetValue(long v);
 		protected:
-			int upperbound;
-			int lowerbound;
+			long upperbound;
+			long lowerbound;
+			long value;
 		};
-		class CommandArgumentFloat : public _ArgumentNumber {
+		class CommandArgumentFloat : public _CommandArgument {
 		public:
-			virtual CommandArgumentFloat* GetCommandClassType();
-			virtual float SetUpperbound(float up);
-			virtual float SetLowerbound(float down);
-			virtual float GetUpperbound(float up);
-			virtual float GetLowerbound(float down);
+			virtual double SetUpperbound(double up);
+			virtual double SetLowerbound(double down);
+			virtual double GetUpperbound();
+			virtual double GetLowerbound();
+			virtual double GetValue();
+			virtual double SetValue(double v);
 		protected:
-			float upperbound;
-			float lowerbound;
+			double upperbound;
+			double lowerbound;
+			double value;
+		};
+		class CommandArgumentBool : public _CommandArgument {
+		public:
+			virtual bool GetValue();
+			virtual bool SetValue(bool v);
+		protected:
+			bool value;
 		};
 		class CommandArgumentString : public _ArgumentString {
-		public:
-			virtual CommandArgumentString* GetCommandClassType();
+
 		};
 		class CommandArgumentQuotableString : public _ArgumentString {
-		public:
-			virtual CommandArgumentQuotableString* GetCommandClassType();
+
 		};
 		class CommandArgumentGreedyString : public _ArgumentString {
-		public:
-			virtual CommandArgumentGreedyString* GetCommandClassType();
+
 		};
 		class CommandBind : public _CommandBind {
-		public:
-			virtual CommandBind* GetCommandClassType();
+
 		};
 		class ConstantString : public _CommandConstantString {
 		public:
@@ -325,8 +300,6 @@ export{
 				uuid cmduuid = random_generator()();
 				this->cmduuid = cmduuid;
 			}
-
-			virtual ConstantString* GetCommandClassType();
 		};
 	}
 }

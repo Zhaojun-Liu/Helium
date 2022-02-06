@@ -37,7 +37,7 @@ export module Helium;
 
 #define HELIUM_MAJORVER 0
 #define HELIUM_MINORVER 6
-#define HELIUM_PATCHVER 9
+#define HELIUM_PATCHVER 10
 #define HELIUM_DEVSTAT prerelease::alpha
 
 export import Helium.CommandQueue;
@@ -52,6 +52,7 @@ export import Helium.Logger;
 export import Helium.MinecraftServer;
 export import Helium.Parser;
 export import Helium.Utils;
+export import Helium.UUIDManager;
 export import Helium.XMLUtils;
 
 import <string>;

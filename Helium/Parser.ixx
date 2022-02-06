@@ -24,19 +24,61 @@
 
 module;
 
-#include<regex>
-#include<vector>
-#include<string>
-#include<map>
-#include<algorithm>
-#include<thread>
-
 export module Helium.Parser;
+
+import <string>;
 
 using namespace std;
 
 export{
 	namespace Helium {
+		class _BasicHeliumParser {
+		public:
+			_BasicHeliumParser();
+			virtual ~_BasicHeliumParser();
 
+			virtual string StopCommand() = 0;
+			virtual string MessageCommand() = 0;
+			virtual string BroadcastCommand() = 0;
+			virtual string Parse(string rawoutput) = 0;
+		};
+
+		class VanillaParser : public _BasicHeliumParser {
+		public:
+			virtual string StopCommand();
+			virtual string MessageCommand();
+			virtual string BroadcastCommand();
+			virtual string Parse(string rawoutput);
+		};
+
+		class ForgeParser : public _BasicHeliumParser {
+		public:
+		};
+
+		class BukkitParser : public _BasicHeliumParser {
+		public:
+		};
+
+		class Bukkit14Parser : public _BasicHeliumParser {
+		public:
+		};
+
+		class BungeeCordParser : public _BasicHeliumParser {
+		public:
+		};
+
+		class WaterfallParser : public _BasicHeliumParser {
+		public:
+		};
+
+		class CatParser : public _BasicHeliumParser {
+		public:
+		};
+
+		class Beta18Parser : public _BasicHeliumParser {
+		public:
+		};
+
+		_BasicHeliumParser* GetParserByType(int type);
 	}
 }

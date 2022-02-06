@@ -34,6 +34,7 @@ module;
 
 export module Helium.MinecraftServer:Class;
 
+import Helium.Parser;
 import Helium.Logger;
 import <string>;
 
@@ -103,11 +104,12 @@ export {
 			string dir;
 			string startcommand;
 
-			int type;
-			int stat;
+			HeliumServerType type;
+			HeliumServerStat stat;
 
 			bool visi;
 			bool autostart;
+			bool parserinited;
 
 			HANDLE proc;
 			HANDLE thread;
@@ -119,6 +121,8 @@ export {
 			uuid serveruuid;
 
 			RCONInfo rcon;
+
+			_BasicHeliumParser* parser;
 		public:
 			HeliumMinecraftServer();
 			virtual ~HeliumMinecraftServer();
@@ -140,10 +144,10 @@ export {
 			bool EnableOutputVisibility();
 			bool DisableOutputVisibility();
 
-			int GetServerType();
-			int SetServerType(int type);
+			HeliumServerType GetServerType();
+			HeliumServerType SetServerType(HeliumServerType type);
 
-			int GetServerStat();
+			HeliumServerStat GetServerStat();
 
 			uuid GetServerUUID();
 
@@ -179,6 +183,7 @@ export {
 
 			void operator=(HeliumMinecraftServer server);			
 		};
+
 		HeliumLogger lg("HeliumServer");
 		int ProcessServerOutput(HeliumMinecraftServer* ptr, string servername, HANDLE stdread, HANDLE hproc);
 		int InitServerEnv();

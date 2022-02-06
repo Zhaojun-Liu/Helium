@@ -150,7 +150,7 @@ namespace Helium {
 			servernodechild = servernode->FirstChildElement("ServerType");
 			if (servernodechild)
 				if (servernodechild->GetText()) {
-					tempins.SetServerType(ServerTypeStrToID(servernodechild->GetText()));
+					tempins.SetServerType((HeliumServerType)ServerTypeStrToID(servernodechild->GetText()));
 				}
 
 			servernodechild = servernode->FirstChildElement("AutoStart");

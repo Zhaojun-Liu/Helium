@@ -24,108 +24,136 @@
 
 module;
 
-#include<deque>
-#include<map>
-#include<string>
-#include<vector>
-#include<guiddef.h>
+#include<boost/uuid/uuid.hpp>
+#include<list>
 
 export module Helium.Events;
 
-#define HELIUM_EVENT_EXTENSION_ON_LOAD_DEF_FUNC_NAME "OnExtensionLoad"
-#define HELIUM_EVENT_EXTENSION_ON_FULLY_LOADED_DEF_FUNC_NAME "OnExtensionFullyLoaded"
-#define HELIUM_EVENT_EXTENSION_ON_UNLOAD_DEF_FUNC_NAME "OnExtensionUnload"
-#define HELIUM_EVENT_SERVER_ON_OUTPUT_DEF_FUNC_NAME "OnServerOutput"
-#define HELIUM_EVENT_SERVER_ON_INFO_DEF_FUNC_NAME "OnServerInfo"
-#define HELIUM_EVENT_SERVER_ON_USER_INFO_DEF_FUNC_NAME "OnUserInfo"
-#define HELIUM_EVENT_SERVER_START_DEF_FUNC_NAME "OnServerStart"
-#define HELIUM_EVENT_SERVER_STARTUP_DEF_FUNC_NAME "OnServerStartup"
-#define HELIUM_EVENT_SERVER_STOP_DEF_FUNC_NAME "OnServerStop"
-#define HELIUM_EVENT_PLAYER_JOIN_DEF_FUNC_NAME "OnPlayerJoin"
-#define HELIUM_EVENT_PLAYER_LEFT_DEF_FUNC_NAME "OnPlayerLeft"
-#define HELIUM_EVENT_HELIUM_START_DEF_FUNC_NAME "OnHeliumStart"
-#define HELIUM_EVENT_HELIUM_FINISHED_INIT_DEF_FUNC_NAME "OnHeliumFinishedInit"
-#define HELIUM_EVENT_HELIUM_STOP_DEF_FUNC_NAME "OnHeliumStop"
-
-#define GET_EVENT_NUM(eventtype, eventname) (HELIUM_EVENT##_##eventtype##_##eventname)
-#define GET_EVENT_DEF_FUNC_NAME(eventtype, eventname) (HELIUM_EVENT##_##eventtype##_##eventname##_##_DEF_FUNC_NAME)
-
-#define EXPORTFUNC extern "C" _declspec(dllexport)
+import Helium.Extension;
 
 using namespace std;
+using namespace boost::uuids;
 
 export{
 	namespace Helium {
-		enum HeliumEventEnum {
-			HELIUM_EVENT_EXTENSION_ON_LOAD,
-			HELIUM_EVENT_EXTENSION_ON_FULLY_LOADED,
-			HELIUM_EVENT_EXTENSION_ON_UNLOAD,
-			HELIUM_EVENT_SERVER_ON_OUTPUT,
-			HELIUM_EVENT_SERVER_ON_INFO,
-			HELIUM_EVENT_SERVER_ON_USER_INFO,
-			HELIUM_EVENT_SERVER_START,
-			HELIUM_EVENT_SERVER_STARTUP,
-			HELIUM_EVENT_SERVER_STOP,
-			HELIUM_EVENT_PLAYER_JOIN,
-			HELIUM_EVENT_PLAYER_LEFT,
-			HELIUM_EVENT_HELIUM_START,
-			HELIUM_EVENT_HELIUM_FINISHED_INIT,
-			HELIUM_EVENT_HELIUM_STOP,
-			HELIUM_EVENT_USER_CUSTOM_START,
+		enum HeliumEvents {
+			UndefinedEvent,
+			ExtensionLoaded,
+			ExtensionUnloaded,
+			ServerOutput,
+			UserOutput,
+			ServerStart,
+			ServerInited,
+			ServerPause,
+			ServerResume,
+			ServerStop,
+			HeliumStart,
+			HeliumStop,
+			PlayerJoined,
+			PlayerLeft
 		};
 
-		typedef int(_stdcall* HeliumEventCallbackType)(int events);
-
-		class HeliumEvent;
-		class HeliumEventInstance;
-
-		extern deque<HeliumEventInstance*> eventsqueue;
-		extern map<int, HeliumEvent*> eventmap;
-
-		EXPORTFUNC int RegisterHeliumEvent(HeliumEvent* event, int eventnum);
-		EXPORTFUNC int DeleteHeliumEvent(int eventnum);
-		EXPORTFUNC int GetHeliumEvent(int eventnum, HeliumEvent* event);
-		EXPORTFUNC int GetHeliumEventIterator(int eventnum, map<int, HeliumEvent*>::iterator* outit);
-
-		EXPORTFUNC int CreateHeliumEvent(int eventnum, int quantity = 1);
-		EXPORTFUNC int BlockHeliumEvent(int eventnum);
-
-		typedef int (*RegisterHeliumEvent_FuncT)(HeliumEvent* event, int eventnum);
-		typedef int (*DeleteHeliumEvent_FuncT)(int eventnum);
-		typedef int (*GetHeliumEvent_FuncT)(int eventnum, HeliumEvent* event);
-		typedef int (*GetHeliumEventIterator_FuncT)(int eventnum, map<int, HeliumEvent*>::iterator* outit);
-
-		typedef int (*CreateHeliumEvent_FuncT)(int eventnum, int quantity);
-		typedef int (*BlockHeliumEvent_FuncT)(int eventnum);
-
-		class HeliumEvent {
+		class _BasicHeliumEvent {
 		public:
-			struct CallbackFunctionInfo {
-				GUID funcguid;
-				HeliumEventCallbackType funcptr;
-				bool funccallbackenable;
+			_BasicHeliumEvent();
+			virtual ~_BasicHeliumEvent();
+			virtual HeliumEvents GetEventType() = 0;
 
-				CallbackFunctionInfo();
-			};
-			HeliumEvent();
+			virtual bool IsGlobalBlockable();
+			virtual bool IsGlobalBlocked();
+			virtual bool EnableGlobalBlock();
+			virtual bool DisableGlobalBlock();
 
-			int RegisterListenerFunction(HeliumEventCallbackType funcptr);
-			CallbackFunctionInfo GetListenerFunction(LPGUID guid);
-			int DeleteListenerFunction(LPGUID guid);
-			void EnableCallback();
-			void DisableCallback();
-			void EnableFunctionCallback(LPGUID guid);
-			void DisableFunctionCallback(LPGUID guid);
+			virtual bool IsExtensionBlockable();
+			virtual list<uuid> GetBlockedExtensionList();
+			virtual bool IsExtensionBlocked(uuid extuuid);
+			virtual bool IsExtensionUnblocked(uuid extuuid);
+			virtual int BlockExtension(uuid extuuid);
+			virtual int UnblockExtension(uuid extuuid);
+
+			virtual bool IsServerBlockable();
+			virtual list<uuid> GetBlockedServerList();
+			virtual bool IsServerBlocked(uuid serveruuid);
+			virtual bool IsServerUnblocked(uuid serveruuid);
+			virtual int BlockServer(uuid serveruuid);
+			virtual int UnblockServer(uuid serveruuid);
 		protected:
-			string eventname;
-			string eventdesc;
-			bool callbackenable;
-
-			vector<CallbackFunctionInfo> listenerfuncs;
+			bool globalblock;
+			list<uuid> blockexts;
+			list<uuid> blockservers;
 		};
 
-		class HeliumEventInstance {
+		class UndefinedEvent : public _BasicHeliumEvent {
+		public:
+			virtual HeliumEvents GetEventType() { return HeliumEvents::UndefinedEvent; }
+		};
 
+		class _ExtensionEvent : public _BasicHeliumEvent {
+		public:
+			virtual HeliumEvents GetEventType() = 0;
+		};
+		class _ServerEvent : public _BasicHeliumEvent {
+		public:
+			virtual HeliumEvents GetEventType() = 0;
+		};
+		class _HeliumEvent : public _BasicHeliumEvent {
+		public:
+			virtual HeliumEvents GetEventType() = 0;
+		};
+
+		class ExtensionLoaded : public _ExtensionEvent {
+		public:
+			virtual HeliumEvents GetEventType() { return HeliumEvents::ExtensionLoaded; }
+		};
+		class ExtensionUnloaded : public _ExtensionEvent {
+		public:
+			virtual HeliumEvents GetEventType() { return HeliumEvents::ExtensionUnloaded; }
+		};
+
+		class ServerOutput : public _ServerEvent {
+		public:
+			virtual HeliumEvents GetEventType() { return HeliumEvents::ServerOutput; }
+		};
+		class UserOutput : public _ServerEvent {
+		public:
+			virtual HeliumEvents GetEventType() { return HeliumEvents::UserOutput; }
+		};
+		class ServerStart : public _ServerEvent {
+		public:
+			virtual HeliumEvents GetEventType() { return HeliumEvents::ServerStart; }
+		};
+		class ServerInited : public _ServerEvent {
+		public:
+			virtual HeliumEvents GetEventType() { return HeliumEvents::ServerInited; }
+		};
+		class ServerPause : public _ServerEvent {
+		public:
+			virtual HeliumEvents GetEventType() { return HeliumEvents::ServerPause; }
+		};
+		class ServerResume : public _ServerEvent {
+		public:
+			virtual HeliumEvents GetEventType() { return HeliumEvents::ServerResume; }
+		};
+		class ServerStop : public _ServerEvent {
+		public:
+			virtual HeliumEvents GetEventType() { return HeliumEvents::ServerStop; }
+		};
+		class PlayerJoined : public _ServerEvent {
+		public:
+			virtual HeliumEvents GetEventType() { return HeliumEvents::PlayerJoined; }
+		};
+		class PlayerLeft : public _ServerEvent {
+		public:
+			virtual HeliumEvents GetEventType() { return HeliumEvents::PlayerLeft; }
+		};
+
+		class HeliumStart : public _HeliumEvent {
+		public:
+			virtual HeliumEvents GetEventType() { return HeliumEvents::HeliumStart; }
+		};
+		class HeliumStop : public _HeliumEvent {
+		public:
+			virtual HeliumEvents GetEventType() { return HeliumEvents::HeliumStop; }
 		};
 	}
 }

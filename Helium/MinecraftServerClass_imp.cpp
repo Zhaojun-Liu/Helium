@@ -132,16 +132,19 @@ namespace Helium {
 		return t;
 	}
 
-	int HeliumMinecraftServer::GetServerType() {
+	HeliumServerType HeliumMinecraftServer::GetServerType() {
 		return this->type;
 	}
-	int HeliumMinecraftServer::SetServerType(int type) {
-		int t = this->type;
+	HeliumServerType HeliumMinecraftServer::SetServerType(HeliumServerType type) {
+		auto t = this->type;
 		this->type = type;
+
+		if (this->parserinited) delete[] this->parser;
+		this->parser = GetParserByType(this->type);
 		return t;
 	}
 
-	int HeliumMinecraftServer::GetServerStat() {
+	HeliumServerStat HeliumMinecraftServer::GetServerStat() {
 		return this->stat;
 	}
 
@@ -313,10 +316,14 @@ namespace Helium {
 	}
 	int HeliumMinecraftServer::StopServer() {
 		int ret = 0;
+
+		this->stat = HeliumServerStat::TERMINATED;
 		return ret;
 	}
 	int HeliumMinecraftServer::PauseServer() {
 		int ret = 0;
+
+		this->stat = HeliumServerStat::PAUSED;
 		return ret;
 	}
 	int HeliumMinecraftServer::ResumeServer() {
@@ -338,6 +345,8 @@ namespace Helium {
 			return GetLastError();
 		}
 
+		this->stat = HeliumServerStat::RUNNING;
+
 		return ret;
 	}
 
@@ -349,7 +358,8 @@ namespace Helium {
 		this->stat = HeliumServerStat::TERMINATED;
 	}
 	HeliumMinecraftServer::~HeliumMinecraftServer() {
-
+		if (this->stat != HeliumServerStat::TERMINATED) this->StopServer();
+		if (this->parserinited) delete[] this->parser;
 	}
 
 	int ProcessServerOutput(HeliumMinecraftServer* ptr, string servername, HANDLE stdread, HANDLE hproc) {

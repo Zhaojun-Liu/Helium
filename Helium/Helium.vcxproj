@@ -118,7 +118,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_SILENCE_CXX17_STRSTREAM_DEPRECATION_WARNING;_HAS_DEPRECATED_RESULT_OF;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;_HAS_STD_BYTE=0;REPLXX_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -199,8 +199,8 @@
     <ClCompile Include="tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="Utils_imp.cpp" />
     <ClCompile Include="Utils.ixx" />
-    <ClCompile Include="Watchdog_imp.cpp" />
-    <ClCompile Include="Watchdog.ixx" />
+    <ClCompile Include="UUIDManager_imp.cpp" />
+    <ClCompile Include="UUIDManager.ixx" />
     <ClCompile Include="XMLUtils_imp.cpp" />
     <ClCompile Include="MinecraftServerClass_imp.cpp" />
     <ClCompile Include="Extension_imp.cpp" />

@@ -134,7 +134,54 @@ namespace Helium {
 	}
 	Replxx::completions_t CompletionCallBack(string const& context, int& len) {
 		Replxx::completions_t c;
-		cout << "\tCompletion : " << context << "(" << len << ")" << endl;
+		vector<string> splited;
+		istringstream iss(context);
+		string word, beforeword = context.substr(0, context.length() - len);
+		tree<_BasicHeliumCommand*>::fixed_depth_iterator pit = HeliumCommandTree.begin();
+		tree<_BasicHeliumCommand*>::fixed_depth_iterator tit;
+		while (iss >> word) {
+			splited.push_back(word);
+		}
+
+		if (splited.empty()) return c;
+		if (beforeword.length() > 0 && len <= 0)
+			if (beforeword[beforeword.length() - 1] == ' ') return c;
+		
+		for (auto it = splited.begin(); it < splited.end(); it++) {
+			string currword = *it;
+			if (it + 1 == splited.end()) {
+				for (tit = HeliumCommandTree.begin_fixed(pit, 1);
+					HeliumCommandTree.is_valid(tit) && (*(HeliumCommandTree.parent(tit)))->CommandUUID() == (*pit)->CommandUUID();
+					tit++) {
+					if (typeid((**tit)) != typeid(ConstantString)) continue;
+					string command = static_cast<ConstantString*>(*tit)->GetCommandString();
+					if (IsStringEqual(command, currword)) {
+						c.emplace_back(command.c_str(), Replxx::Color::YELLOW);
+					}
+				}
+			}
+			else {
+				bool find = false;
+				for (tit = HeliumCommandTree.begin_fixed(pit, 1);
+					HeliumCommandTree.is_valid(tit) && (*(HeliumCommandTree.parent(tit)))->CommandUUID() == (*pit)->CommandUUID();
+					tit++) {
+					if (typeid((**tit)) != typeid(ConstantString)) continue;
+					string command = static_cast<ConstantString*>(*tit)->GetCommandString();
+					string atlas = static_cast<ConstantString*>(*tit)->GetCommandAtlas();
+					if (*it == command) {
+						pit = tit;
+						find = true;
+						break;
+					}
+					if (*it == atlas) {
+						pit = tit;
+						find = true;
+						break;
+					}
+				}
+				if (!find) return c;
+			}
+		}
 		return c;
 	}
 	int InitBuiltinCommandTree() {
