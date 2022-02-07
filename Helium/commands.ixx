@@ -134,7 +134,26 @@ export{
 		protected:
 			bool optional;
 			bool preprocenable;
+			
+			string argudesc;
 		public:
+			_CommandArgument() {
+				this->argudesc = "DefaultArgumentDescription";
+				this->optional = false;
+				this->preprocenable = false;
+				uuid cmduuid = random_generator()();
+				this->cmduuid = cmduuid;
+			}
+			_CommandArgument(string desc
+				, bool op = false
+				, bool preproc = true) {
+				this->argudesc = desc;
+				this->optional = op;
+				this->preprocenable = preproc;
+				uuid cmduuid = random_generator()();
+				this->cmduuid = cmduuid;
+			}
+
 			virtual bool IsOptional();
 			virtual bool EnableOptional();
 			virtual bool DisableOptional();
@@ -142,6 +161,9 @@ export{
 			virtual bool IsPreproc();
 			virtual bool EnablePreproc();
 			virtual bool DisablePreproc();
+
+			virtual string GetArgumentDesc();
+			virtual string SetArgumentDesc(string desc);
 		};
 		class _CommandConstantString : public _BasicHeliumCommand {
 		public:
@@ -165,38 +187,66 @@ export{
 			virtual bool EnableCompletion();
 			virtual bool DisableCompletion();
 
+			virtual HeliumPermissionLevel GetCommandPermission();
+			virtual HeliumPermissionLevel SetCommandPermission(HeliumPermissionLevel perm);
+
 			virtual string GetCommandString();
 			virtual string SetCommandString(string cmd);
 
 			virtual string GetCommandDesc();
 			virtual string SetCommandDesc(string hint);
 
-			virtual string GetCommandAtlas();
-			virtual string SetCommandAtlas(string atlas);
+			virtual string GetCommandAlias();
+			virtual string SetCommandAlias(string alias);
 
 			virtual bool IsValid();
 
 			_CommandConstantString() {
 				this->commanddesc = "Default Command Description";
 				this->commandstr = "DefaultCMD";
-				this->atlas = "DCMD";
+				this->alias = "DCMD";
 				this->callback = false;
 				this->list = true;
 				this->exec = false;
 				this->hint = true;
 				this->autocomp = true;
+				this->level = HeliumPermissionLevel::HELIUMOWNER;
 				uuid cmduuid = random_generator()();
 				this->cmduuid = cmduuid;
 			}
-			_CommandConstantString(string desc, string str, string atlas = "", bool callback = true, bool list = true, bool exec = true, bool hint = true, bool autocomp = true) {
+			_CommandConstantString(string desc
+				, string str
+				, string alias
+				, HeliumPermissionLevel perm
+				, bool callback = true
+				, bool list = true
+				, bool exec = true
+				, bool hint = true
+				, bool autocomp = true) {
 				this->commanddesc = desc;
 				this->commandstr = str;
-				this->atlas = atlas;
+				this->alias = alias;
 				this->callback = callback;
 				this->list = list;
 				this->exec = exec;
 				this->hint = hint;
 				this->autocomp = autocomp;
+				this->level = perm;
+				uuid cmduuid = random_generator()();
+				this->cmduuid = cmduuid;
+			}
+			_CommandConstantString(string desc
+				, string str
+				, string alias = "") {
+				this->commanddesc = desc;
+				this->commandstr = str;
+				this->alias = alias;
+				this->callback = false;
+				this->list = true;
+				this->exec = true;
+				this->hint = true;
+				this->autocomp = true;
+				this->level = HPL::HELIUMOWNER;
 				uuid cmduuid = random_generator()();
 				this->cmduuid = cmduuid;
 			}
@@ -209,7 +259,7 @@ export{
 
 			string commanddesc;
 			string commandstr;
-			string atlas;
+			string alias;
 
 			HeliumPermissionLevel level;
 		};
@@ -220,57 +270,160 @@ export{
 		};
 		class _ArgumentString : public _CommandArgument {
 		public:
+			_ArgumentString() {
+				this->argudesc = "DefaultArgumentDescription";
+				this->optional = false;
+				this->preprocenable = false;
+				this->lengthlim = 0;
+				uuid cmduuid = random_generator()();
+				this->cmduuid = cmduuid;
+			}
+			_ArgumentString(string desc
+				, unsigned long lengthlim = 0
+				, bool op = false
+				, bool preproc = true) {
+				this->argudesc = desc;
+				this->optional = op;
+				this->preprocenable = preproc;
+				this->lengthlim = lengthlim;
+				uuid cmduuid = random_generator()();
+				this->cmduuid = cmduuid;
+			}
+
 			virtual unsigned long GetLengthLimit();
 			virtual unsigned long SetLengthLimit(unsigned long lim);
-			virtual string GetValue();
-			virtual string SetValue(string v);
 		protected:
 			unsigned long lengthlim;
-			string value;
 		};
 #pragma endregion
 
 		class CommandArgumentInt : public _CommandArgument {
 		public:
+			CommandArgumentInt() {
+				this->argudesc = "DefaultArgumentDescription";
+				this->optional = false;
+				this->preprocenable = false;
+				this->upperbound = 0;
+				this->lowerbound = 0;
+				uuid cmduuid = random_generator()();
+				this->cmduuid = cmduuid;
+			}
+			CommandArgumentInt(string desc
+				, bool op = false
+				, bool preproc = true
+				, long upperbound = 0
+				, long lowerbound = 0) {
+				this->argudesc = desc;
+				this->optional = op;
+				this->preprocenable = preproc;
+				this->upperbound = upperbound;
+				this->lowerbound = lowerbound;
+				uuid cmduuid = random_generator()();
+				this->cmduuid = cmduuid;
+			}
+
 			virtual long SetUpperbound(long up);
 			virtual long SetLowerbound(long down);
 			virtual long GetUpperbound();
 			virtual long GetLowerbound();
-			virtual long GetValue();
-			virtual long SetValue(long v);
 		protected:
 			long upperbound;
 			long lowerbound;
-			long value;
 		};
 		class CommandArgumentFloat : public _CommandArgument {
 		public:
+			CommandArgumentFloat() {
+				this->argudesc = "DefaultArgumentDescription";
+				this->optional = false;
+				this->preprocenable = false;
+				this->upperbound = 0;
+				this->lowerbound = 0;
+				uuid cmduuid = random_generator()();
+				this->cmduuid = cmduuid;
+			}
+			CommandArgumentFloat(string desc
+				, bool op = false
+				, bool preproc = true
+				, double upperbound = 0
+				, double lowerbound = 0) {
+				this->argudesc = desc;
+				this->optional = op;
+				this->preprocenable = preproc;
+				this->upperbound = upperbound;
+				this->lowerbound = lowerbound;
+				uuid cmduuid = random_generator()();
+				this->cmduuid = cmduuid;
+			}
+
 			virtual double SetUpperbound(double up);
 			virtual double SetLowerbound(double down);
 			virtual double GetUpperbound();
 			virtual double GetLowerbound();
-			virtual double GetValue();
-			virtual double SetValue(double v);
 		protected:
 			double upperbound;
 			double lowerbound;
-			double value;
 		};
 		class CommandArgumentBool : public _CommandArgument {
-		public:
-			virtual bool GetValue();
-			virtual bool SetValue(bool v);
-		protected:
-			bool value;
+			CommandArgumentBool() {
+				this->argudesc = "DefaultArgumentDescription";
+				this->optional = false;
+				this->preprocenable = false;
+				uuid cmduuid = random_generator()();
+				this->cmduuid = cmduuid;
+			}
+			CommandArgumentBool(string desc
+				, bool op = false
+				, bool preproc = true) {
+				this->argudesc = desc;
+				this->optional = op;
+				this->preprocenable = preproc;
+				uuid cmduuid = random_generator()();
+				this->cmduuid = cmduuid;
+			}
 		};
 		class CommandArgumentString : public _ArgumentString {
-
+		public:
+			CommandArgumentString() {
+				this->argudesc = "DefaultArgumentDescription";
+				this->optional = false;
+				this->preprocenable = false;
+				this->lengthlim = 0;
+				uuid cmduuid = random_generator()();
+				this->cmduuid = cmduuid;
+			}
+			CommandArgumentString(string desc
+				, unsigned long lengthlim = 0
+				, bool op = false
+				, bool preproc = true) {
+				this->argudesc = desc;
+				this->optional = op;
+				this->preprocenable = preproc;
+				this->lengthlim = lengthlim;
+				uuid cmduuid = random_generator()();
+				this->cmduuid = cmduuid;
+			}
 		};
 		class CommandArgumentQuotableString : public _ArgumentString {
-
-		};
-		class CommandArgumentGreedyString : public _ArgumentString {
-
+		public:
+			CommandArgumentQuotableString() {
+				this->argudesc = "DefaultArgumentDescription";
+				this->optional = false;
+				this->preprocenable = false;
+				this->lengthlim = 0;
+				uuid cmduuid = random_generator()();
+				this->cmduuid = cmduuid;
+			}
+			CommandArgumentQuotableString(string desc
+				, unsigned long lengthlim = 0
+				, bool op = false
+				, bool preproc = true) {
+				this->argudesc = desc;
+				this->optional = op;
+				this->preprocenable = preproc;
+				this->lengthlim = lengthlim;
+				uuid cmduuid = random_generator()();
+				this->cmduuid = cmduuid;
+			}
 		};
 		class CommandBind : public _CommandBind {
 
@@ -285,18 +438,43 @@ export{
 				this->exec = false;
 				this->hint = true;
 				this->autocomp = true;
+				this->level = HeliumPermissionLevel::HELIUMOWNER;
 				uuid cmduuid = random_generator()();
 				this->cmduuid = cmduuid;
 			}
-			ConstantString(string desc, string str, string atlas = "", bool callback = true, bool list = true, bool exec = true, bool hint = true, bool autocomp = true) {
+			ConstantString(string desc
+				, string str
+				, string alias
+				, HeliumPermissionLevel perm
+				, bool callback = true
+				, bool list = true
+				, bool exec = true
+				, bool hint = true
+				, bool autocomp = true) {
 				this->commanddesc = desc;
 				this->commandstr = str;
-				this->atlas = atlas;
+				this->alias = alias;
 				this->callback = callback;
 				this->list = list;
 				this->exec = exec;
 				this->hint = hint;
 				this->autocomp = autocomp;
+				this->level = perm;
+				uuid cmduuid = random_generator()();
+				this->cmduuid = cmduuid;
+			}
+			ConstantString(string desc
+				, string str
+				, string alias = "") {
+				this->commanddesc = desc;
+				this->commandstr = str;
+				this->alias = alias;
+				this->callback = false;
+				this->list = true;
+				this->exec = true;
+				this->hint = true;
+				this->autocomp = true;
+				this->level = HPL::HELIUMOWNER;
 				uuid cmduuid = random_generator()();
 				this->cmduuid = cmduuid;
 			}

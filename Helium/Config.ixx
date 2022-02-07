@@ -57,6 +57,8 @@ export{
 			HELIUMOWNER
 		};
 
+		typedef HeliumPermissionLevel HPL;
+
 		struct HeliumSetting {
 			int Language;
 			string Encoding;

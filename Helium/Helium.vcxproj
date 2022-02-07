@@ -162,6 +162,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CommandCallback.ixx" />
     <ClCompile Include="CommandQueue_imp.cpp" />
     <ClCompile Include="CommandQueue.ixx" />
     <ClCompile Include="Commands.ixx" />
@@ -208,6 +209,7 @@
     <ClCompile Include="Extension_imp.cpp" />
     <ClCompile Include="Commands_imp.cpp" />
     <ClCompile Include="XMLUtils.ixx" />
+    <ClCompile Include="CommandCallback_imp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="replxx\conversion.hxx" />

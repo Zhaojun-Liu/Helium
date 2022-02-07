@@ -60,8 +60,8 @@ namespace Helium {
 			if (typeid((**it)) == typeid(ConstantString)) {
 				for (int i = 0; i < tr.depth(it) - rootdepth; ++i)
 					cout << "  ";
-				if (!(static_cast<ConstantString*>(*it)->GetCommandAtlas().empty()))
-					cout << static_cast<ConstantString*>(*it)->GetCommandString() << "/" << static_cast<ConstantString*>(*it)->GetCommandAtlas() << endl;
+				if (!(static_cast<ConstantString*>(*it)->GetCommandAlias().empty()))
+					cout << static_cast<ConstantString*>(*it)->GetCommandString() << "/" << static_cast<ConstantString*>(*it)->GetCommandAlias() << endl;
 				else
 					cout << static_cast<ConstantString*>(*it)->GetCommandString() << endl;
 			}
@@ -114,13 +114,13 @@ namespace Helium {
 					tit++) {
 					if (typeid((**tit)) != typeid(ConstantString)) continue;
 					string command = static_cast<ConstantString*>(*tit)->GetCommandString();
-					string atlas = static_cast<ConstantString*>(*tit)->GetCommandAtlas();
+					string Alias = static_cast<ConstantString*>(*tit)->GetCommandAlias();
 					if(*it == command){
 						pit = tit;
 						find = true;
 						break;
 					}
-					if (*it == atlas) {
+					if (*it == Alias) {
 						pit = tit;
 						find = true;
 						break;
@@ -149,6 +149,11 @@ namespace Helium {
 				tit++) {
 				if (typeid((**tit)) != typeid(ConstantString)) continue;
 				string command = static_cast<ConstantString*>(*tit)->GetCommandString();
+				string alias;
+				if (!static_cast<ConstantString*>(*tit)->GetCommandAlias().empty()) {
+					alias = static_cast<ConstantString*>(*tit)->GetCommandAlias();
+					c.emplace_back(alias.c_str(), Replxx::Color::YELLOW);
+				}
 				c.emplace_back(command.c_str(), Replxx::Color::YELLOW);
 				return c;
 			}
@@ -163,16 +168,19 @@ namespace Helium {
 						tit++) {
 						if (typeid((**tit)) != typeid(ConstantString)) continue;
 						string command = static_cast<ConstantString*>(*tit)->GetCommandString();
-						string atlas = static_cast<ConstantString*>(*tit)->GetCommandAtlas();
 						if (*it == command) {
 							pit = tit;
 							find = true;
 							break;
 						}
-						if (*it == atlas) {
-							pit = tit;
-							find = true;
-							break;
+						string alias;
+						if (!static_cast<ConstantString*>(*tit)->GetCommandAlias().empty()) {
+							alias = static_cast<ConstantString*>(*tit)->GetCommandAlias();
+							if (*it == alias) {
+								pit = tit;
+								find = true;
+								break;
+							}
 						}
 					}
 					if (!find) return c;
@@ -182,7 +190,9 @@ namespace Helium {
 					tit++) {
 					if (typeid((**tit)) != typeid(ConstantString)) continue;
 					string command = static_cast<ConstantString*>(*tit)->GetCommandString();
+					string alias = static_cast<ConstantString*>(*tit)->GetCommandAlias();
 					c.emplace_back(command.c_str(), Replxx::Color::YELLOW);
+					c.emplace_back(alias.c_str(), Replxx::Color::YELLOW);
 					return c;
 				}
 			}
@@ -199,6 +209,13 @@ namespace Helium {
 					if (IsStringEqual(command, currword)) {
 						c.emplace_back(command.c_str(), Replxx::Color::YELLOW);
 					}
+					string alias;
+					if (!static_cast<ConstantString*>(*tit)->GetCommandAlias().empty()) {
+						alias = static_cast<ConstantString*>(*tit)->GetCommandAlias();
+						if (IsStringEqual(alias, currword)) {
+							c.emplace_back(alias.c_str(), Replxx::Color::YELLOW);
+						}
+					}
 				}
 			} else {
 				bool find = false;
@@ -207,16 +224,19 @@ namespace Helium {
 					tit++) {
 					if (typeid((**tit)) != typeid(ConstantString)) continue;
 					string command = static_cast<ConstantString*>(*tit)->GetCommandString();
-					string atlas = static_cast<ConstantString*>(*tit)->GetCommandAtlas();
 					if (*it == command) {
 						pit = tit;
 						find = true;
 						break;
 					}
-					if (*it == atlas) {
-						pit = tit;
-						find = true;
-						break;
+					string alias;
+					if (!static_cast<ConstantString*>(*tit)->GetCommandAlias().empty()) {
+						alias = static_cast<ConstantString*>(*tit)->GetCommandAlias();
+						if (*it == alias) {
+							pit = tit;
+							find = true;
+							break;
+						}
 					}
 				}
 				if (!find) return c;
@@ -228,42 +248,321 @@ namespace Helium {
 		_BasicHeliumCommand* treeroot = new _BasicHeliumCommand();
 		HeliumCommandTree.set_head(treeroot);
 
-		ConstantString* root = new ConstantString("Helium Built-in Command \"#Helium\" command root.", "#Helium", "#Hel", false);
-		ConstantString* help = new ConstantString("Helium Built-in Command \"#Help\" command root.", "#Help", "");
-		auto rit = AddCommand(root);
-		auto hit = AddCommand(help);
+		const auto howner = HPL::HELIUMOWNER;
+		const auto sowner = HPL::SERVEROWNER;
+		const auto admin = HPL::ADMIN;
+		const auto user = HPL::USER;
+		const auto guest = HPL::GUEST;
 
-		ConstantString* show = new ConstantString("Helium Built-in Command : \"show\" command.", "show", "sh");
-		ConstantString* conditions = new ConstantString("Helium Built-in Command : \"conditions\" command.", "conditions", "c");
-		ConstantString* warranty = new ConstantString("Helium Built-in Command : \"warranty\" command", "warranty", "w");
+		auto root = new ConstantString("Helium Built-in Command \"#helium\"", "#helium", "#hel");
+		auto help = new ConstantString("Helium Built-in Command \"#help\"", "#help", "", guest);
 
-		auto showit = AddCommand(show, rit);
-		AddCommand(conditions, showit);
-		AddCommand(warranty, showit);
+		auto command = new ConstantString("Helium Built-in Command \"command\"", "command", "cmd");
+		auto events = new ConstantString("Helium Built-in Command \"event\"", "event", "ent");
+		auto extension = new ConstantString("Helium Built-in Command \"extension\"", "extension", "ext");
+		auto exit = new ConstantString("Helium Built-in Command \"exit\"", "exit", "");
+		auto permission = new ConstantString("Helium Built-in Command\"\"", "permission", "perm");
+		auto reload = new ConstantString("Helium Built-in Command \"reload\"", "reload", "rld");
+		auto server = new ConstantString("Helium Built-in Command \"server\"", "server", "svr");
+		auto show = new ConstantString("Helium Built-in Command \"show\"", "show", "");
+		auto status = new ConstantString("Helium Built-in Command \"status\"", "status", "stat", guest);
+		auto update = new ConstantString("Helium Built-in Command \"update\"", "update", "upd", admin);
+		auto version = new ConstantString("Helium Built-in Command \"version\"", "version", "ver", guest);
+		auto document = new ConstantString("Helium Built-in Command \"documentation\"", "documentation", "doc", guest);
+		auto manual = new ConstantString("Helium Built-in Command \"manual\"", "manual", "man", guest);
 
-		ConstantString* command = new ConstantString("Helium Built-in Command : \"command\" command", "command", "cmd");
-		ConstantString* cmdlist = new ConstantString("Helium Built-in Command : \"list\" command", "list", "lst");
+		auto rootit = AddCommand(root);
+		auto helpit = AddCommand(help);
 
-		auto cmdit = AddCommand(command, rit);
-		AddCommand(cmdlist, cmdit);
+		auto cmdit = AddCommand(command, rootit);
+		auto entit = AddCommand(events, rootit);
+		auto extit = AddCommand(extension, rootit);
+		auto permit = AddCommand(permission, rootit);
+		auto rldit = AddCommand(reload, rootit);
+		auto svrit = AddCommand(server, rootit);
+		auto showit = AddCommand(show, rootit);
+		auto manit = AddCommand(manual, helpit);
+		AddCommand(exit, rootit);
+		AddCommand(status, rootit);
+		AddCommand(update, rootit);
+		AddCommand(version, rootit);
+		AddCommand(document, helpit);
 
-		ConstantString* server = new ConstantString("Helium Built-in Command : \"server\" command", "server", "svr");
+		if (cmdit != HeliumCommandTree.end()) {
+			auto attr = new ConstantString("Helium Built-in Command \"\"", "", "");
+			auto bind = new ConstantString("Helium Built-in Command \"\"", "", "");
+			auto detail = new ConstantString("Helium Built-in Command \"\"", "", "");
+			auto list = new ConstantString("Helium Built-in Command \"\"", "", "", user, true);
 
-		auto serverit = AddCommand(server, rit);
+			auto attrit = AddCommand(attr, cmdit);
+			auto bindit = AddCommand(bind, cmdit);
+			auto detlit = AddCommand(detail, cmdit);
+			auto listit = AddCommand(list, cmdit);
+			if (attrit != HeliumCommandTree.end()) {
+				auto alias = new ConstantString("Helium Built-in Command \"\"", "", "", sowner, true);
+				auto autocomp = new ConstantString("Helium Built-in Command \"\"", "", "", sowner, true);
+				auto callback = new ConstantString("Helium Built-in Command \"\"", "", "", sowner, true);
+				auto cmd = new ConstantString("Helium Built-in Command \"\"", "", "", sowner, true);
+				auto desc = new ConstantString("Helium Built-in Command \"\"", "", "", sowner, true);
+				auto exec = new ConstantString("Helium Built-in Command \"\"", "", "", sowner, true);
+				auto hint = new ConstantString("Helium Built-in Command \"\"", "", "", sowner, true);
+				auto list = new ConstantString("Helium Built-in Command \"\"", "", "", sowner, true);
+				auto perm = new ConstantString("Helium Built-in Command \"\"", "", "", sowner, true);
 
-		ConstantString* ext = new ConstantString("Helium Built-in Command : \"extension\" command", "extension", "ext");
+				auto aliasit = AddCommand(alias, attrit);
+				auto autocompit = AddCommand(autocomp, attrit);
+				auto callbackit = AddCommand(callback, attrit);
+				auto commandit = AddCommand(cmd, attrit);
+				auto descit = AddCommand(desc, attrit);
+				auto execit = AddCommand(exec, attrit);
+				auto hintit = AddCommand(hint, attrit);
+				auto listit = AddCommand(list, attrit);
+				auto permit = AddCommand(perm, attrit);
+				if (aliasit != HeliumCommandTree.end()) {
+					auto aliasstr = new CommandArgumentQuotableString("new_alias");
+					auto cmdstr = new CommandArgumentQuotableString("command");
 
-		auto extit = AddCommand(ext, rit);
+					auto strit = AddCommand(aliasstr, aliasit);
+					AddCommand(cmdstr, strit);
+				}
+				if (autocompit != HeliumCommandTree.end()) {
+					auto boolarg = new CommandArgumentBool("new");
+					auto cmdstr = new CommandArgumentQuotableString("command");
 
-		ConstantString* ent = new ConstantString("Helium Built-in Command : \"event\" command", "event", "ent");
-		ConstantString* ent_create = new ConstantString("Helium Built-in Command : \"create\" command", "create", "crt");
-		ConstantString* ent_trace = new ConstantString("Helium Built-in Command : \"trace\" command", "trace", "trc");
-		ConstantString* ent_block = new ConstantString("Helium Built-in Command : \"block\" command", "block", "blk");
+					auto boolit = AddCommand(boolarg, autocompit);
+					AddCommand(cmdstr, boolit);
+				}
+				if (callbackit != HeliumCommandTree.end()) {
+					auto boolarg = new CommandArgumentBool("new");
+					auto cmdstr = new CommandArgumentQuotableString("command");
 
-		auto entit = AddCommand(ent, rit);
-		AddCommand(ent_create, entit);
-		AddCommand(ent_trace, entit);
-		AddCommand(ent_block, entit);
+					auto boolit = AddCommand(boolarg, callbackit);
+					AddCommand(cmdstr, boolit);
+				}
+				if (commandit != HeliumCommandTree.end()) {
+					auto newcmdstr = new CommandArgumentQuotableString("new_command");
+					auto cmdstr = new CommandArgumentQuotableString("command");
+
+					auto strit = AddCommand(newcmdstr, commandit);
+					AddCommand(cmdstr, strit);
+				}
+				if (descit != HeliumCommandTree.end()) {
+					auto descstr = new CommandArgumentQuotableString("new_description");
+					auto cmdstr = new CommandArgumentQuotableString("command");
+
+					auto strit = AddCommand(descstr, descit);
+					AddCommand(cmdstr, strit);
+				}
+				if (execit != HeliumCommandTree.end()) {
+					auto boolarg = new CommandArgumentBool("new");
+					auto cmdstr = new CommandArgumentQuotableString("command");
+
+					auto boolit = AddCommand(boolarg, execit);
+					AddCommand(cmdstr, boolit);
+				}
+				if (hintit != HeliumCommandTree.end()) {
+					auto boolarg = new CommandArgumentBool("new");
+					auto cmdstr = new CommandArgumentQuotableString("command");
+
+					auto boolit = AddCommand(boolarg, hintit);
+					AddCommand(cmdstr, boolit);
+				}
+				if (listit != HeliumCommandTree.end()) {
+					auto boolarg = new CommandArgumentBool("new");
+					auto cmdstr = new CommandArgumentQuotableString("command");
+
+					auto boolit = AddCommand(boolarg, listit);
+					AddCommand(cmdstr, boolit);
+				}
+				if (permit != HeliumCommandTree.end()) {
+					auto intarg = new ArgumentInt("new_permission", false, true, 5, 1);
+					auto cmdstr = new CommandArgumentQuotableString("command");
+
+					auto intit = AddCommand(intarg, permit);
+					AddCommand(cmdstr, intit);
+				}
+			}
+			if (bindit != HeliumCommandTree.end()) {
+				auto create = new ConstantString("Helium Built-in Command \"\"", "", "", sowner, true);
+				auto detail = new ConstantString("Helium Built-in Command \"\"", "", "", sowner, true);
+				auto dlt = new ConstantString("Helium Built-in Command \"\"", "", "", sowner, true);
+				auto list = new ConstantString("Helium Built-in Command \"\"", "", "", user, true);
+
+				auto createit = AddCommand(create, bindit);
+				auto detailit = AddCommand(detail, bindit);
+				auto deleteit = AddCommand(dlt, bindit);
+				auto listit = AddCommand(list, bindit);
+
+				if (createit != HeliumCommandTree.end()) {
+					auto bindedcmd = new CommandArgumentQuotableString("binded_command");
+					auto commandtobind = new CommandArgumentQuotableString("command_to_bind");
+
+					auto bindedcmdit = AddCommand(bindedcmd, createit);
+					AddCommand(commandtobind, bindedcmdit);
+				}
+				if (detailit != HeliumCommandTree.end()) {
+					auto bindedcmd = new CommandArgumentQuotableString("binded_command");
+
+					bindedcmdit = AddCommand(bindedcmd, createit);
+				}
+				if (deleteit != HeliumCommandTree.end()) {
+					auto bindedcmd = new CommandArgumentQuotableString("binded_command");
+
+					bindedcmdit = AddCommand(bindedcmd, createit);
+				}
+			}
+			if (detlit != HeliumCommandTree.end()) {
+				auto cmdstr = new CommandArgumentQuotableString("command");
+
+				AddCommand(cmdstr, detlit);
+			}
+			if (listit != HeliumCommandTree.end()) {
+				auto cmdstr = new CommandArgumentQuotableString("command_subtree_parent", 0, true);
+
+				AddCommand(cmdstr, listit);
+			}
+		}
+
+		if (entit != HeliumCommandTree.end()) {
+			auto block = new ConstantString("Helium Built-in Command \"\"", "", "");
+			auto create = new ConstantString("Helium Built-in Command \"\"", "", "");
+			auto detail = new ConstantString("Helium Built-in Command \"\"", "", "");
+			auto list = new ConstantString("Helium Built-in Command \"\"", "", "");
+			auto trace = new ConstantString("Helium Built-in Command \"\"", "", "");
+
+			auto blkit = AddCommand(block, entit);
+			auto crtit = AddCommand(create, entit);
+			auto detailit = AddCommand(detail, entit);
+			auto trcit = AddCommand(trace, entit);
+			AddCommand(list, entit);
+
+			if (blkit != HeliumCommandTree.end()) {
+				auto blockext = new ConstantString("Helium Built-in Command \"\"", "", "");
+				auto blockglobal = new ConstantString("Helium Built-in Command \"\"", "", "");
+				auto blockserver = new ConstantString("Helium Built-in Command \"\"", "", "");
+
+				auto beit = AddCommand(blockext, blkit);
+				auto bgit = AddCommand(blockglobal, blkit);
+				auto bsit = AddCommand(blockserver, blkit);
+
+				if (beit != HeliumCommandTree.end()) {
+					auto all = new ConstantString("Helium Built-in Command \"\"", "", "");
+					auto intarg = new CommandArgumentInt("event_id");
+
+					AddCommand(all, beit);
+					AddCommand(intarg, beit);
+				}
+				if (bgit != HeliumCommandTree.end()) {
+					auto all = new ConstantString("Helium Built-in Command \"\"", "", "");
+					auto intarg = new CommandArgumentInt("event_id");
+
+					AddCommand(all, bgit);
+					AddCommand(intarg, bgit);
+				}
+				if (bsit != HeliumCommandTree.end()) {
+					auto all = new ConstantString("Helium Built-in Command \"\"", "", "");
+					auto intarg = new CommandArgumentInt("event_id");
+
+					AddCommand(all, bsit);
+					AddCommand(intarg, bsit);
+				}
+			}
+			if (crtit != HeliumCommandTree.end()) {
+				auto intarg = new CommandArgumentInt("event_id");
+
+				AddCommand(intarg, crtit);
+			}
+			if (detailit != HeliumCommandTree.end()) {
+				auto intarg = new CommandArgumentInt("event_id");
+
+				AddCommand(intarg, detailit);
+			}
+			if (trcit != HeliumCommandTree.end()) {
+				auto intarg = new CommandArgumentInt("event_id");
+
+				AddCommand(intarg, trcit);
+			}
+		}
+
+		if (extit != HeliumCommandTree.end()) {
+			auto detail = new ConstantString("Helium Built-in Command \"\"", "", "");
+			auto list = new ConstantString("Helium Built-in Command \"\"", "", "");
+			auto load = new ConstantString("Helium Built-in Command \"\"", "", "");
+			auto lock = new ConstantString("Helium Built-in Command \"\"", "", "");
+			auto reloadconfig = new ConstantString("Helium Built-in Command \"\"", "", "");
+			auto reloadext = new ConstantString("Helium Built-in Command \"\"", "", "");
+			auto unload = new ConstantString("Helium Built-in Command \"\"", "", "");
+			auto unlock = new ConstantString("Helium Built-in Command \"\"", "", "");
+
+			auto dtlit = AddCommand(detail, extit);
+			auto loadit = AddCommand(load, extit);
+			auto lockit = AddCommand(lock, extit);
+			auto rldcfgit = AddCommand(reloadconfig, extit);
+			auto rldextit = AddCommand(reloadext, extit);
+			auto unloadit = AddCommand(unload, extit);
+			auto unlockit = AddCommand(unlock, extit);
+			AddCommand(list, extit);
+
+			if (dtlit != HeliumCommandTree.end()) {
+				auto extname = new CommandArgumentString("extension_name");
+
+				AddCommand(extname, dtlit);
+			}
+			if (loadit != HeliumCommandTree.end()) {
+				auto extname = new CommandArgumentString("extension_name");
+
+				AddCommand(extname, loadit);
+			}
+			if (lockit != HeliumCommandTree.end()) {
+				auto extname = new CommandArgumentString("extension_name");
+
+				AddCommand(extname, lockit);
+			}
+			if (rldcfgit != HeliumCommandTree.end()) {
+				auto all = new ConstantString("Helium Built-in Command \"\"", "", "");
+				auto extname = new CommandArgumentString("extension_name");
+
+				AddCommand(all, rldcfgit);
+				AddCommand(extname, rldcfgit);
+			}
+			if (rldextit != HeliumCommandTree.end()) {
+				auto all = new ConstantString("Helium Built-in Command \"\"", "", "");
+				auto extname = new CommandArgumentString("extension_name");
+
+				AddCommand(all, rlgextit);
+				AddCommand(extname, rldextit);
+			}
+			if (unloadit != HeliumCommandTree.end()) {
+				auto extname = new CommandArgumentString("extension_name");
+
+				AddCommand(extname, unloadit);
+			}
+			if (unlockit != HeliumCommandTree.end()) {
+				auto extname = new CommandArgumentString("extension_name");
+
+				AddCommand(extname, unlockit);
+			}
+		}
+
+		if (permit != HeliumCommandTree.end()) {
+
+		}
+
+		if (rldit != HeliumCommandTree.end()) {
+
+		}
+
+		if (svrit != HeliumCommandTree.end()) {
+
+		}
+
+		if (showit != HeliumCommandTree.end()) {
+
+		}
+
+		if (manit != HeliumCommandTree.end()) {
+
+		}
 
 		print_tree(HeliumCommandTree);
 		return 0;
@@ -465,6 +764,7 @@ namespace Helium {
 		DeleteCommand(uuid uuid) {
 		for (auto tit = HeliumCommandTree.begin(); tit != HeliumCommandTree.end(); tit++) {
 			if ((**tit).CommandUUID() == uuid) {
+				delete[] * tit;
 				return HeliumCommandTree.erase(tit);
 			}
 		}
@@ -473,6 +773,7 @@ namespace Helium {
 	tree<_BasicHeliumCommand*>::pre_order_iterator 
 		DeleteCommand(tree<_BasicHeliumCommand*>::pre_order_iterator it) {
 		if (HeliumCommandTree.is_valid(it)) {
+			delete[] *it;
 			return HeliumCommandTree.erase(it);
 		}
 		return HeliumCommandTree.end();
@@ -481,6 +782,7 @@ namespace Helium {
 		DeleteCommandTree(uuid uuid) {
 		for (auto tit = HeliumCommandTree.begin(); tit != HeliumCommandTree.end(); tit++) {
 			if ((**tit).CommandUUID() == uuid) {
+				for (auto subit = tit.begin(); subit != tit.end() subit++) delete[] * subit;
 				HeliumCommandTree.erase_children(tit);
 				return HeliumCommandTree.erase(tit);
 			}
@@ -490,6 +792,7 @@ namespace Helium {
 	tree<_BasicHeliumCommand*>::pre_order_iterator 
 		DeleteCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator it) {
 		if (HeliumCommandTree.is_valid(it)) {
+			for (auto subit = it.begin(); subit != it.end() subit++) delete[] * subit;
 			HeliumCommandTree.erase_children(it);
 			return HeliumCommandTree.erase(it);
 		}
@@ -518,6 +821,7 @@ namespace Helium {
 		ReplaceCommand(uuid uuid, _BasicHeliumCommand* cmd) {
 		auto tit = QueryCommand(uuid);
 		if (HeliumCommandTree.end() != tit) {
+			delete[] * tit;
 			return HeliumCommandTree.replace(tit, cmd);
 		}
 		return HeliumCommandTree.end();
@@ -525,6 +829,7 @@ namespace Helium {
 	tree<_BasicHeliumCommand*>::pre_order_iterator 
 		ReplaceCommand(tree<_BasicHeliumCommand*>::pre_order_iterator it, _BasicHeliumCommand* cmd) {
 		if (HeliumCommandTree.is_valid(it) && cmd->IsValid()) {
+			delete[] * it;
 			return HeliumCommandTree.replace(it, cmd);
 		}
 		return HeliumCommandTree.end();
@@ -533,6 +838,7 @@ namespace Helium {
 		ReplaceCommandTree(uuid uuid, tree<_BasicHeliumCommand*>::pre_order_iterator subtree) {
 		auto tit = QueryCommand(uuid);
 		if (HeliumCommandTree.end() != tit) {
+			for (auto subit = tit.begin(); subit != tit.end() subit++) delete[] * subit;
 			return HeliumCommandTree.replace(tit, subtree);
 		}
 		return HeliumCommandTree.end();
@@ -540,6 +846,7 @@ namespace Helium {
 	tree<_BasicHeliumCommand*>::pre_order_iterator 
 		ReplaceCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator it, tree<_BasicHeliumCommand*>::pre_order_iterator subtree) {
 		if (HeliumCommandTree.is_valid(it)) {
+			for (auto subit = it.begin(); subit != it.end() subit++) delete[] * subit;
 			return HeliumCommandTree.replace(it, subtree);
 		}
 		return HeliumCommandTree.end();
@@ -621,6 +928,15 @@ namespace Helium {
 		return r;
 	}
 
+	HeliumPermissionLevel _CommandConstantString::GetCommandPermission() {
+		return this->level;
+	}
+	HeliumPermissionLevel _CommandConstantString::SetCommandPermission(HeliumPermissionLevel perm) {
+		auto ol = this->level;
+		this->level = perm;
+		return ol;
+	}
+
 	string _CommandConstantString::GetCommandString() {
 		return this->commandstr;
 	}
@@ -639,12 +955,12 @@ namespace Helium {
 		return tempstr;
 	}
 
-	string _CommandConstantString::GetCommandAtlas() {
-		return this->atlas;
+	string _CommandConstantString::GetCommandAlias() {
+		return this->alias;
 	}
-	string _CommandConstantString::SetCommandAtlas(string atlas) {
-		string tempstr = this->atlas;
-		this->atlas = atlas;
+	string _CommandConstantString::SetCommandAlias(string alias) {
+		string tempstr = this->alias;
+		this->alias = alias;
 		return tempstr;
 	}
 
@@ -681,14 +997,6 @@ namespace Helium {
 	long CommandArgumentInt::GetLowerbound() {
 		return this->lowerbound;
 	}
-	long CommandArgumentInt::GetValue() {
-		return this->value;
-	}
-	long CommandArgumentInt::SetValue(long v) {
-		auto ov = this->value;
-		this->value = v;
-		return ov;
-	}
 
 	double CommandArgumentFloat::SetUpperbound(double up) {
 		auto oub = this->upperbound;
@@ -705,14 +1013,6 @@ namespace Helium {
 	}
 	double CommandArgumentFloat::GetLowerbound() {
 		return this->lowerbound;
-	}
-	double CommandArgumentFloat::GetValue() {
-		return this->value;
-	}
-	double CommandArgumentFloat::SetValue(double v) {
-		auto ov = this->value;
-		this->value = v;
-		return ov;
 	}
 
 	bool _CommandArgument::IsOptional() {
@@ -743,13 +1043,13 @@ namespace Helium {
 		return opreproc;
 	}
 
-	bool CommandArgumentBool::GetValue() {
-		return this->value;
+	string _CommandArgument::GetArgumentDesc() {
+		return this->argudesc;
 	}
-	bool CommandArgumentBool::SetValue(bool v) {
-		auto ov = this->value;
-		this->value = v;
-		return ov;
+	string _CommandArgument::SetArgumentDesc(string desc) {
+		auto olddesc = this->argudesc;
+		this->argudesc = desc;
+		return olddesc;
 	}
 #pragma endregion
 
@@ -763,7 +1063,7 @@ namespace Helium {
 		if (this->commandstr.empty()) ret = false;
 		for(auto i = 0; i < wordbreakstr.length(); i ++)
 			if (this->commandstr.find(wordbreakstr[i]) != string::npos
-				|| this->atlas.find(wordbreakstr[i]) != string::npos) {
+				|| this->alias.find(wordbreakstr[i]) != string::npos) {
 				ret = false;
 				break;
 			}
