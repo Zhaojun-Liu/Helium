@@ -25,7 +25,7 @@
 module;
 
 #include<boost/uuid/uuid.hpp>
-#include<list>
+#include<vector>
 
 export module Helium.Events;
 
@@ -36,6 +36,33 @@ using namespace boost::uuids;
 
 export{
 	namespace Helium {
+		enum HeliumEvents;
+
+		class _BasicHeliumEvent;
+		/*
+		class _ExtensionEvent;
+		class _ServerEvent;
+		class _HeliumEvent;
+
+		class ExtensionLoaded;
+		class ExtensionUnloaded;
+
+		class ServerOutput;
+		class UserOutput;
+		class ServerStart;
+		class ServerInited;
+		class ServerPause;
+		class ServerResume;
+		class ServerStop;
+		class PlayerJoined;
+		class PlayerLeft;
+
+		class HeliumStart;
+		class HeliumStop;
+
+		class UndefinedEvent;
+		*/
+
 		enum HeliumEvents {
 			UndefinedEvent,
 			ExtensionLoaded,
@@ -52,11 +79,19 @@ export{
 			PlayerJoined,
 			PlayerLeft
 		};
-
+		
 		class _BasicHeliumEvent {
+		protected:
+			bool globalblock;
+			vector<uuid> blockexts;
+			vector<uuid> blockservers;
 		public:
-			_BasicHeliumEvent();
-			virtual ~_BasicHeliumEvent();
+			_BasicHeliumEvent() {
+
+			}
+			virtual ~_BasicHeliumEvent() {
+
+			}
 			virtual HeliumEvents GetEventType() = 0;
 
 			virtual bool IsGlobalBlockable();
@@ -65,29 +100,32 @@ export{
 			virtual bool DisableGlobalBlock();
 
 			virtual bool IsExtensionBlockable();
-			virtual list<uuid> GetBlockedExtensionList();
+			virtual vector<uuid> GetBlockedExtensionList();
 			virtual bool IsExtensionBlocked(uuid extuuid);
 			virtual bool IsExtensionUnblocked(uuid extuuid);
 			virtual int BlockExtension(uuid extuuid);
 			virtual int UnblockExtension(uuid extuuid);
 
 			virtual bool IsServerBlockable();
-			virtual list<uuid> GetBlockedServerList();
+			virtual vector<uuid> GetBlockedServerList();
 			virtual bool IsServerBlocked(uuid serveruuid);
 			virtual bool IsServerUnblocked(uuid serveruuid);
 			virtual int BlockServer(uuid serveruuid);
 			virtual int UnblockServer(uuid serveruuid);
-		protected:
-			bool globalblock;
-			list<uuid> blockexts;
-			list<uuid> blockservers;
 		};
-
+		/*
 		class UndefinedEvent : public _BasicHeliumEvent {
 		public:
+			UndefinedEvent() {
+
+			}
+			virtual ~UndefinedEvent() {
+
+			}
+
 			virtual HeliumEvents GetEventType() { return HeliumEvents::UndefinedEvent; }
 		};
-
+		
 		class _ExtensionEvent : public _BasicHeliumEvent {
 		public:
 			virtual HeliumEvents GetEventType() = 0;
@@ -100,7 +138,7 @@ export{
 		public:
 			virtual HeliumEvents GetEventType() = 0;
 		};
-
+		
 		class ExtensionLoaded : public _ExtensionEvent {
 		public:
 			virtual HeliumEvents GetEventType() { return HeliumEvents::ExtensionLoaded; }
@@ -154,6 +192,7 @@ export{
 		class HeliumStop : public _HeliumEvent {
 		public:
 			virtual HeliumEvents GetEventType() { return HeliumEvents::HeliumStop; }
-		};
+		}
+		*/;
 	}
 }

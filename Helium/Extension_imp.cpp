@@ -25,6 +25,9 @@
 module;
 
 #include"tinyxml2/tinyxml2.h"
+#include<boost/uuid/uuid.hpp>
+#include<boost/uuid/uuid_io.hpp>
+#include<boost/uuid/uuid_generators.hpp>
 
 module Helium.Extension;
 
@@ -33,9 +36,10 @@ import Helium.Logger;
 
 using namespace tinyxml2;
 using namespace std;
+using namespace boost::uuids;
 
 namespace Helium {
-	int HeliumExtensionConfig::ReadConfig()	{
+	int HeliumExtension::HeliumExtensionConfig::ReadConfig() {
 		HeliumEndline hendl;
 		tinyxml2::XMLDocument doc;
 		if (auto ret = doc.LoadFile(this->configpath.c_str()); ret != tinyxml2::XMLError::XML_SUCCESS) {
@@ -60,6 +64,8 @@ namespace Helium {
 			return ;
 		log << HLL::LL_INFO << "Done." << hendl;
 		this->extstat = EXT_STATUS_UNLOADED;
+		uuid extuuid = random_generator()();
+		this->extuuid = extuuid;
 		return ;
 	}
 	HeliumExtension::~HeliumExtension() {

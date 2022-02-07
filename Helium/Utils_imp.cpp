@@ -73,7 +73,7 @@ namespace Helium {
     string ReplaceString(string rawstr, string deststr, string repstr)
     {
         string text = rawstr;
-        int iter = text.find(deststr);
+        auto iter = text.find(deststr);
         text.replace(iter, iter + deststr.size(), repstr);
         return text;
     }
