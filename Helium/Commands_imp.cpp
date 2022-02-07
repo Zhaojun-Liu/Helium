@@ -143,9 +143,50 @@ namespace Helium {
 			splited.push_back(word);
 		}
 
-		if (splited.empty()) return c;
-		if (beforeword.length() > 0 && len <= 0)
-			if (beforeword[beforeword.length() - 1] == ' ') return c;
+		if (splited.empty()) {
+			for (tit = HeliumCommandTree.begin_fixed(pit, 1);
+				HeliumCommandTree.is_valid(tit) && (*(HeliumCommandTree.parent(tit)))->CommandUUID() == (*pit)->CommandUUID();
+				tit++) {
+				if (typeid((**tit)) != typeid(ConstantString)) continue;
+				string command = static_cast<ConstantString*>(*tit)->GetCommandString();
+				c.emplace_back(command.c_str(), Replxx::Color::YELLOW);
+				return c;
+			}
+		}
+
+		if (!beforeword.empty()) {
+			if (beforeword[beforeword.length() - 1] == ' ' && len <= 0) {
+				for (auto it = splited.begin(); it < splited.end(); it++) {
+					bool find = false;
+					for (tit = HeliumCommandTree.begin_fixed(pit, 1);
+						HeliumCommandTree.is_valid(tit) && (*(HeliumCommandTree.parent(tit)))->CommandUUID() == (*pit)->CommandUUID();
+						tit++) {
+						if (typeid((**tit)) != typeid(ConstantString)) continue;
+						string command = static_cast<ConstantString*>(*tit)->GetCommandString();
+						string atlas = static_cast<ConstantString*>(*tit)->GetCommandAtlas();
+						if (*it == command) {
+							pit = tit;
+							find = true;
+							break;
+						}
+						if (*it == atlas) {
+							pit = tit;
+							find = true;
+							break;
+						}
+					}
+					if (!find) return c;
+				}
+				for (tit = HeliumCommandTree.begin_fixed(pit, 1);
+					HeliumCommandTree.is_valid(tit) && (*(HeliumCommandTree.parent(tit)))->CommandUUID() == (*pit)->CommandUUID();
+					tit++) {
+					if (typeid((**tit)) != typeid(ConstantString)) continue;
+					string command = static_cast<ConstantString*>(*tit)->GetCommandString();
+					c.emplace_back(command.c_str(), Replxx::Color::YELLOW);
+					return c;
+				}
+			}
+		}
 		
 		for (auto it = splited.begin(); it < splited.end(); it++) {
 			string currword = *it;
@@ -159,8 +200,7 @@ namespace Helium {
 						c.emplace_back(command.c_str(), Replxx::Color::YELLOW);
 					}
 				}
-			}
-			else {
+			} else {
 				bool find = false;
 				for (tit = HeliumCommandTree.begin_fixed(pit, 1);
 					HeliumCommandTree.is_valid(tit) && (*(HeliumCommandTree.parent(tit)))->CommandUUID() == (*pit)->CommandUUID();
@@ -376,12 +416,14 @@ namespace Helium {
 				return HeliumCommandTree.append_child(tit, cmd);;
 			}
 		}
+		return HeliumCommandTree.end();
 	}
 	tree<_BasicHeliumCommand*>::pre_order_iterator 
 		AddCommand(_BasicHeliumCommand* cmd, tree<_BasicHeliumCommand*>::pre_order_iterator parentit) {
 		if (HeliumCommandTree.is_valid(parentit) && cmd->IsValid())
 			return HeliumCommandTree.append_child(parentit, cmd);
-		return HeliumCommandTree.end();
+		else
+			return HeliumCommandTree.end();
 	}
 	tree<_BasicHeliumCommand*>::pre_order_iterator 
 		InsertCommand(_BasicHeliumCommand* cmd, uuid parentuuid) {
@@ -389,9 +431,11 @@ namespace Helium {
 			if (parentuuid == (**tit).CommandUUID()) {
 				if (!cmd->IsValid())
 					return HeliumCommandTree.end();
-				return HeliumCommandTree.insert(tit, cmd);;
+				else
+					return HeliumCommandTree.insert(tit, cmd);;
 			}
 		}
+		return HeliumCommandTree.end();
 	}
 	tree<_BasicHeliumCommand*>::pre_order_iterator 
 		InsertCommand(_BasicHeliumCommand* cmd, tree<_BasicHeliumCommand*>::pre_order_iterator tit) {
@@ -408,12 +452,14 @@ namespace Helium {
 				return HeliumCommandTree.insert_subtree_after(tit, subtree);;
 			}
 		}
+		return HeliumCommandTree.end();
 	}
 	tree<_BasicHeliumCommand*>::pre_order_iterator 
 		AddCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator subtree, tree<_BasicHeliumCommand*>::pre_order_iterator parentit) {
 		if (!HeliumCommandTree.is_valid(parentit))
 			return HeliumCommandTree.end();
-		return HeliumCommandTree.insert_subtree_after(parentit, subtree);
+		else
+			return HeliumCommandTree.insert_subtree_after(parentit, subtree);
 	}
 	tree<_BasicHeliumCommand*>::pre_order_iterator 
 		DeleteCommand(uuid uuid) {
@@ -422,6 +468,7 @@ namespace Helium {
 				return HeliumCommandTree.erase(tit);
 			}
 		}
+		return HeliumCommandTree.end();
 	}
 	tree<_BasicHeliumCommand*>::pre_order_iterator 
 		DeleteCommand(tree<_BasicHeliumCommand*>::pre_order_iterator it) {
@@ -438,6 +485,7 @@ namespace Helium {
 				return HeliumCommandTree.erase(tit);
 			}
 		}
+		return HeliumCommandTree.end();
 	}
 	tree<_BasicHeliumCommand*>::pre_order_iterator 
 		DeleteCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator it) {
@@ -479,6 +527,7 @@ namespace Helium {
 		if (HeliumCommandTree.is_valid(it) && cmd->IsValid()) {
 			return HeliumCommandTree.replace(it, cmd);
 		}
+		return HeliumCommandTree.end();
 	}
 	tree<_BasicHeliumCommand*>::pre_order_iterator 
 		ReplaceCommandTree(uuid uuid, tree<_BasicHeliumCommand*>::pre_order_iterator subtree) {

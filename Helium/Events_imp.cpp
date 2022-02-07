@@ -24,12 +24,12 @@
 
 module;
 
-#include<list>
 #include<boost/uuid/uuid.hpp>
 
 module Helium.Events;
 
 import Helium.UUIDManager;
+import <vector>;
 
 using namespace std;
 using namespace boost::uuids;
@@ -40,14 +40,14 @@ namespace Helium {
 	}
 	bool _BasicHeliumEvent::IsGlobalBlocked() {
 		if (this->IsGlobalBlockable())
-			return this->globalblocked;
+			return this->globalblock;
 		else
 			return false;
 	}
 	bool _BasicHeliumEvent::EnableGlobalBlock() {
 		if (this->IsGlobalBlockable()) {
-			auto ogb = this->globalblocked;
-			this->globalblocked = true;
+			auto ogb = this->globalblock;
+			this->globalblock = true;
 			return ogb;
 		}
 		else
@@ -55,8 +55,8 @@ namespace Helium {
 	}
 	bool _BasicHeliumEvent::DisableGlobalBlock() {
 		if (this->IsGlobalBlockable()) {
-			auto ogb = this->globalblocked;
-			this->globalblocked = false;
+			auto ogb = this->globalblock;
+			this->globalblock = false;
 			return ogb;
 		}
 		else
@@ -66,12 +66,12 @@ namespace Helium {
 	bool _BasicHeliumEvent::IsExtensionBlockable() {
 		return true;
 	}
-	list<uuid> _BasicHeliumEvent::GetBlockedExtensionList() {
+	vector<uuid> _BasicHeliumEvent::GetBlockedExtensionList() {
 		return this->blockexts;
 	}
 	bool _BasicHeliumEvent::IsExtensionBlocked(uuid extuuid) {
 		if (this->IsExtensionBlockable() && IsExtensionUUIDExists(extuuid)) {
-			for (auto blockeduuid : this->blockexts) {
+			for (auto blockuuid : this->blockexts) {
 				if (blockuuid == extuuid) return true;
 			}
 			return false;
@@ -82,7 +82,7 @@ namespace Helium {
 	}
 	bool _BasicHeliumEvent::IsExtensionUnblocked(uuid extuuid) {
 		if (this->IsExtensionBlockable() && IsExtensionUUIDExists(extuuid)) {
-			for (auto blockeduuid : this->blockexts) {
+			for (auto blockuuid : this->blockexts) {
 				if (blockuuid == extuuid) return false;
 			}
 			return true;
@@ -118,12 +118,12 @@ namespace Helium {
 	bool _BasicHeliumEvent::IsServerBlockable() {
 		return true;
 	}
-	list<uuid> _BasicHeliumEvent::GetBlockedServerList() {
+	vector<uuid> _BasicHeliumEvent::GetBlockedServerList() {
 		return this->blockservers;
 	}
 	bool _BasicHeliumEvent::IsServerBlocked(uuid serveruuid) {
 		if (this->IsServerBlockable() && IsServerUUIDExists(serveruuid)) {
-			for (auto blockeduuid : this->blockservers;) {
+			for (auto blockuuid : this->blockservers) {
 				if (blockuuid == serveruuid) return true;
 			}
 			return false;
@@ -134,7 +134,7 @@ namespace Helium {
 	}
 	bool _BasicHeliumEvent::IsServerUnblocked(uuid serveruuid) {
 		if (this->IsServerBlockable() && IsServerUUIDExists(serveruuid)) {
-			for (auto blockeduuid : this->blockservers;) {
+			for (auto blockuuid : this->blockservers) {
 				if (blockuuid == serveruuid) return false;
 			}
 			return true;

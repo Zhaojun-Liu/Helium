@@ -29,8 +29,10 @@ module;
 module Helium.Parser;
 
 import Helium.MinecraftServer;
-import Helium.Event;
+import Helium.Events;
 import <string>;
+
+using namespace std;
 
 namespace Helium {
 	string VanillaParser::StopCommand() {
@@ -44,8 +46,8 @@ namespace Helium {
 		string cmd;
 		return cmd;
 	}
-	string VanillaParser::Parse(string rawoutput) {
-
+	int VanillaParser::Parse(string rawoutput) {
+		return 0;
 	}
 
 	_BasicHeliumParser* GetParserByType(int type) {
@@ -53,19 +55,19 @@ namespace Helium {
 		case HeliumServerType::VANILLA:
 			return new VanillaParser;
 		case HeliumServerType::FORGE:
-			return new ForgeParser;
+			return new VanillaParser;
 		case HeliumServerType::BUKKIT:
-			return new BukkitParser;
+			return new VanillaParser;
 		case HeliumServerType::BUKKIT14:
-			return new Bukkit14Parser;
+			return new VanillaParser;
 		case HeliumServerType::BUNGEECORD:
-			return new BungeeCordParser;
+			return new VanillaParser;
 		case HeliumServerType::WATERFALL:
-			return new WaterfallParser;
+			return new VanillaParser;
 		case HeliumServerType::CAT:
-			return new CatParser;
+			return new VanillaParser;
 		case HeliumServerType::BETA18:
-			return new Beta18Parser;
+			return new VanillaParser;
 		default:
 			return new VanillaParser;
 		}

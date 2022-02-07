@@ -34,13 +34,17 @@ export{
 	namespace Helium {
 		class _BasicHeliumParser {
 		public:
-			_BasicHeliumParser();
-			virtual ~_BasicHeliumParser();
+			_BasicHeliumParser() {
+
+			}
+			virtual ~_BasicHeliumParser() {
+
+			}
 
 			virtual string StopCommand() = 0;
 			virtual string MessageCommand() = 0;
 			virtual string BroadcastCommand() = 0;
-			virtual string Parse(string rawoutput) = 0;
+			virtual int Parse(string rawoutput) = 0;
 		};
 
 		class VanillaParser : public _BasicHeliumParser {
@@ -48,7 +52,7 @@ export{
 			virtual string StopCommand();
 			virtual string MessageCommand();
 			virtual string BroadcastCommand();
-			virtual string Parse(string rawoutput);
+			virtual int Parse(string rawoutput);
 		};
 
 		class ForgeParser : public _BasicHeliumParser {
