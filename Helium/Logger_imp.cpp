@@ -46,13 +46,9 @@ namespace Helium {
 		try {
 			string logname = name;
 
-			this->log = make_shared<spdlog::logger>(logname, heliumconsolesink);
+			spdlog::sinks_init_list sinklist = { heliumdailysink, heliumconsolesink };
 
-			logname.append("_file");
-			this->filelog = make_shared<spdlog::logger>(logname, heliumdailysink);
-
-			spdlog::register_logger(this->log);
-			spdlog::register_logger(this->filelog);
+			this->log = make_shared<spdlog::logger>(logname, sinklist.begin(), sinklist.end());
 		}
 		catch (const spdlog::spdlog_ex& ex) {
 			cout << "Logger initalization failed(" << this->name << "), reason : " << ex.what() << endl;
@@ -90,23 +86,18 @@ namespace Helium {
 			switch (this->loglevel) {
 			case HeliumLoggerLevel::LL_DBG:
 				this->log->debug(str);
-				this->filelog->debug(str);
 				break;
 			case HeliumLoggerLevel::LL_INFO:
 				this->log->info(str);
-				this->filelog->info(str);
 				break;
 			case HeliumLoggerLevel::LL_WARN:
 				this->log->warn(str);
-				this->filelog->warn(str);
 				break;
 			case HeliumLoggerLevel::LL_ERR:
 				this->log->error(str);
-				this->filelog->error(str);
 				break;
 			case HeliumLoggerLevel::LL_CRIT:
 				this->log->critical(str);
-				this->filelog->critical(str);
 				break;
 			default:
 				break;

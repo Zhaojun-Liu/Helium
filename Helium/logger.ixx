@@ -79,7 +79,6 @@ export{
 			string loggername;
 			stringstream buffer;
 			shared_ptr<spdlog::logger> log;
-			shared_ptr<spdlog::logger> filelog;
 		};
 
 		HeliumLogger log("Helium");
