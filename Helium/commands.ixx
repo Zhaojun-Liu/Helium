@@ -25,6 +25,7 @@
 module;
 
 #include<map>
+#include<list>
 #include<iostream>
 #include<functional>
 #include<boost/multiprecision/cpp_int.hpp>
@@ -113,7 +114,9 @@ export{
 		tree<_BasicHeliumCommand*>::pre_order_iterator 
 			ReplaceCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator it, tree<_BasicHeliumCommand*>::pre_order_iterator subtree);
 
-		int ExecuteCommand(string rawcmd);
+		int ExecuteCommand(string rawcmd, string sender, int prioity);
+
+		typedef int (*HeliumCommandCallback)(string rawcmd, string sender, int prioity...);
 
 #pragma region CommandClassBase
 		class _BasicHeliumCommand {
@@ -429,6 +432,7 @@ export{
 
 		};
 		class ConstantString : public _CommandConstantString {
+			friend int ExecuteCommand(string rawcmd, string sender, int prioity);
 		public:
 			ConstantString() {
 				this->commanddesc = "Default Command Description";
@@ -478,6 +482,10 @@ export{
 				uuid cmduuid = random_generator()();
 				this->cmduuid = cmduuid;
 			}
+
+			virtual void AddCallback(HeliumCommandCallback fnptr);
+		protected:
+			std::list<HeliumCommandCallback> fnlist;
 		};
 	}
 }

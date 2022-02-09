@@ -49,6 +49,8 @@ namespace Helium {
 			spdlog::sinks_init_list sinklist = { heliumdailysink, heliumconsolesink };
 
 			this->log = make_shared<spdlog::logger>(logname, sinklist.begin(), sinklist.end());
+
+			spdlog::register_logger(this->log);
 		}
 		catch (const spdlog::spdlog_ex& ex) {
 			cout << "Logger initalization failed(" << this->name << "), reason : " << ex.what() << endl;
