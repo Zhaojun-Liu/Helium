@@ -24,6 +24,9 @@
 
 module;
 
+#include<any>
+#include<list>
+
 module Helium.CommandCallback;
 
 import <string>;
@@ -32,244 +35,247 @@ import Helium.Logger;
 using namespace std;
 
 namespace Helium {
-	int helium_command_bind_create(string rawcmd, string sender, int prioity, ...) {
+	int helium_command_bind_create(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "Get Arguments : " << hendl;
+		for (auto str : arguments) {
+			log << any_cast<string>(str) << hendl;
+		}
+		return 0;
+	}
+	int helium_command_bind_detail(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
 		return 0;
 	}
-	int helium_command_bind_detail(string rawcmd, string sender, int prioity, ...) {
+	int helium_command_bind_delete(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
 		return 0;
 	}
-	int helium_command_bind_delete(string rawcmd, string sender, int prioity, ...) {
+	int helium_command_bind_list(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
 		return 0;
 	}
-	int helium_command_bind_list(string rawcmd, string sender, int prioity, ...) {
+	int helium_command_detail(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
 		return 0;
 	}
-	int helium_command_detail(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-	int helium_command_list(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-
-	int helium_event_block_extension(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-	int helium_event_block_extension_all(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-	int helium_event_block_global(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-	int helium_event_block_global_all(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-	int helium_event_block_server(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-	int helium_event_block_server_all(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-	int helium_event_create(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-	int helium_event_detail(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-	int helium_event_list(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-	int helium_event_trace(string rawcmd, string sender, int prioity, ...) {
+	int helium_command_list(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
 		return 0;
 	}
 
-	int helium_extension_detail(string rawcmd, string sender, int prioity, ...) {
+	int helium_event_block_extension(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
 		return 0;
 	}
-	int helium_extension_list(string rawcmd, string sender, int prioity, ...) {
+	int helium_event_block_extension_all(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
 		return 0;
 	}
-	int helium_extension_load(string rawcmd, string sender, int prioity, ...) {
+	int helium_event_block_global(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
 		return 0;
 	}
-	int helium_extension_lock(string rawcmd, string sender, int prioity, ...) {
+	int helium_event_block_global_all(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
 		return 0;
 	}
-	int helium_extension_unload(string rawcmd, string sender, int prioity, ...) {
+	int helium_event_block_server(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
 		return 0;
 	}
-	int helium_extension_unlock(string rawcmd, string sender, int prioity, ...) {
+	int helium_event_block_server_all(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
 		return 0;
 	}
-
-	int helium_exit(string rawcmd, string sender, int prioity, ...) {
+	int helium_event_create(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
 		return 0;
 	}
-
-	int helium_permission_default(string rawcmd, string sender, int prioity, ...) {
+	int helium_event_detail(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
 		return 0;
 	}
-	int helium_permission_query(string rawcmd, string sender, int prioity, ...) {
+	int helium_event_list(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
 		return 0;
 	}
-
-	int helium_reload_all(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-	int helium_reload_config(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-	int helium_reload_extconfig(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-	int helium_reload_extconfig_all(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-	int helium_reload_extension(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-	int helium_reload_extension_all(string rawcmd, string sender, int prioity, ...) {
+	int helium_event_trace(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
 		return 0;
 	}
 
-	int helium_server_activate_add(string rawcmd, string sender, int prioity, ...) {
+	int helium_extension_detail(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
 		return 0;
 	}
-	int helium_server_activate_add_all(string rawcmd, string sender, int prioity, ...) {
+	int helium_extension_list(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
 		return 0;
 	}
-	int helium_server_activate_remove(string rawcmd, string sender, int prioity, ...) {
+	int helium_extension_load(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
 		return 0;
 	}
-	int helium_server_activate_remove_all(string rawcmd, string sender, int prioity, ...) {
+	int helium_extension_lock(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
 		return 0;
 	}
-	int helium_server_activate_list(string rawcmd, string sender, int prioity, ...) {
+	int helium_extension_unload(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
 		return 0;
 	}
-	int helium_server_detail(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-	int helium_server_list(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-	int helium_server_pause(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-	int helium_server_pause_all(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-	int helium_server_resume(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-	int helium_server_resume_all(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-	int helium_server_start(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-	int helium_server_start_all(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-	int helium_server_stop(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-	int helium_server_stop_all(string rawcmd, string sender, int prioity, ...) {
+	int helium_extension_unlock(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
 		return 0;
 	}
 
-	int helium_show_warranty(string rawcmd, string sender, int prioity, ...) {
+	int helium_exit(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		return 0;
+	}
+
+	int helium_permission_default(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		return 0;
+	}
+	int helium_permission_query(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		return 0;
+	}
+
+	int helium_reload_all(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		return 0;
+	}
+	int helium_reload_config(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		return 0;
+	}
+	int helium_reload_extconfig(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		return 0;
+	}
+	int helium_reload_extconfig_all(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		return 0;
+	}
+	int helium_reload_extension(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		return 0;
+	}
+	int helium_reload_extension_all(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		return 0;
+	}
+
+	int helium_server_activate_add(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		return 0;
+	}
+	int helium_server_activate_add_all(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		return 0;
+	}
+	int helium_server_activate_remove(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		return 0;
+	}
+	int helium_server_activate_remove_all(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		return 0;
+	}
+	int helium_server_activate_list(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		return 0;
+	}
+	int helium_server_detail(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		return 0;
+	}
+	int helium_server_list(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		return 0;
+	}
+	int helium_server_pause(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		return 0;
+	}
+	int helium_server_pause_all(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		return 0;
+	}
+	int helium_server_resume(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		return 0;
+	}
+	int helium_server_resume_all(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		return 0;
+	}
+	int helium_server_start(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		return 0;
+	}
+	int helium_server_start_all(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		return 0;
+	}
+	int helium_server_stop(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		return 0;
+	}
+	int helium_server_stop_all(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		return 0;
+	}
+
+	int helium_show_warranty(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 
 		log << HLL::LL_INFO << "Disclaimer of Warranty." << hendl;
@@ -283,7 +289,7 @@ namespace Helium {
 
 		return 0;
 	}
-	int helium_show_condition(string rawcmd, string sender, int prioity, ...) {
+	int helium_show_condition(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 
 
@@ -291,31 +297,31 @@ namespace Helium {
 		return 0;
 	}
 
-	int helium_status(string rawcmd, string sender, int prioity, ...) {
-		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
-		return 0;
-	}
-	int helium_update(string rawcmd, string sender, int prioity, ...) {
+	int helium_status(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
 		return 0;
 	}
-	int helium_version(string rawcmd, string sender, int prioity, ...) {
+	int helium_update(string rawcmd, string sender, int permission, list<any> arguments) {
+		HeliumEndline hendl;
+		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		return 0;
+	}
+	int helium_version(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
 		return 0;
 	}
 
 
-	int help_documentation(string rawcmd, string sender, int prioity, ...) {
+	int help_documentation(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
 		log << HLL::LL_INFO << "Helium Documentation : https://helium-devteam.github.io/Helium-User-Document/" << hendl;
 		return 0;
 	}
-	int help_manual(string rawcmd, string sender, int prioity, ...) {
+	int help_manual(string rawcmd, string sender, int permission, list<any> arguments) {
 		HeliumEndline hendl;
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(" << hendl;
+		log << HLL::LL_INFO << "Argument : " << any_cast<string>(arguments.front()) << hendl;
 		return 0;
 	}
 }

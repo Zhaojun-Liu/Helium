@@ -24,6 +24,7 @@
 
 module;
 
+#include<any>
 #include<map>
 #include<list>
 #include<iostream>
@@ -114,9 +115,9 @@ export{
 		tree<_BasicHeliumCommand*>::pre_order_iterator 
 			ReplaceCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator it, tree<_BasicHeliumCommand*>::pre_order_iterator subtree);
 
-		int ExecuteCommand(string rawcmd, string sender, int prioity);
+		int ExecuteCommand(string rawcmd, string sender, int permission);
 
-		typedef int (*HeliumCommandCallback)(string rawcmd, string sender, int prioity...);
+		typedef int (*HeliumCommandCallback)(string rawcmd, string sender, int permission, list<any> arguments);
 
 #pragma region CommandClassBase
 		class _BasicHeliumCommand {
@@ -432,7 +433,7 @@ export{
 
 		};
 		class ConstantString : public _CommandConstantString {
-			friend int ExecuteCommand(string rawcmd, string sender, int prioity);
+			friend int ExecuteCommand(string rawcmd, string sender, int permission);
 		public:
 			ConstantString() {
 				this->commanddesc = "Default Command Description";

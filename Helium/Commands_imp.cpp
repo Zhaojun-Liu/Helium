@@ -25,6 +25,8 @@
 module;
 
 #define REPLXX_STATIC
+#include<any>
+#include<regex>
 #include<functional>
 #include<iostream>
 #include<sstream>
@@ -701,7 +703,7 @@ namespace Helium {
 		}
 
 		log << HLL::LL_INFO << "Helium built-in command tree initialized." << hendl;
-		print_tree(HeliumCommandTree);
+		
 		return 0;
 	}
 	int InitShellEnv() {
@@ -1220,10 +1222,12 @@ namespace Helium {
 		return ret;
 	}
 
-	int ExecuteCommand(string rawcmd, string sender, int prioity) {
+	int ExecuteCommand(string rawcmd, string sender, int permission) {
+		HeliumEndline hendl;
 		istringstream iss(rawcmd);
 		list<string> words;
 		list<_BasicHeliumCommand*> cmdpath;
+		list<string> argus;
 		string tempstr;
 		tree<_BasicHeliumCommand*>::fixed_depth_iterator pit = HeliumCommandTree.begin();
 		tree<_BasicHeliumCommand*>::fixed_depth_iterator tit;
@@ -1237,32 +1241,153 @@ namespace Helium {
 		for (auto it = words.begin(); it != words.end(); it++) {
 
 			string currword = *it;
-			bool isconststr = false;
+			bool iscstr = false;
 
 			for (tit = HeliumCommandTree.begin_fixed(pit, 1);
 				HeliumCommandTree.is_valid(tit) && (*(HeliumCommandTree.parent(tit)))->CommandUUID() == (*pit)->CommandUUID();
 				tit++) {
-				if (typeid((**tit)) != typeid(ConstantString)) continue;
-				string command = static_cast<ConstantString*>(*tit)->GetCommandString();
-				string alias = static_cast<ConstantString*>(*tit)->GetCommandAlias();
+				if (typeid((**tit)) == typeid(ConstantString)) {
+					string command = static_cast<ConstantString*>(*tit)->GetCommandString();
+					string alias = static_cast<ConstantString*>(*tit)->GetCommandAlias();
 
-				if (currword == command || currword == alias) {
-					pit = tit;
-					isconststr = true;
-					cmdpath.push_back(static_cast<ConstantString*>(*tit));
-					break;
+					if (currword == command || currword == alias) {
+						pit = tit;
+						cmdpath.push_back(static_cast<ConstantString*>(*tit));
+						iscstr = true;
+						break;
+					}
+				}
+			}
+
+			if (!iscstr) {
+				bool isargu = false;
+
+				for (tit = HeliumCommandTree.begin_fixed(pit, 1);
+					HeliumCommandTree.is_valid(tit) && (*(HeliumCommandTree.parent(tit)))->CommandUUID() == (*pit)->CommandUUID();
+					tit++) {
+					if (typeid((**tit)) == typeid(CommandArgumentInt)) {
+						if (regex_match(currword, regex("^-?[1-9]\\d*$"))) {
+							isargu = true;
+							pit = tit;
+							argus.push_back(currword);
+							cmdpath.push_back(static_cast<CommandArgumentInt*>(*tit));
+							log << HLL::LL_DBG << "Matched integer : " << currword << hendl;
+							break;
+						}
+					}
+					if (typeid((**tit)) == typeid(CommandArgumentFloat)) {
+						if (regex_match(currword, regex("^[1-9]\\d*\\.\\d*|0\\.\\d*[1-9]\\d*$"))
+							|| regex_match(currword, regex("^-[1-9]\\d*\\.\\d*|-0\\.\\d*[1-9]\\d*$"))) {
+							isargu = true;
+							pit = tit;
+							argus.push_back(currword);
+							cmdpath.push_back(static_cast<CommandArgumentFloat*>(*tit));
+							log << HLL::LL_DBG << "Matched float : " << currword << hendl;
+							break;
+						}
+					}
+					if (typeid((**tit)) == typeid(CommandArgumentQuotableString)) {
+						if (currword[0] == '\"') {
+							bool findend = false;
+							string fullword = currword;
+							auto innerit = it;
+							for (innerit++; innerit != words.end(); innerit++) {
+								if ((*innerit)[innerit->length() - 1] == '\"') {
+									findend = true;
+									it++;
+									fullword.append(" ").append(*innerit);
+									fullword.erase(fullword.begin());
+									fullword.erase(fullword.end() - 1);
+									break;
+								} else{
+									fullword.append(" ").append(*innerit);
+									it++;
+								}
+							}
+							if (!findend) {
+								log << HLL::LL_ERR << "Can't find another \'\"\'!";
+								return -1;
+							}
+							isargu = true;
+							log << HLL::LL_DBG << "Matched full quotable string : " << fullword << hendl;
+							argus.push_back(fullword);
+							pit = tit;
+							cmdpath.push_back(static_cast<CommandArgumentQuotableString*>(*tit));
+							break;
+						}
+					}
+					if (typeid((**tit)) == typeid(CommandArgumentString)) {
+						if (currword.find("\"") != string::npos) continue;
+						log << HLL::LL_DBG << "Matched string : " << currword << hendl;
+						pit = tit;
+						isargu = true;
+						argus.push_back(currword);
+						break;
+					}
+				}
+
+				if (!isargu) {
+					log << HLL::LL_ERR << "Bad command." << hendl;
+					return -1;
 				}
 			}
 		}
 
+		list<any> argumentlist;
 		for (auto it = cmdpath.rbegin(); it != cmdpath.rend(); it++) {
 			if (typeid(**it) == typeid(ConstantString)) {
 				for (auto fnptr : static_cast<ConstantString*>(*it)->fnlist) {
-					fnptr(rawcmd, sender, prioity);
+					if (permission >= static_cast<ConstantString*>(*it)->GetCommandPermission()) {
+						fnptr(rawcmd, sender, permission, argumentlist);
+						argumentlist.clear();
+					}
+					else {
+						log << HLL::LL_ERR << "You haven't enough permission to execute this command!" << hendl;
+						break;
+					}
 				}
 			}
 			else {
-				;
+				if (typeid(**it) == typeid(CommandArgumentInt)) {
+					string argu = argus.back();
+					long realargu;
+					any anyargu;
+					argus.pop_back();
+
+					stringstream sstr;
+					sstr << argu;
+					sstr >> realargu;
+					anyargu = realargu;
+
+					argumentlist.push_front(anyargu);
+				}
+				if (typeid(**it) == typeid(CommandArgumentFloat)) {
+					string argu = argus.back();
+					float realargu;
+					any anyargu;
+					argus.pop_back();
+
+					stringstream sstr;
+					sstr << argu;
+					sstr >> realargu;
+					anyargu = realargu;
+
+					argumentlist.push_front(anyargu);
+				}
+				if (typeid(**it) == typeid(CommandArgumentString)) {
+					string argu = argus.back();
+					any anyargu = argu;
+					argus.pop_back();
+
+					argumentlist.push_front(anyargu);
+				}
+				if (typeid(**it) == typeid(CommandArgumentQuotableString)) {
+					string argu = argus.back();
+					any anyargu = argu;
+					argus.pop_back();
+
+					argumentlist.push_front(anyargu);
+				}
 			}
 		}
 
