@@ -122,10 +122,10 @@ namespace Helium {
 
         HeliumEnvInit();
 
+        HeliumInitOutput();
+
         InitShellEnv();
         InitBuiltinCommandTree();
-
-        HeliumInitOutput();
 
         try {
             ret = HeliumInit();

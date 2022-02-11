@@ -1287,7 +1287,17 @@ namespace Helium {
 						}
 					}
 					if (typeid((**tit)) == typeid(CommandArgumentQuotableString)) {
-						if (currword[0] == '\"') {
+						if (currword[0] == '\"' && currword[currword.length() - 1] == '\"') {
+							isargu = true;
+							pit = tit;
+							string strarg = currword;
+							strarg.erase(strarg.begin());
+							strarg.erase(strarg.end() - 1);
+							argus.push_back(strarg);
+							cmdpath.push_back(static_cast<CommandArgumentQuotableString*>(*tit));
+							break;
+						}
+						if (currword[0] == '\"' && currword.find_last_of("\"") == 0) {
 							bool findend = false;
 							string fullword = currword;
 							auto innerit = it;
@@ -1305,7 +1315,7 @@ namespace Helium {
 								}
 							}
 							if (!findend) {
-								log << HLL::LL_ERR << "Can't find another \'\"\'!";
+								log << HLL::LL_ERR << "Can't find another \'\"\'!" << hendl;
 								return -1;
 							}
 							isargu = true;
@@ -1314,6 +1324,10 @@ namespace Helium {
 							pit = tit;
 							cmdpath.push_back(static_cast<CommandArgumentQuotableString*>(*tit));
 							break;
+						}
+						else {
+							log << HLL::LL_ERR << "Unexpected \'\"\'!" << hendl;
+							return -1;
 						}
 					}
 					if (typeid((**tit)) == typeid(CommandArgumentString)) {
