@@ -26,18 +26,8 @@
 #include "framework.h"
 #include "HeliumAPI.h"
 
-
-// 这是导出变量的一个示例
-HELIUMAPI_API int nHeliumAPI=0;
-
-// 这是导出函数的一个示例。
-HELIUMAPI_API int fnHeliumAPI(void)
-{
-    return 0;
-}
-
-// 这是已导出类的构造函数。
-CHeliumAPI::CHeliumAPI()
-{
-    return;
+namespace HeliumAPI {
+	int HELIUMAPI_API TransferFuncMap(map<string, void*> funcmap) {
+		return 0;
+	}
 }

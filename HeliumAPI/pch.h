@@ -25,6 +25,10 @@
 #ifndef PCH_H
 #define PCH_H
 
-#include "framework.h"
+#include"framework.h"
+#include"semver/semver.hpp"
+
+#include<iostream>
+#include
 
 #endif

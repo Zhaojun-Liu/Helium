@@ -1,7 +1,7 @@
 ﻿/*
 * Helium is a customizable extension system for Minecraft server.
 * You can get the lastest source code and releases of Helium at :
-* https://github.com/Minecraft1248/Helium
+* https://github.com/Helium-DevTeam/Helium
 * ----------------------------------------------------------------------------------------
 * Helium Copyright (C) 2021-2022 HeliumDevTeam
 *
@@ -39,6 +39,7 @@ import <string>;
 
 import Helium.Extension;
 import Helium.MinecraftServer;
+import Helium.ExportFunction;
 
 using namespace std;
 using namespace tinyxml2;
@@ -74,9 +75,16 @@ namespace Helium {
         return 0;
     }
     int HeliumInit() {
-        HeliumEndline hendl;
+        HeliumEndline hendl;   
 
         log << HLL::LL_INFO << "Start Helium initialization." << hendl;
+
+        InitShellEnv();
+        InitBuiltinCommandTree();
+
+        InitFuncMap();
+        LoadHeliumAPI();
+        TransferFuncMap();
 
         log << HLL::LL_DBG << "Start adding dirs" << hendl;
         AddHeliumDirectory("./extensions", "The \"extension\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
@@ -123,9 +131,6 @@ namespace Helium {
         HeliumEnvInit();
 
         HeliumInitOutput();
-
-        InitShellEnv();
-        InitBuiltinCommandTree();
 
         try {
             ret = HeliumInit();

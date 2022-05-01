@@ -27,13 +27,11 @@
 #define HELIUMAPI_API __declspec(dllimport)
 #endif
 
-// 此类是从 dll 导出的
-class HELIUMAPI_API CHeliumAPI {
-public:
-	CHeliumAPI(void);
-	// TODO: 在此处添加方法。
-};
+#include<map>
+#include<string>
 
-extern HELIUMAPI_API int nHeliumAPI;
+using namespace std;
 
-HELIUMAPI_API int fnHeliumAPI(void);
+namespace HeliumAPI {
+	int HELIUMAPI_API TransferFuncMap(map<string, void*> funcmap);
+}
