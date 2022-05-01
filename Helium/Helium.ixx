@@ -46,7 +46,6 @@ export import Helium.Commands;
 export import Helium.Config;
 export import Helium.ErrorExit;
 export import Helium.Events;
-export import Helium.ExportFunction;
 export import Helium.Extension;
 export import Helium.InitDirectory;
 export import Helium.Logger;

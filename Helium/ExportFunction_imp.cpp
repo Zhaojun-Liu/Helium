@@ -22,18 +22,43 @@
 * ----------------------------------------------------------------------------------------
 */
 
+#define EXP_FUNCPTR_TYPE(ret, name, ...) ret (*fp##name)(__VA_ARGS__);
+#define ADD_EXP_FUNC(namestr, name) HeliumExportFunctionMap.insert(pair<string, void*>(namestr, name));
+
 module;
+
+#include<map>
 
 module Helium.ExportFunction;
 
 import <string>;
+import Helium.Extension;
+import Helium.Logger;
 
 using namespace std;
 
 namespace Helium {
+	EXP_FUNCPTR_TYPE(void, HeliumExtensionDebugPrint, string)
+
 	map<string, void*> HeliumExportFunctionMap;
 
 	int InitFuncMap() {
+		HeliumEndline hendl;
+		log << "Building Helium API map..." << hendl;
+		HeliumExportFunctionMap.insert(pair<string, void*>("HeliumExtensionDebugPrint", (void*)HeliumExtensionDebugPrint));
+		log << "Helium API map successfully built" << hendl;
+		return 0;
+	}
+
+	int LoadHeliumAPI() {
+		return 0;
+	}
+
+	int TransferFuncMap() {
+		return 0;
+	}
+
+	int UnloadHeliumAPI() {
 		return 0;
 	}
 }

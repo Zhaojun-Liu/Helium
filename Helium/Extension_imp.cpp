@@ -39,6 +39,11 @@ using namespace std;
 using namespace boost::uuids;
 
 namespace Helium {
+	void HeliumExtensionDebugPrint(string extprint) {
+		HeliumEndline hendl;
+		log << "Debug print from extension : " << extprint << hendl;
+	}
+
 	int HeliumExtension::HeliumExtensionConfig::ReadConfig() {
 		HeliumEndline hendl;
 		tinyxml2::XMLDocument doc;

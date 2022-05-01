@@ -40,6 +40,8 @@ using namespace boost::uuids;
 
 export{
 	namespace Helium {
+		void HeliumExtensionDebugPrint(string extprint);
+
 		class HeliumExtension {
 		public:
 			HeliumExtension(string cfgname);

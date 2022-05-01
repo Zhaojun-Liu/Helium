@@ -1,0 +1,2 @@
+#define HELIUMAPI_API __declspec(dllexport)
+#define HELIUMAPI_API __declspec(dllimport)

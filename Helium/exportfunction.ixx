@@ -35,5 +35,8 @@ export {
 	namespace Helium {
 		extern map<string, void*> HeliumExportFunctionMap;
 		int InitFuncMap();
+		int LoadHeliumAPI();
+		int TransferFuncMap();
+		int UnloadHeliumAPI();
 	}
 }
