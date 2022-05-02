@@ -27,18 +27,23 @@ module;
 #define WIN32_LEAN_AND_MEAN
 
 #include<thread>
-
+#include<boost/uuid/uuid.hpp>
+#include<boost/uuid/uuid_io.hpp>
+#include<boost/uuid/uuid_generators.hpp>
+#include<boost/algorithm/string/classification.hpp>
+#include<boost/algorithm/string/split.hpp>
 #include<Windows.h>
 #include<spdlog/spdlog.h>
-#include<boost/uuid/uuid.hpp>
+#include<iostream>
 
 export module Helium.MinecraftServer:Class;
 
-import Helium.Parser;
 import Helium.Logger;
 import <string>;
+import <vector>;
 
 using namespace std;
+using namespace boost;
 using namespace boost::uuids;
 
 export {
@@ -84,8 +89,7 @@ export {
 				}
 				else
 				{
-					exception e;
-					throw e;
+					throw "Error";
 				}
 			}
 		};
@@ -109,7 +113,6 @@ export {
 
 			bool visi;
 			bool autostart;
-			bool parserinited;
 
 			HANDLE proc;
 			HANDLE thread;
@@ -121,8 +124,6 @@ export {
 			uuid serveruuid;
 
 			RCONInfo rcon;
-
-			_BasicHeliumParser* parser;
 		public:
 			HeliumMinecraftServer();
 			virtual ~HeliumMinecraftServer();
@@ -185,11 +186,321 @@ export {
 		};
 
 		HeliumLogger lg("HeliumServer");
+		CRITICAL_SECTION cs;
+		vector<thread> outputthreads;
+		bool isinit = false;
+
 		int ProcessServerOutput(HeliumMinecraftServer* ptr, string servername, HANDLE stdread, HANDLE hproc);
 		int InitServerEnv();
-	}
-}
 
-namespace Helium {
-	vector<thread> outputthread;
+		int InitServerEnv() {
+			InitializeCriticalSection(&cs);
+			return 0;
+		}
+		string HeliumMinecraftServer::GetServerName() {
+			return this->name;
+		}
+		string HeliumMinecraftServer::SetServerName(string name) {
+			string temps = this->name;
+			this->name = name;
+			return temps;
+		}
+
+		string HeliumMinecraftServer::GetServerDirectory() {
+			return this->dir;
+		}
+		string HeliumMinecraftServer::SetServerDirectory(string dir) {
+			string temps = this->dir;
+			this->dir = dir;
+			return temps;
+		}
+
+		string HeliumMinecraftServer::GetServerStartCommand() {
+			return this->startcommand;
+		}
+		string HeliumMinecraftServer::SetServerStartCommand(string cmd) {
+			string temps = this->startcommand;
+			this->startcommand = cmd;
+			return temps;
+		}
+
+		bool HeliumMinecraftServer::IsAutoStart() {
+			return this->autostart;
+		}
+		bool HeliumMinecraftServer::EnableAutoStart() {
+			bool t = this->autostart;
+			this->autostart = true;
+			return t;
+		}
+		bool HeliumMinecraftServer::DisableAutoStart() {
+			bool t = this->autostart;
+			this->autostart = false;
+			return t;
+		}
+
+		bool HeliumMinecraftServer::IsOutputVisible() {
+			return this->visi;
+		}
+		bool HeliumMinecraftServer::EnableOutputVisibility() {
+			bool t = this->visi;
+			this->visi = true;
+			return t;
+		}
+		bool HeliumMinecraftServer::DisableOutputVisibility() {
+			bool t = this->visi;
+			this->visi = false;
+			return t;
+		}
+
+		HeliumServerType HeliumMinecraftServer::GetServerType() {
+			return this->type;
+		}
+		HeliumServerType HeliumMinecraftServer::SetServerType(HeliumServerType type) {
+			auto t = this->type;
+			this->type = type;
+			return t;
+		}
+
+		HeliumServerStat HeliumMinecraftServer::GetServerStat() {
+			return this->stat;
+		}
+
+		uuid HeliumMinecraftServer::GetServerUUID() {
+			return this->serveruuid;
+		}
+
+		DWORD HeliumMinecraftServer::GetServerPID() {
+			return this->pid;
+		}
+
+		HANDLE HeliumMinecraftServer::GetServerHandle() {
+			return this->proc;
+		}
+		HANDLE HeliumMinecraftServer::GetServerThreadHandle() {
+			return this->thread;
+		}
+
+		DWORD HeliumMinecraftServer::GetServerRetValue() {
+			return this->retv;
+		}
+
+		RedirectInformation HeliumMinecraftServer::GetServerRedir() {
+			return this->redir;
+		}
+		RedirectInformation HeliumMinecraftServer::SetServerRedir(RedirectInformation* redir) {
+			RedirectInformation r = this->redir;
+			this->redir = *redir;
+			return r;
+		}
+
+		bool HeliumMinecraftServer::IsRCONEnabled() {
+			return this->rcon.isenabled;
+		}
+		bool HeliumMinecraftServer::EnableRCON() {
+			auto r = this->rcon.isenabled;
+			this->rcon.isenabled = true;
+			return r;
+		}
+		bool HeliumMinecraftServer::DisableRCON() {
+			auto r = this->rcon.isenabled;
+			this->rcon.isenabled = false;
+			return r;
+		}
+
+		int HeliumMinecraftServer::GetRCONPort() {
+			return this->rcon.port;
+		}
+		int HeliumMinecraftServer::SetRCONPort(int port) {
+			auto r = this->rcon.port;
+			this->rcon.port = port;
+			return r;
+		}
+
+		string HeliumMinecraftServer::GetRCONPassword() {
+			return this->rcon.pwd;
+		}
+		string HeliumMinecraftServer::SetRCONPassword(string pwd) {
+			auto r = this->rcon.pwd;
+			this->rcon.pwd = pwd;
+			return r;
+		}
+
+		uuid HeliumMinecraftServer::GenServerUUID() {
+			uuid serveruuid = random_generator()();
+			string uuidstr = to_string(serveruuid);
+			HeliumEndline hendl;
+			log << HLL::LL_INFO;
+			log << "Successfully generated UUID of server : " << this->name << hendl;
+			log << "Server UUID : " << uuidstr << hendl;
+			this->serveruuid = serveruuid;
+			return this->serveruuid;
+		}
+
+		bool HeliumMinecraftServer::IsValid() {
+			bool ret = true;
+			return ret;
+		}
+
+		int HeliumMinecraftServer::StartServer() {
+			HeliumEndline hendl;
+
+			log << HLL::LL_INFO;
+			log << "Starting server " << this->name << "(" << to_string(this->serveruuid) << ")" << hendl;
+			log << "Start command : " << this->startcommand << hendl;
+
+			if (this->stat != HeliumServerStat::TERMINATED) {
+				log << "Someone are trying to start a non-terminated server : " << this->name << "(" << to_string(this->serveruuid) << ")" << hendl;
+				return -1;
+			}
+
+			if (!this->IsValid()) {
+				log << "Someone are trying to start a invalid server : " << this->name << "(" << to_string(this->serveruuid) << ")" << hendl;
+				return -1;
+			}
+
+			SECURITY_ATTRIBUTES sa;
+			PROCESS_INFORMATION pi;
+			STARTUPINFOA si;
+			string workingdir;
+
+			sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+			sa.bInheritHandle = true;
+			sa.lpSecurityDescriptor = NULL;
+
+			ZeroMemory(&pi, sizeof(PROCESS_INFORMATION));
+
+			ZeroMemory(&si, sizeof(STARTUPINFO));
+			si.cb = sizeof(STARTUPINFO);
+
+			workingdir = this->dir;
+
+			if (!CreatePipe(&this->redir.hStdOutRead, &this->redir.hStdOutWrite, &sa, 0)) {
+				log << HLL::LL_ERR << "Failed to create STDOut pipe for server " << this->name << " with error code : " << (long)GetLastError() << hendl;
+				return GetLastError();
+			}
+
+			if (!CreatePipe(&this->redir.hStdInRead, &this->redir.hStdInWrite, &sa, 0)) {
+				log << HLL::LL_ERR << "Failed to create STDIn pipe for server " << this->name << " with error code : " << (long)GetLastError() << hendl;
+				return GetLastError();
+			}
+
+			if (!SetHandleInformation(this->redir.hStdOutRead, HANDLE_FLAG_INHERIT, 0)) {
+				log << HLL::LL_ERR << "Failed to SetHandleInformation() for STDOut for server " << this->name << " with error code : " << (long)GetLastError() << hendl;
+				return GetLastError();
+			}
+
+			if (!SetHandleInformation(this->redir.hStdInWrite, HANDLE_FLAG_INHERIT, 0)) {
+				log << HLL::LL_ERR << "Failed to SetHandleInformation() for STDIn for server " << this->name << " with error code : " << (long)GetLastError() << hendl;
+				return GetLastError();
+			}
+
+			si.hStdError = this->redir.hStdOutWrite;
+			si.hStdOutput = this->redir.hStdOutWrite;
+			si.hStdInput = this->redir.hStdInRead;
+			si.dwFlags |= STARTF_USESTDHANDLES;
+
+			if (auto suc = CreateProcessA(NULL,
+				const_cast<char*>(this->startcommand.c_str()),
+				NULL,
+				NULL,
+				true,
+				CREATE_SUSPENDED | CREATE_NO_WINDOW,
+				NULL,
+				workingdir.c_str(),
+				&si,
+				&pi); !suc) {
+				log << HLL::LL_ERR << "Failed to create process for server " << this->name << " with error code : " << (long)GetLastError() << hendl;
+				return GetLastError();
+			}
+			else {
+				CloseHandle(this->redir.hStdOutWrite);
+				CloseHandle(this->redir.hStdInRead);
+
+				this->proc = pi.hProcess;
+				this->thread = pi.hThread;
+
+				this->stat = HeliumServerStat::PAUSED;
+
+				log << "Successfully started server " << this->name << "(" << to_string(this->serveruuid) << ")" << hendl;
+				log << "Server running on PID " << (long)pi.dwProcessId << hendl;
+
+				std::thread outthread(ProcessServerOutput, this, this->name, this->redir.hStdOutRead, this->proc);
+				outputthreads.push_back(std::move(outthread));
+				outputthreads.back().detach();
+			}
+
+			return 0;
+		}
+		int HeliumMinecraftServer::StopServer() {
+			int ret = 0;
+
+			this->stat = HeliumServerStat::TERMINATED;
+			return ret;
+		}
+		int HeliumMinecraftServer::PauseServer() {
+			int ret = 0;
+
+			this->stat = HeliumServerStat::PAUSED;
+			return ret;
+		}
+		int HeliumMinecraftServer::ResumeServer() {
+			int ret = 0;
+			HeliumEndline hendl;
+
+			if (!this->IsValid()) {
+				log << HLL::LL_ERR << "Someone are trying to start a invalid server : " << this->name << "(" << to_string(this->serveruuid) << ")" << hendl;
+				return -1;
+			}
+
+			if (this->stat != HeliumServerStat::PAUSED) {
+				log << HLL::LL_ERR << "Someone are trying to start a non-paused server : " << this->name << "(" << to_string(this->serveruuid) << ")" << hendl;
+				return -1;
+			}
+
+			if (ret = ResumeThread(this->thread); ret == -1) {
+				log << HLL::LL_ERR << "Failed to resume process for server " << this->name << " with error code : " << (long)GetLastError() << hendl;
+				return GetLastError();
+			}
+
+			this->stat = HeliumServerStat::RUNNING;
+
+			return ret;
+		}
+
+		void HeliumMinecraftServer::operator = (HeliumMinecraftServer server) {
+
+		}
+
+		HeliumMinecraftServer::HeliumMinecraftServer() {
+			this->stat = HeliumServerStat::TERMINATED;
+		}
+		HeliumMinecraftServer::~HeliumMinecraftServer() {
+			if (this->stat != HeliumServerStat::TERMINATED) this->StopServer();
+		}
+
+		int ProcessServerOutput(HeliumMinecraftServer* ptr, string servername, HANDLE stdread, HANDLE hproc) {
+			DWORD dwRead, dwWritten;
+			CHAR chBuf[4097];
+			BOOL bSuccess = false;
+
+			for (;;)
+			{
+				bSuccess = ReadFile(stdread, chBuf, 4096, &dwRead, NULL);
+				if (!bSuccess) continue;
+
+				chBuf[dwRead - 1] = '\0';
+				string output(chBuf);
+				vector<string> lines;
+				split(lines, output, is_any_of("\n"), token_compress_on);
+
+				for (auto s : lines) {
+					EnterCriticalSection(&cs);
+					cout << servername << " > " << s << endl;
+					LeaveCriticalSection(&cs);
+				}
+			}
+
+			return 0;
+		}
+	}
 }

@@ -24,19 +24,55 @@
 
 module;
 
+#define EXP_FUNCPTR_TYPE(ret, name, ...) ret (*fp##name)(__VA_ARGS__)
+#define ADD_EXP_FUNC(namestr, name) HeliumExportFunctionMap.insert(pair<string, void*>(namestr, name))
+
 #include<map>
 #include<string>
+#include<boost/dll.hpp>
+#include<boost/dll/import.hpp>
 
 export module Helium.ExportFunction;
 
+import <string>;
+import Helium.Extension;
+import Helium.Logger;
+
 using namespace std;
+using namespace boost::dll;
 
 export {
 	namespace Helium {
-		extern map<string, void*> HeliumExportFunctionMap;
+		shared_library heliumapilib;
+		fs::path apipath("./heliumapi.dll");
+		map<string, void*> HeliumExportFunctionMap;
+
+		EXP_FUNCPTR_TYPE(void, HeliumExtensionDebugPrint, string);
+
 		int InitFuncMap();
 		int LoadHeliumAPI();
 		int TransferFuncMap();
 		int UnloadHeliumAPI();
+
+		int InitFuncMap() {
+			HeliumEndline hendl;
+			log << "Building Helium API map..." << hendl;
+			HeliumExportFunctionMap.insert(pair<string, void*>("HeliumExtensionDebugPrint", (void*)HeliumExtensionDebugPrint));
+			log << "Helium API map successfully built" << hendl;
+			return 0;
+		}
+
+		int LoadHeliumAPI() {
+
+			return 0;
+		}
+
+		int TransferFuncMap() {
+			return 0;
+		}
+
+		int UnloadHeliumAPI() {
+			return 0;
+		}
 	}
 }

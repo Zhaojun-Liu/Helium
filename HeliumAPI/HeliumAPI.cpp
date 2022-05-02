@@ -22,12 +22,12 @@
 * ----------------------------------------------------------------------------------------
 */
 
-#include "pch.h"
-#include "framework.h"
-#include "HeliumAPI.h"
+#include"pch.h"
+#include"framework.h"
+#include"HeliumAPI.h"
 
 namespace HeliumAPI {
-	int HELIUMAPI_API TransferFuncMap(map<string, void*> funcmap) {
+	HELIUMAPI_API int TransferFuncMap(map<string, void*> funcmap) {
 		return 0;
 	}
 }

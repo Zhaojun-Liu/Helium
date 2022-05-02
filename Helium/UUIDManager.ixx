@@ -34,5 +34,12 @@ export{
 	namespace Helium {
 		bool IsServerUUIDExists(uuid serveruuid);
 		bool IsExtensionUUIDExists(uuid extuuid);
+
+		bool IsServerUUIDExists(uuid serveruuid) {
+			return true;
+		}
+		bool IsExtensionUUIDExists(uuid extuuid) {
+			return true;
+		}
 	}
 }

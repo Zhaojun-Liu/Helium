@@ -21,17 +21,17 @@
 * along with Helium API.  If not, see <https://www.gnu.org/licenses/>.
 * ----------------------------------------------------------------------------------------
 */
-#ifdef HELIUMAPI_EXPORTS
-#define HELIUMAPI_API __declspec(dllexport)
-#else
-#define HELIUMAPI_API __declspec(dllimport)
-#endif
 
-#include<map>
-#include<string>
+#include"pch.h"
 
 using namespace std;
 
+#ifdef HELIUMAPI_EXPORTS
+#define HELIUMAPI_API extern "C" _declspec(dllexport)
+#else
+#define HELIUMAPI_API extern "C" _declspec(dllimport)
+#endif
+
 namespace HeliumAPI {
-	int HELIUMAPI_API TransferFuncMap(map<string, void*> funcmap);
+	HELIUMAPI_API int TransferFuncMap(map<string, void*> funcmap);
 }

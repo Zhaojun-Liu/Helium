@@ -24,11 +24,14 @@
 
 module;
 
-#include<string>
+#include<iostream>
+#include<cstdarg>
+#include<spdlog/spdlog.h>
 
 export module Helium.ErrorExit;
 
 import Helium.Logger;
+import <string>;
 
 using namespace std;
 
@@ -36,5 +39,45 @@ export{
 	namespace Helium {
 		void HeliumErrorExit(bool ispause, bool uselogger, string str, ...);
 		void HeliumError_exit(bool ispause, bool uselogger, string str, ...);
+
+		void HeliumErrorExit(bool ispause, bool uselogger, string str, ...) {
+			va_list arglist;
+
+			if (uselogger) {
+				HeliumEndline hendl;
+				va_start(arglist, str);
+				log << HLL::LL_CRIT << arglist << hendl;
+				va_end(arglist);
+			}
+			else {
+				va_start(arglist, str);
+				cout << arglist << endl;
+				va_end(arglist);
+			}
+
+			spdlog::drop_all();
+			_flushall();
+			if (ispause) system("pause");
+			exit(EXIT_FAILURE);
+		}
+		void HeliumError_exit(bool ispause, bool uselogger, string str, ...) {
+			va_list arglist;
+
+			if (uselogger) {
+				HeliumEndline hendl;
+				va_start(arglist, str);
+				log << HLL::LL_CRIT << arglist << hendl;
+				va_end(arglist);
+			}
+			else {
+				va_start(arglist, str);
+				cout << arglist << endl;
+				va_end(arglist);
+			}
+
+			spdlog::drop_all();
+			if (ispause) system("pause");
+			_exit(EXIT_FAILURE);
+		}
 	}
 }

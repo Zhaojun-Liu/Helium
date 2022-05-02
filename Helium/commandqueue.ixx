@@ -61,5 +61,18 @@ export{
 		public:
 			virtual SaveableCommandQueue* GetCommandQueueClassType();
 		};
+
+		_BasicHeliumCommandQueue* _BasicHeliumCommandQueue::GetCommandQueueClassType() {
+			return this;
+		}
+		ShellCommandQueue* ShellCommandQueue::GetCommandQueueClassType() {
+			return this;
+		}
+		RuntimeCommandQueue* RuntimeCommandQueue::GetCommandQueueClassType() {
+			return this;
+		}
+		SaveableCommandQueue* SaveableCommandQueue::GetCommandQueueClassType() {
+			return this;
+		}
 	}
 }

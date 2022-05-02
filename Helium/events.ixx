@@ -25,11 +25,14 @@
 module;
 
 #include<boost/uuid/uuid.hpp>
-#include<vector>
 
 export module Helium.Events;
 
 import Helium.Extension;
+import Helium.UUIDManager;
+import Helium.Extension;
+
+import <vector>;
 
 using namespace std;
 using namespace boost::uuids;
@@ -194,5 +197,137 @@ export{
 			virtual HeliumEvents GetEventType() { return HeliumEvents::HeliumStop; }
 		}
 		*/;
+
+		bool _BasicHeliumEvent::IsGlobalBlockable() {
+			return true;
+		}
+		bool _BasicHeliumEvent::IsGlobalBlocked() {
+			if (this->IsGlobalBlockable())
+				return this->globalblock;
+			else
+				return false;
+		}
+		bool _BasicHeliumEvent::EnableGlobalBlock() {
+			if (this->IsGlobalBlockable()) {
+				auto ogb = this->globalblock;
+				this->globalblock = true;
+				return ogb;
+			}
+			else
+				return false;
+		}
+		bool _BasicHeliumEvent::DisableGlobalBlock() {
+			if (this->IsGlobalBlockable()) {
+				auto ogb = this->globalblock;
+				this->globalblock = false;
+				return ogb;
+			}
+			else
+				return false;
+		}
+
+		bool _BasicHeliumEvent::IsExtensionBlockable() {
+			return true;
+		}
+		vector<uuid> _BasicHeliumEvent::GetBlockedExtensionList() {
+			return this->blockexts;
+		}
+		bool _BasicHeliumEvent::IsExtensionBlocked(uuid extuuid) {
+			if (this->IsExtensionBlockable() && IsExtensionUUIDExists(extuuid)) {
+				for (auto blockuuid : this->blockexts) {
+					if (blockuuid == extuuid) return true;
+				}
+				return false;
+			}
+			else {
+				return false;
+			}
+		}
+		bool _BasicHeliumEvent::IsExtensionUnblocked(uuid extuuid) {
+			if (this->IsExtensionBlockable() && IsExtensionUUIDExists(extuuid)) {
+				for (auto blockuuid : this->blockexts) {
+					if (blockuuid == extuuid) return false;
+				}
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		int _BasicHeliumEvent::BlockExtension(uuid extuuid) {
+			if (this->IsExtensionBlockable() && IsExtensionUUIDExists(extuuid)) {
+				this->blockexts.push_back(extuuid);
+				return 0;
+			}
+			else {
+				return -1;
+			}
+		}
+		int _BasicHeliumEvent::UnblockExtension(uuid extuuid) {
+			if (this->IsExtensionBlockable() && IsExtensionUUIDExists(extuuid)) {
+				for (auto it = this->blockexts.begin(); it != this->blockexts.end(); it++) {
+					if (*it == extuuid) {
+						this->blockexts.erase(it);
+						return 0;
+					}
+				}
+				return -1;
+			}
+			else {
+				return -1;
+			}
+		}
+
+		bool _BasicHeliumEvent::IsServerBlockable() {
+			return true;
+		}
+		vector<uuid> _BasicHeliumEvent::GetBlockedServerList() {
+			return this->blockservers;
+		}
+		bool _BasicHeliumEvent::IsServerBlocked(uuid serveruuid) {
+			if (this->IsServerBlockable() && IsServerUUIDExists(serveruuid)) {
+				for (auto blockuuid : this->blockservers) {
+					if (blockuuid == serveruuid) return true;
+				}
+				return false;
+			}
+			else {
+				return false;
+			}
+		}
+		bool _BasicHeliumEvent::IsServerUnblocked(uuid serveruuid) {
+			if (this->IsServerBlockable() && IsServerUUIDExists(serveruuid)) {
+				for (auto blockuuid : this->blockservers) {
+					if (blockuuid == serveruuid) return false;
+				}
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		int _BasicHeliumEvent::BlockServer(uuid serveruuid) {
+			if (this->IsServerBlockable() && IsServerUUIDExists(serveruuid)) {
+				this->blockservers.push_back(serveruuid);
+				return 0;
+			}
+			else {
+				return -1;
+			}
+		}
+		int _BasicHeliumEvent::UnblockServer(uuid serveruuid) {
+			if (this->IsServerBlockable() && IsServerUUIDExists(serveruuid)) {
+				for (auto it = this->blockservers.begin(); it != this->blockservers.end(); it++) {
+					if (*it == serveruuid) {
+						this->blockservers.erase(it);
+						return 0;
+					}
+				}
+				return -1;
+			}
+			else {
+				return -1;
+			}
+		}
 	}
 }

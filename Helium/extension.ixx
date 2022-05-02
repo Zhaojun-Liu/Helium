@@ -24,17 +24,22 @@
 
 module;
 
-#include<string>
 #include<vector>
 #include<map>
 #include<spdlog/spdlog.h>
 #include<boost/dll.hpp>
 #include<boost/uuid/uuid.hpp>
+#include<boost/uuid/uuid_io.hpp>
+#include<boost/uuid/uuid_generators.hpp>
 
 #include"tinyxml2/tinyxml2.h"
 
 export module Helium.Extension;
 
+import <string>;
+import Helium.Logger;
+
+using namespace tinyxml2;
 using namespace std;
 using namespace boost::uuids;
 
@@ -98,5 +103,62 @@ export{
 			uuid extuuid;
 			string name;
 		};
+
+		void HeliumExtensionDebugPrint(string extprint) {
+			HeliumEndline hendl;
+			log << "Debug print from extension : " << extprint << hendl;
+		}
+
+		int HeliumExtension::HeliumExtensionConfig::ReadConfig() {
+			HeliumEndline hendl;
+			tinyxml2::XMLDocument doc;
+			if (auto ret = doc.LoadFile(this->configpath.c_str()); ret != tinyxml2::XMLError::XML_SUCCESS) {
+				log << HLL::LL_WARN << "Failed to load extension config file : " << this->configpath << hendl;
+				return -1;
+			}
+
+			tinyxml2::XMLElement* root = doc.RootElement();
+			if (root == NULL) {
+				log << HLL::LL_WARN << "Failed to get root element of extension config file : " << this->configpath << hendl;
+				return -1;
+			}
+			return 0;
+		}
+
+		HeliumExtension::HeliumExtension(string cfgname) {
+			HeliumEndline hendl;
+			this->extstat = EXT_STATUS_EMPTY;
+			this->config.Extconfigpath.append("./extensions/extconfigs").append(cfgname).append(".xml");
+			log << HLL::LL_INFO << "Reading extension config file : " << cfgname << ".xml" << hendl;
+			if (auto ret = this->config.ReadConfig(); ret != 0)
+				return;
+			log << HLL::LL_INFO << "Done." << hendl;
+			this->extstat = EXT_STATUS_UNLOADED;
+			uuid extuuid = random_generator()();
+			this->extuuid = extuuid;
+			return;
+		}
+		HeliumExtension::~HeliumExtension() {
+			this->extstat = EXT_STATUS_EMPTY;
+			return;
+		}
+		int HeliumExtension::LoadExt() {
+			return 0;
+		}
+		int HeliumExtension::LockExt() {
+			return 0;
+		}
+		int HeliumExtension::UnloadExt() {
+			return 0;
+		}
+		int HeliumExtension::UnlockExt() {
+			return 0;
+		}
+		int HeliumExtension::ScanEventFunc() {
+			return 0;
+		}
+		int HeliumExtension::SendExportFuncMap() {
+			return 0;
+		}
 	}
 }

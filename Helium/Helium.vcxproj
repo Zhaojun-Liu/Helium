@@ -163,30 +163,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CommandCallback.ixx" />
-    <ClCompile Include="CommandQueue_imp.cpp" />
     <ClCompile Include="CommandQueue.ixx" />
     <ClCompile Include="Commands.ixx" />
-    <ClCompile Include="ErrorExit_imp.cpp" />
     <ClCompile Include="ErrorExit.ixx" />
-    <ClCompile Include="Events_imp.cpp" />
     <ClCompile Include="Events.ixx" />
-    <ClCompile Include="ExportFunction_imp.cpp" />
     <ClCompile Include="ExportFunction.ixx" />
     <ClCompile Include="Extension.ixx" />
     <ClCompile Include="Helium.ixx" />
-    <ClCompile Include="Config_imp.cpp" />
     <ClCompile Include="Config.ixx" />
-    <ClCompile Include="InitDirectory_imp.cpp" />
     <ClCompile Include="InitDirectory.ixx" />
-    <ClCompile Include="Logger_imp.cpp" />
-    <ClCompile Include="Helium_imp.cpp" />
     <ClCompile Include="Logger.ixx" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MinecraftServer.ixx" />
     <ClCompile Include="MinecraftServerAPI.ixx" />
-    <ClCompile Include="MinecraftServerAPI_imp.cpp" />
     <ClCompile Include="MinecraftServerClass.ixx" />
-    <ClCompile Include="Parser_imp.cpp" />
     <ClCompile Include="Parser.ixx" />
     <ClCompile Include="replxx\conversion.cxx" />
     <ClCompile Include="replxx\ConvertUTF.cpp" />
@@ -200,16 +190,9 @@
     <ClCompile Include="replxx\wcwidth.cpp" />
     <ClCompile Include="replxx\windows.cxx" />
     <ClCompile Include="tinyxml2\tinyxml2.cpp" />
-    <ClCompile Include="Utils_imp.cpp" />
     <ClCompile Include="Utils.ixx" />
-    <ClCompile Include="UUIDManager_imp.cpp" />
     <ClCompile Include="UUIDManager.ixx" />
-    <ClCompile Include="XMLUtils_imp.cpp" />
-    <ClCompile Include="MinecraftServerClass_imp.cpp" />
-    <ClCompile Include="Extension_imp.cpp" />
-    <ClCompile Include="Commands_imp.cpp" />
     <ClCompile Include="XMLUtils.ixx" />
-    <ClCompile Include="CommandCallback_imp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="replxx\conversion.hxx" />

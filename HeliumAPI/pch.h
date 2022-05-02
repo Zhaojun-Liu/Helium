@@ -28,7 +28,9 @@
 #include"framework.h"
 #include"semver/semver.hpp"
 
+#include<map>
+#include<string>
 #include<iostream>
-#include
+#include<boost/dll.hpp>
 
 #endif

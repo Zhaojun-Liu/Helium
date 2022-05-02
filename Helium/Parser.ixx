@@ -24,7 +24,12 @@
 
 module;
 
+#include<regex>
+
 export module Helium.Parser;
+
+import Helium.MinecraftServer;
+import Helium.Events;
 
 import <string>;
 
@@ -84,5 +89,43 @@ export{
 		};
 
 		_BasicHeliumParser* GetParserByType(int type);
+
+		string VanillaParser::StopCommand() {
+			return "stop";
+		}
+		string VanillaParser::MessageCommand() {
+			string cmd;
+			return cmd;
+		}
+		string VanillaParser::BroadcastCommand() {
+			string cmd;
+			return cmd;
+		}
+		int VanillaParser::Parse(string rawoutput) {
+			return 0;
+		}
+
+		_BasicHeliumParser* GetParserByType(int type) {
+			switch (type) {
+			case HeliumServerType::VANILLA:
+				return new VanillaParser;
+			case HeliumServerType::FORGE:
+				return new VanillaParser;
+			case HeliumServerType::BUKKIT:
+				return new VanillaParser;
+			case HeliumServerType::BUKKIT14:
+				return new VanillaParser;
+			case HeliumServerType::BUNGEECORD:
+				return new VanillaParser;
+			case HeliumServerType::WATERFALL:
+				return new VanillaParser;
+			case HeliumServerType::CAT:
+				return new VanillaParser;
+			case HeliumServerType::BETA18:
+				return new VanillaParser;
+			default:
+				return new VanillaParser;
+			}
+		}
 	}
 }
