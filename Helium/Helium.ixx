@@ -96,6 +96,9 @@ export{
         int HeliumEnvInit() {
             HeliumEndline hendl;
             SetConsoleTitleA("Helium");
+
+            InitLoggerEnv();
+
 #ifdef NOT_STABLE
             log << HLL::LL_INFO << "This is a unstable version of helium, log level set to debug." << hendl;
             spdlog::set_level(spdlog::level::debug);

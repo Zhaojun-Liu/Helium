@@ -117,7 +117,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>_SILENCE_CXX17_STRSTREAM_DEPRECATION_WARNING;_HAS_DEPRECATED_RESULT_OF;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;_HAS_STD_BYTE=0;REPLXX_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -126,7 +126,7 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CallingConvention>StdCall</CallingConvention>
-      <DisableSpecificWarnings>4215;4273;4101;26812;4005</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4215;4273;4101;26812;4005;5104;5105</DisableSpecificWarnings>
       <EnableModules>false</EnableModules>
       <ForcedIncludeFiles>%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <TranslateIncludes>false</TranslateIncludes>
