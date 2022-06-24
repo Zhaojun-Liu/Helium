@@ -167,11 +167,13 @@
     <ClCompile Include="Commands.ixx" />
     <ClCompile Include="ErrorExit.ixx" />
     <ClCompile Include="Events.ixx" />
+    <ClCompile Include="Exception.ixx" />
     <ClCompile Include="ExportFunction.ixx" />
     <ClCompile Include="Extension.ixx" />
     <ClCompile Include="Helium.ixx" />
     <ClCompile Include="Config.ixx" />
     <ClCompile Include="InitDirectory.ixx" />
+    <ClCompile Include="Internationalization.ixx" />
     <ClCompile Include="Logger.ixx" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MinecraftServer.ixx" />

@@ -1,7 +1,7 @@
 /*
 * Helium is a customizable extension system for Minecraft server.
 * You can get the lastest source code and releases of Helium at :
-* https://github.com/Minecraft1248/Helium
+* https://github.com/Helium-DevTeam/Helium
 * ----------------------------------------------------------------------------------------
 * Helium Copyright (C) 2021-2022 HeliumDevTeam
 *
@@ -46,8 +46,10 @@ export import Helium.Commands;
 export import Helium.Config;
 export import Helium.ErrorExit;
 export import Helium.Events;
+export import Helium.Exception;
 export import Helium.Extension;
 export import Helium.InitDirectory;
+export import Helium.Internationalization;
 export import Helium.Logger;
 export import Helium.MinecraftServer;
 export import Helium.Parser;
