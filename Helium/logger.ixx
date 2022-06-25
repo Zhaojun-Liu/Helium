@@ -84,10 +84,13 @@ export{
 			//shared_ptr<spdlog::logger> log;
 		};
 
-		int InitLoggerEnv();
-
 		HeliumEndline hendl;
 		HeliumLogger log("Helium");
+		auto LDBG = HLL::LL_DBG;
+		auto LINFO = HLL::LL_INFO;
+		auto LWARN = HLL::LL_DBG;
+		auto LCRIT = HLL::LL_DBG;
+		auto LFATAL = HLL::LL_DBG;
 	}
 }
 

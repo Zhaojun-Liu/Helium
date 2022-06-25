@@ -77,8 +77,6 @@ export{
 		int HeliumFin();
 		int HeliumStartServer();
 
-        map<string, HeliumExtension> extensions;
-
         void HeliumInitOutput() {
             HeliumEndline hendl;
             log << HLL::LL_INFO << " _   _      _ _" << hendl;
@@ -108,8 +106,6 @@ export{
             return 0;
         }
         int HeliumInit() {
-            HeliumEndline hendl;
-
             log << HLL::LL_INFO << "Start Helium initialization." << hendl;
 
             InitShellEnv();
@@ -119,8 +115,10 @@ export{
             LoadHeliumAPI();
             TransferFuncMap();
 
-            HeliumExtension testext;
-            testext.LoadExt();
+            auto sucext = InitAllExtension();
+            log << HLL::LL_INFO << "Successfully initialized " << sucext << " extensions" << hendl;
+            sucext = LoadAllExtension();
+            log << HLL::LL_INFO << "Successfully loaded " << sucext << " extensions." << hendl;
 
             log << HLL::LL_DBG << "Start adding dirs" << hendl;
             AddHeliumDirectory("./extensions", "The \"extension\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
@@ -147,21 +145,18 @@ export{
             return 0;
         }
         int HeliumStartServer() {
-            HeliumEndline hendl;
             auto ret = AutoStartAllServer();
             ResumeAllServer();
             return ret;
         }
         int HeliumFin() {
-            HeliumEndline hendl;
-
+            UnloadAllExtension();
             FinShell();
             StopAllServer();
 
             return 0;
         }
         int HeliumMain(int argc, char* argv[]) {
-            HeliumEndline hendl;
             int ret;
 
             HeliumEnvInit();
