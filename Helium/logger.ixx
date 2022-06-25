@@ -65,6 +65,9 @@ export{
 			}
 
 			HeliumLogger(string name);
+			~HeliumLogger() {
+				this->logger->flush();
+			}
 
 			HeliumLogger& operator<<(HeliumLoggerLevel n);
 			HeliumLogger& operator<<(string s);
@@ -75,6 +78,7 @@ export{
 			HeliumLogger& operator<<(HeliumEndline hendl);
 		protected:
 			int loglevel;
+			shared_ptr<spdlog::logger> logger;
 			string loggername;
 			stringstream buffer;
 			//shared_ptr<spdlog::logger> log;
@@ -82,6 +86,7 @@ export{
 
 		int InitLoggerEnv();
 
+		HeliumEndline hendl;
 		HeliumLogger log("Helium");
 	}
 }
@@ -93,26 +98,17 @@ namespace Helium {
 	//static unique_ptr<spdlog::sinks::stdout_color_sink_mt> heliumconsolesink = make_unique<spdlog::sinks::stdout_color_sink_mt>(spdlog::color_mode::automatic);
 	//spdlog::sinks_init_list sinklist = { heliumdailysink, heliumconsolesink };
 
-	vector<spdlog::sink_ptr> sinks;
-	shared_ptr<spdlog::logger> logger;
-
-	int InitLoggerEnv() {
-		try {
-			sinks.push_back(make_shared<spdlog::sinks::daily_file_sink_mt>("./logs/helium-log.log", 23, 59));
-			sinks.push_back(make_shared<spdlog::sinks::stdout_color_sink_mt>(spdlog::color_mode::automatic));
-			logger = std::make_shared<spdlog::logger>("HeliumLogger", begin(sinks), end(sinks));
-		}
-		catch (const spdlog::spdlog_ex& ex) {
-			cout << "Logger initalization failed : " << ex.what() << endl;
-		}
-		return 0;
-	}
-
 	bool isinit = false;
-	
+	vector<spdlog::sink_ptr> sinks;
 
 	HeliumLogger::HeliumLogger(string name) {
 		this->loggername = name;
+		if (!isinit) {
+			sinks.push_back(make_shared<spdlog::sinks::daily_file_sink_mt>("./logs/helium-log.log", 23, 59));
+			sinks.push_back(make_shared<spdlog::sinks::stdout_color_sink_mt>(spdlog::color_mode::automatic));
+			isinit = true;
+		}
+		this->logger = std::make_shared<spdlog::logger>(name, begin(sinks), end(sinks));
 	}
 
 	HeliumLogger& HeliumLogger::operator<<(HeliumLoggerLevel n) {
@@ -145,19 +141,19 @@ namespace Helium {
 		try {
 			switch (this->loglevel) {
 			case HeliumLoggerLevel::LL_DBG:
-				logger->debug(str);
+				this->logger->debug(str);
 				break;
 			case HeliumLoggerLevel::LL_INFO:
-				logger->info(str);
+				this->logger->info(str);
 				break;
 			case HeliumLoggerLevel::LL_WARN:
-				logger->warn(str);
+				this->logger->warn(str);
 				break;
 			case HeliumLoggerLevel::LL_ERR:
-				logger->error(str);
+				this->logger->error(str);
 				break;
 			case HeliumLoggerLevel::LL_CRIT:
-				logger->critical(str);
+				this->logger->critical(str);
 				break;
 			default:
 				break;

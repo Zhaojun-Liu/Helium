@@ -81,11 +81,11 @@ export{
 
         void HeliumInitOutput() {
             HeliumEndline hendl;
-            log << HLL::LL_INFO << "  _   _      _ _" << hendl;
-            log << " | | | | ___| (_)_   _ _ __ ___" << hendl;
-            log << " | |_| |/ _ \\ | | | | | '_ ` _ \\" << hendl;
-            log << " |  _  |  __/ | | |_| | | | | | |" << hendl;
-            log << " |_| |_|\\___|_|_|\\__,_|_| |_| |_|" << hendl;
+            log << HLL::LL_INFO << " _   _      _ _" << hendl;
+            log << "| | | | ___| (_)_   _ _ __ ___" << hendl;
+            log << "| |_| |/ _ \\ | | | | | '_ ` _ \\" << hendl;
+            log << "|  _  |  __/ | | |_| | | | | | |" << hendl;
+            log << "|_| |_|\\___|_|_|\\__,_|_| |_| |_|" << hendl;
             log << heliumversion.to_string() << hendl;
             log << "Copyright(C) 2021-2022 HeliumDevTeam" << hendl;
             log << "This program comes with ABSOLUTELY NO WARRANTY;" << hendl;
@@ -98,8 +98,6 @@ export{
         int HeliumEnvInit() {
             HeliumEndline hendl;
             SetConsoleTitleA("Helium");
-
-            InitLoggerEnv();
 
 #ifdef NOT_STABLE
             log << HLL::LL_INFO << "This is a unstable version of helium, log level set to debug." << hendl;
@@ -120,6 +118,9 @@ export{
             InitFuncMap();
             LoadHeliumAPI();
             TransferFuncMap();
+
+            HeliumExtension testext;
+            testext.LoadExt();
 
             log << HLL::LL_DBG << "Start adding dirs" << hendl;
             AddHeliumDirectory("./extensions", "The \"extension\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);

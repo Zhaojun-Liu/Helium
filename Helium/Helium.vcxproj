@@ -126,7 +126,7 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CallingConvention>StdCall</CallingConvention>
-      <DisableSpecificWarnings>4215;4273;4101;26812;4005;5104;5105</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4215;4273;4101;26812;4005;5104;5105;4267</DisableSpecificWarnings>
       <EnableModules>false</EnableModules>
       <ForcedIncludeFiles>%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <TranslateIncludes>false</TranslateIncludes>

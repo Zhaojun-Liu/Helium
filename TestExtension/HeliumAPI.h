@@ -22,26 +22,17 @@
 * ----------------------------------------------------------------------------------------
 */
 
-#include"pch.h"
-#include"framework.h"
-#include"HeliumAPI.h"
+#include <map>
 
 using namespace std;
 
+#ifdef HELIUMAPI_EXPORTS
+#define HELIUMAPI_API extern "C" _declspec(dllexport)
+#else
+#define HELIUMAPI_API extern "C" _declspec(dllimport)
+#endif
+
 namespace HeliumAPI {
-	map<string, void*> HeliumAPIMap;
-
-	typedef int (*funcptr)(string);
-
-	HELIUMAPI_API int TransferFuncMap(map<string, void*> funcmap) {
-		cout << "Enter TransferFuncMap()!" << endl;
-		HeliumAPIMap = funcmap;
-		return 0;
-	}
-
-	HELIUMAPI_API int HeliumExtensionDebugPrint(string debugprint) {
-		auto rawptr = HeliumAPIMap.at("HeliumExtensionDebugPrint");
-		funcptr ptr = (funcptr)rawptr;
-		return ptr(debugprint);
-	}
+	HELIUMAPI_API int TransferFuncMap(map<string, void*> funcmap);
+	HELIUMAPI_API int HeliumExtensionDebugPrint(string debugprint);
 }

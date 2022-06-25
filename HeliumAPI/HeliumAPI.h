@@ -34,4 +34,5 @@ using namespace std;
 
 namespace HeliumAPI {
 	HELIUMAPI_API int TransferFuncMap(map<string, void*> funcmap);
+	HELIUMAPI_API int HeliumExtensionDebugPrint(string debugprint);
 }

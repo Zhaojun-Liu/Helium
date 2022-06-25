@@ -42,6 +42,7 @@ import Helium.Logger;
 using namespace tinyxml2;
 using namespace std;
 using namespace boost::uuids;
+using namespace boost::dll;
 
 export{
 	namespace Helium {
@@ -49,6 +50,9 @@ export{
 
 		class HeliumExtension {
 		public:
+			HeliumExtension() {
+
+			}
 			HeliumExtension(string cfgname);
 			~HeliumExtension();
 
@@ -105,12 +109,10 @@ export{
 		};
 
 		void HeliumExtensionDebugPrint(string extprint) {
-			HeliumEndline hendl;
-			log << "Debug print from extension : " << extprint << hendl;
+			log << HLL::LL_INFO << "Debug print from extension : " << extprint << hendl;
 		}
 
 		int HeliumExtension::HeliumExtensionConfig::ReadConfig() {
-			HeliumEndline hendl;
 			tinyxml2::XMLDocument doc;
 			if (auto ret = doc.LoadFile(this->configpath.c_str()); ret != tinyxml2::XMLError::XML_SUCCESS) {
 				log << HLL::LL_WARN << "Failed to load extension config file : " << this->configpath << hendl;
@@ -126,7 +128,6 @@ export{
 		}
 
 		HeliumExtension::HeliumExtension(string cfgname) {
-			HeliumEndline hendl;
 			this->extstat = EXT_STATUS_EMPTY;
 			this->config.Extconfigpath.append("./extensions/extconfigs").append(cfgname).append(".xml");
 			log << HLL::LL_INFO << "Reading extension config file : " << cfgname << ".xml" << hendl;
@@ -143,6 +144,17 @@ export{
 			return;
 		}
 		int HeliumExtension::LoadExt() {
+			log << HLL::LL_INFO << "Enter LoadExt()" << hendl;
+			shared_library ext;
+			ext.load(fs::path("./TestExtension.dll"));
+			if (ext.has("ExtensionLoad")) {
+				log << HLL::LL_INFO << "Try to get ExtensionLoad()'s pointer" << hendl;
+				auto& symbol = ext.get<int()>("ExtensionLoad");
+				symbol();
+			}
+			else {
+				log << HLL::LL_WARN << "Cannot find ExtensionLoad() in TestExtension" << hendl;
+			}
 			return 0;
 		}
 		int HeliumExtension::LockExt() {

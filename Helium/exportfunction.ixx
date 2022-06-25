@@ -35,8 +35,22 @@ module;
 export module Helium.ExportFunction;
 
 import <string>;
+import Helium.CommandCallback;
+import Helium.CommandQueue;
+import Helium.Commands;
+import Helium.Config;
+import Helium.ErrorExit;
+import Helium.Events;
+import Helium.Exception;
 import Helium.Extension;
+import Helium.InitDirectory;
+import Helium.Internationalization;
 import Helium.Logger;
+import Helium.MinecraftServer;
+import Helium.Parser;
+import Helium.Utils;
+import Helium.UUIDManager;
+import Helium.XMLUtils;
 
 using namespace std;
 using namespace boost::dll;
@@ -64,6 +78,14 @@ export {
 
 		int LoadHeliumAPI() {
 			heliumapilib.load(apipath);
+			if (heliumapilib.has("TransferFuncMap")) {
+				log << HLL::LL_INFO << "Successfully Loaded HeliumAPI!" << hendl;
+				auto& transfer = heliumapilib.get<int(map<string, void*> funcmap)>("TransferFuncMap");
+				transfer(HeliumExportFunctionMap);
+			}
+			else {
+				HeliumErrorExit(true, "Can't find TransferFuncMap() in the HeliumAPI.dll", ", try to use another HeliumAPI.dll");
+			}
 			return 0;
 		}
 
