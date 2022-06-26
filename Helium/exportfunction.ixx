@@ -77,7 +77,7 @@ export {
 			ADD_EXP_FUNC("ExtLoggerWarn", ExtLoggerWarn);
 			ADD_EXP_FUNC("ExtLoggerCrit", ExtLoggerCrit);
 			ADD_EXP_FUNC("ExtLoggerFatal", ExtLoggerFatal);
-			log << "Helium API map successfully built" << hendl;
+			log << "Helium API map was successfully built" << hendl;
 			return 0;
 		}
 

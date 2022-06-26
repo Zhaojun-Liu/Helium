@@ -179,9 +179,11 @@ namespace Helium {
 	}
 	int HeliumExtension::LoadExt() {
 		this->extstat = EXT_STATUS_LOADING;
+		typedef int (*funcptr)();
 		log << HLL::LL_INFO << "Enter LoadExt()" << hendl;
 		this->extins.load(this->config.extpath);
 		this->ScanEventFunc();
+		((funcptr)this->funcs["ExtensionLoad"])();
 		this->extstat = EXT_STATUS_LOADED;
 		return 0;
 	}
@@ -195,6 +197,9 @@ namespace Helium {
 		return 0;
 	}
 	int HeliumExtension::ScanEventFunc() {
+		if (this->extins.has("ExtensionLoad")) {
+			this->funcs["ExtensionLoad"] = this->extins.get<int()>("ExtensionLoad");
+		}
 		return 0;
 	}
 	string HeliumExtension::GetExtName(){
