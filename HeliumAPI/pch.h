@@ -36,6 +36,7 @@
 #include"_TransferFuncMap.h"
 
 #include<map>
+#include<strstream>
 #include<string>
 #include<iostream>
 #include<boost/dll.hpp>

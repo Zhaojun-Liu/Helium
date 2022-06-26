@@ -24,3 +24,8 @@
 
 #include"HeliumLogger.h"
 
+#ifdef HELIUMAPI_EXPORTS
+#define HELIUMAPI_API extern "C" _declspec(dllexport)
+#else
+#define HELIUMAPI_API extern "C" _declspec(dllimport)
+#endif

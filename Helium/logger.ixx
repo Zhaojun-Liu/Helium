@@ -174,12 +174,13 @@ namespace Helium {
 	}
 
 	int CreateExtLogger(string name) {
-		if (extloggers.count(name) == 0) return -1;
+		if (extloggers.count(name) > 0) return -1;
+		log << "Enter create" << hendl;
 		extloggers[name] = new HeliumLogger(name);
 		return 0;
 	}
 	int DeleteExtLogger(string name) {
-		if (extloggers.count(name) == 0) return -1;
+		if (extloggers.count(name) > 0) return -1;
 		delete extloggers[name];
 		return 0;
 	}
@@ -190,21 +191,25 @@ namespace Helium {
 	}
 	int ExtLoggerInfo(string loggername, string raw) {
 		if (extloggers.count(loggername) == 0) return -1;
+		log << "Enter info " << raw << hendl;
 		(*extloggers[loggername]) << LINFO << raw << hendl;
 		return 0;
 	}
 	int ExtLoggerWarn(string loggername, string raw) {
 		if (extloggers.count(loggername) == 0) return -1;
+		log << "Enter warn " << raw << hendl;
 		(*extloggers[loggername]) << LWARN << raw << hendl;
 		return 0;
 	}
 	int ExtLoggerCrit(string loggername, string raw) {
 		if (extloggers.count(loggername) == 0) return -1;
+		log << "Enter crit " << raw << hendl;
 		(*extloggers[loggername]) << LCRIT << raw << hendl;
 		return 0;
 	}
 	int ExtLoggerFatal(string loggername, string raw) {
 		if (extloggers.count(loggername) == 0) return -1;
+		log << "Enter fatal " << raw << hendl;
 		(*extloggers[loggername]) << LFATAL << raw << hendl;
 		return 0;
 	}

@@ -10,8 +10,15 @@ using namespace HeliumAPI;
 
 namespace TestExtension {
 	extern "C" TESTEXTENSION_API int ExtensionLoad() {
-		cout << "Hello World from TestExtension's ExtensionLoad()!" << endl;
 		HeliumExtensionDebugPrint("Hello World!");
+		string lname = "TestExtension";
+		CreateExtLogger(lname);
+		ExtLoggerDebug(lname, "Logging test");
+		ExtLoggerInfo(lname, "Logging test");
+		ExtLoggerWarn(lname, "Logging test");
+		ExtLoggerCrit(lname, "Logging test");
+		ExtLoggerFatal(lname, "Logging test");
+		DeleteExtLogger(lname);
 		return 0;
 	}
 }
