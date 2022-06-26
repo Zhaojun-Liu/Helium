@@ -25,8 +25,15 @@
 #ifndef PCH_H
 #define PCH_H
 
+#ifdef HELIUMAPI_EXPORTS
+#define HELIUMAPI_API extern "C" _declspec(dllexport)
+#else
+#define HELIUMAPI_API extern "C" _declspec(dllimport)
+#endif
+
 #include"framework.h"
 #include"semver/semver.hpp"
+#include"_TransferFuncMap.h"
 
 #include<map>
 #include<string>

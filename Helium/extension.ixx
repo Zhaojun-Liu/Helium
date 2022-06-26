@@ -71,11 +71,10 @@ export{
 			int UnlockExt();
 			int UnloadExt();
 			int ScanEventFunc();
+			void* GetFuncPtr(string funcname);
+			void* SetFuncPtr(string funcname, void* newptr);
+			bool HasFunc(string funcname);
 			string GetExtName();
-
-			class HeliumExtensionFuncs {
-				friend class HeliumExtension;
-			};
 
 			class HeliumExtensionConfig {
 				friend class HeliumExtension;
@@ -97,17 +96,16 @@ export{
 				int ReadConfig();
 			private:
 				fs::path configpath;
-				fs::path extname;
+				fs::path extpath;
+				string extname;
 			};
 
 		private:
 			HeliumExtensionConfig config;
-			HeliumExtensionFuncs funcs;
+			map<string, void*> funcs;
 			int extstat;
 			uuid extuuid;
-			string name;
 			shared_library extins;
-			fs::path extpath;
 		};
 
 		vector<HeliumExtension> extensions;
@@ -128,14 +126,37 @@ namespace Helium {
 	int HeliumExtension::HeliumExtensionConfig::ReadConfig() {
 		tinyxml2::XMLDocument doc;
 		if (auto ret = doc.LoadFile(this->configpath.string().c_str()); ret != tinyxml2::XMLError::XML_SUCCESS) {
-			log << HLL::LL_WARN << "Failed to load extension config file : " << this->configpath.filename().string() << hendl;
+			log << LCRIT << "Failed to load extension config file : " << this->configpath.filename().string() << hendl;
+			log << LCRIT << "The extension will not be loaded" << hendl;
 			return -1;
 		}
 
-		tinyxml2::XMLElement* root = doc.RootElement();
+		tinyxml2::XMLElement* root = doc.FirstChildElement("HeliumExtension");
 		if (root == NULL) {
-			log << HLL::LL_WARN << "Failed to get root element of extension config file : " << this->configpath.filename().string() << hendl;
+			log << LCRIT << "Failed to get root element of extension config file : " << this->configpath.filename().string() << hendl;
+			log << LCRIT << "The extension will not be loaded" << hendl;
 			return -1;
+		}
+
+		auto* extname = root->FirstChildElement("ExtensionName");
+		auto* extfilename = root->FirstChildElement("ExtensionFileName");
+		if (extname == NULL) {
+			log << LCRIT << "Failed to get \"ExtensionName\" element of extension config file : " << this->configpath.filename().string() << hendl;
+			log << LCRIT << "The extension will not be loaded" << hendl;
+			return -1;
+		}
+		if (extfilename == NULL) {
+			log << LCRIT << "Failed to get \"ExtensionName\" element of extension config file : " << this->configpath.filename().string() << hendl;
+			log << LCRIT << "The extension will not be loaded" << hendl;
+			return -1;
+		}
+		if (extname->GetText() != NULL) {
+			this->extname = extname->GetText();
+		}
+		if (extfilename->GetText() != NULL) {
+			string tempstr;
+			tempstr.append("./extensions/").append(extfilename->GetText());
+			this->extpath = fs::path(tempstr);
 		}
 		return 0;
 	}
@@ -157,17 +178,11 @@ namespace Helium {
 		return;
 	}
 	int HeliumExtension::LoadExt() {
+		this->extstat = EXT_STATUS_LOADING;
 		log << HLL::LL_INFO << "Enter LoadExt()" << hendl;
-		this->extpath = "./TestExtension.dll";
-		this->extins.load(this->extpath);
-		if (this->extins.has("ExtensionLoad")) {
-			log << HLL::LL_INFO << "Try to get ExtensionLoad()'s pointer" << hendl;
-			auto& symbol = this->extins.get<int()>("ExtensionLoad");
-			symbol();
-		}
-		else {
-			log << HLL::LL_WARN << "Cannot find ExtensionLoad() in TestExtension" << hendl;
-		}
+		this->extins.load(this->config.extpath);
+		this->ScanEventFunc();
+		this->extstat = EXT_STATUS_LOADED;
 		return 0;
 	}
 	int HeliumExtension::LockExt() {
@@ -183,7 +198,22 @@ namespace Helium {
 		return 0;
 	}
 	string HeliumExtension::GetExtName(){
-		return this->name;
+		return this->config.extname;
+	}
+	void* HeliumExtension::GetFuncPtr(string funcname) {
+		if (this->funcs.count(funcname) != 0) {
+			return this->funcs.at(funcname);
+		}
+		return nullptr;
+	}
+	void* HeliumExtension::SetFuncPtr(string funcname, void* newptr) {
+		auto tempptr = this->funcs.at(funcname);
+		this->funcs[funcname] = newptr;
+		return tempptr;
+	}
+	bool HeliumExtension::HasFunc(string funcname) {
+		if (this->funcs.count(funcname) > 0) return true;
+		return false;
 	}
 
 	int InitAllExtension() {

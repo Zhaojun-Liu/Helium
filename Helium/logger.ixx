@@ -29,12 +29,14 @@ module;
 #include<spdlog/spdlog.h>
 #include<spdlog/sinks/stdout_color_sinks.h>
 #include<spdlog/sinks/daily_file_sink.h>
-#include<string>
 #include<sstream>
 #include<spdlog/fmt/fmt.h>
 #include<iostream>
 
 export module Helium.Logger;
+
+import <map>;
+import <string>;
 
 using namespace std;
 
@@ -81,7 +83,6 @@ export{
 			shared_ptr<spdlog::logger> logger;
 			string loggername;
 			stringstream buffer;
-			//shared_ptr<spdlog::logger> log;
 		};
 
 		HeliumEndline hendl;
@@ -91,18 +92,21 @@ export{
 		auto LWARN = HLL::LL_DBG;
 		auto LCRIT = HLL::LL_DBG;
 		auto LFATAL = HLL::LL_DBG;
+
+		int CreateExtLogger(string name);
+		int DeleteExtLogger(string name);
+		int ExtLoggerDebug(string loggername, string raw);
+		int ExtLoggerInfo(string loggername, string raw);
+		int ExtLoggerWarn(string loggername, string raw);
+		int ExtLoggerCrit(string loggername, string raw);
+		int ExtLoggerFatal(string loggername, string raw);
 	}
 }
 
 namespace Helium {
-	//shared_ptr<spdlog::sinks::daily_file_sink_mt> heliumdailysink = make_shared<spdlog::sinks::daily_file_sink_mt>("./logs/helium-log.log", 23, 59);
-	//shared_ptr<spdlog::sinks::stdout_color_sink_mt> heliumconsolesink = make_shared<spdlog::sinks::stdout_color_sink_mt>(spdlog::color_mode::automatic);
-	//static unique_ptr<spdlog::sinks::daily_file_sink_mt> heliumdailysink = make_unique<spdlog::sinks::daily_file_sink_mt>("./logs/helium-log.log", 23, 59);
-	//static unique_ptr<spdlog::sinks::stdout_color_sink_mt> heliumconsolesink = make_unique<spdlog::sinks::stdout_color_sink_mt>(spdlog::color_mode::automatic);
-	//spdlog::sinks_init_list sinklist = { heliumdailysink, heliumconsolesink };
-
 	bool isinit = false;
 	vector<spdlog::sink_ptr> sinks;
+	map<string, HeliumLogger*> extloggers;
 
 	HeliumLogger::HeliumLogger(string name) {
 		this->loggername = name;
@@ -167,5 +171,41 @@ namespace Helium {
 		}
 		this->buffer.str("");
 		return *this;
+	}
+
+	int CreateExtLogger(string name) {
+		if (extloggers.count(name) == 0) return -1;
+		extloggers[name] = new HeliumLogger(name);
+		return 0;
+	}
+	int DeleteExtLogger(string name) {
+		if (extloggers.count(name) == 0) return -1;
+		delete extloggers[name];
+		return 0;
+	}
+	int ExtLoggerDebug(string loggername, string raw) {
+		if (extloggers.count(loggername) == 0) return -1;
+		(*extloggers[loggername]) << LDBG << raw << hendl;
+		return 0;
+	}
+	int ExtLoggerInfo(string loggername, string raw) {
+		if (extloggers.count(loggername) == 0) return -1;
+		(*extloggers[loggername]) << LINFO << raw << hendl;
+		return 0;
+	}
+	int ExtLoggerWarn(string loggername, string raw) {
+		if (extloggers.count(loggername) == 0) return -1;
+		(*extloggers[loggername]) << LWARN << raw << hendl;
+		return 0;
+	}
+	int ExtLoggerCrit(string loggername, string raw) {
+		if (extloggers.count(loggername) == 0) return -1;
+		(*extloggers[loggername]) << LCRIT << raw << hendl;
+		return 0;
+	}
+	int ExtLoggerFatal(string loggername, string raw) {
+		if (extloggers.count(loggername) == 0) return -1;
+		(*extloggers[loggername]) << LFATAL << raw << hendl;
+		return 0;
 	}
 }

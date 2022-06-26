@@ -31,15 +31,24 @@
     <ClInclude Include="semver\semver.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="HeliumLogger.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="_TransferFuncMap.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="HeliumAPI.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="dllmain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="HeliumLogger.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="_TransferFuncMap.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

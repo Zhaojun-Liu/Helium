@@ -25,7 +25,7 @@
 module;
 
 #define EXP_FUNCPTR_TYPE(ret, name, ...) ret (*fp##name)(__VA_ARGS__)
-#define ADD_EXP_FUNC(namestr, name) HeliumExportFunctionMap.insert(pair<string, void*>(namestr, name))
+#define ADD_EXP_FUNC(namestr, name) HeliumExportFunctionMap.insert(pair<string, void*>(namestr, (void*)name))
 
 #include<map>
 #include<string>
@@ -61,8 +61,6 @@ export {
 		fs::path apipath("./heliumapi.dll");
 		map<string, void*> HeliumExportFunctionMap;
 
-		EXP_FUNCPTR_TYPE(void, HeliumExtensionDebugPrint, string);
-
 		int InitFuncMap();
 		int LoadHeliumAPI();
 		int TransferFuncMap();
@@ -71,7 +69,14 @@ export {
 		int InitFuncMap() {
 			HeliumEndline hendl;
 			log << "Building Helium API map..." << hendl;
-			HeliumExportFunctionMap.insert(pair<string, void*>("HeliumExtensionDebugPrint", (void*)HeliumExtensionDebugPrint));
+			ADD_EXP_FUNC("HeliumExtensionDebugPrint", HeliumExtensionDebugPrint);
+			ADD_EXP_FUNC("CreateExtLogger", CreateExtLogger);
+			ADD_EXP_FUNC("DeleteExtLogger", DeleteExtLogger);
+			ADD_EXP_FUNC("ExtLoggerDebug", ExtLoggerDebug);
+			ADD_EXP_FUNC("ExtLoggerInfo", ExtLoggerInfo);
+			ADD_EXP_FUNC("ExtLoggerWarn", ExtLoggerWarn);
+			ADD_EXP_FUNC("ExtLoggerCrit", ExtLoggerCrit);
+			ADD_EXP_FUNC("ExtLoggerFatal", ExtLoggerFatal);
 			log << "Helium API map successfully built" << hendl;
 			return 0;
 		}
