@@ -66,11 +66,15 @@ export{
 				this->loggername = n;
 			}
 
+			HeliumLogger() {
+
+			}
 			HeliumLogger(string name);
 			~HeliumLogger() {
 				this->logger->flush();
 			}
 
+			void operator=(const HeliumLogger& l);
 			HeliumLogger& operator<<(HeliumLoggerLevel n);
 			HeliumLogger& operator<<(string s);
 			HeliumLogger& operator<<(const char* c);
@@ -106,7 +110,7 @@ export{
 namespace Helium {
 	bool isinit = false;
 	vector<spdlog::sink_ptr> sinks;
-	map<string, HeliumLogger*> extloggers;
+	map<string, HeliumLogger> extloggers;
 
 	HeliumLogger::HeliumLogger(string name) {
 		this->loggername = name;
@@ -116,8 +120,15 @@ namespace Helium {
 			isinit = true;
 		}
 		this->logger = std::make_shared<spdlog::logger>(name, begin(sinks), end(sinks));
+		this->logger->critical("Test000");
 	}
-
+	void HeliumLogger::operator=(const HeliumLogger& l) {
+		this->logger = l.logger;
+		this->loglevel = l.loglevel;
+		this->loggername = l.loggername;
+		this->buffer.clear();
+		this->buffer << l.buffer.str();
+	}
 	HeliumLogger& HeliumLogger::operator<<(HeliumLoggerLevel n) {
 		this->loglevel = n;
 		return *this;
@@ -176,41 +187,43 @@ namespace Helium {
 	int CreateExtLogger(string name) {
 		if (extloggers.count(name) > 0) return -1;
 		log << "Enter create" << hendl;
-		extloggers[name] = new HeliumLogger(name);
+		HeliumLogger templ(name);
+		templ << LCRIT << "TEST" << hendl;
+		extloggers[name] = HeliumLogger(name);
 		return 0;
 	}
 	int DeleteExtLogger(string name) {
 		if (extloggers.count(name) > 0) return -1;
-		delete extloggers[name];
+		//delete extloggers[name];
 		return 0;
 	}
 	int ExtLoggerDebug(string loggername, string raw) {
 		if (extloggers.count(loggername) == 0) return -1;
-		(*extloggers[loggername]) << LDBG << raw << hendl;
+		(extloggers[loggername]) << LDBG << raw << hendl;
 		return 0;
 	}
 	int ExtLoggerInfo(string loggername, string raw) {
 		if (extloggers.count(loggername) == 0) return -1;
 		log << "Enter info " << raw << hendl;
-		(*extloggers[loggername]) << LINFO << raw << hendl;
+		(extloggers[loggername]) << LINFO << raw << hendl;
 		return 0;
 	}
 	int ExtLoggerWarn(string loggername, string raw) {
 		if (extloggers.count(loggername) == 0) return -1;
 		log << "Enter warn " << raw << hendl;
-		(*extloggers[loggername]) << LWARN << raw << hendl;
+		(extloggers[loggername]) << LWARN << raw << hendl;
 		return 0;
 	}
 	int ExtLoggerCrit(string loggername, string raw) {
 		if (extloggers.count(loggername) == 0) return -1;
 		log << "Enter crit " << raw << hendl;
-		(*extloggers[loggername]) << LCRIT << raw << hendl;
+		(extloggers[loggername]) << LCRIT << raw << hendl;
 		return 0;
 	}
 	int ExtLoggerFatal(string loggername, string raw) {
 		if (extloggers.count(loggername) == 0) return -1;
 		log << "Enter fatal " << raw << hendl;
-		(*extloggers[loggername]) << LFATAL << raw << hendl;
+		(extloggers[loggername]) << LFATAL << raw << hendl;
 		return 0;
 	}
 }
