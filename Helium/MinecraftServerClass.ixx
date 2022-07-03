@@ -39,6 +39,8 @@ module;
 export module Helium.MinecraftServer:Class;
 
 import Helium.Logger;
+import Helium.UUIDManager;
+
 import <string>;
 import <vector>;
 
@@ -175,8 +177,6 @@ export {
 
 			bool IsValid();
 
-			uuid GenServerUUID();
-
 			int StartServer();
 			int StopServer();
 			int PauseServer();
@@ -184,8 +184,7 @@ export {
 
 			void operator=(HeliumMinecraftServer server);			
 		};
-
-		HeliumLogger lg("HeliumServer");
+		
 		CRITICAL_SECTION cs;
 		vector<thread> outputthreads;
 		bool isinit = false;
@@ -325,17 +324,6 @@ export {
 			return r;
 		}
 
-		uuid HeliumMinecraftServer::GenServerUUID() {
-			uuid serveruuid = random_generator()();
-			string uuidstr = to_string(serveruuid);
-			HeliumEndline hendl;
-			log << HLL::LL_INFO;
-			log << "Successfully generated UUID of server : " << this->name << hendl;
-			log << "Server UUID : " << uuidstr << hendl;
-			this->serveruuid = serveruuid;
-			return this->serveruuid;
-		}
-
 		bool HeliumMinecraftServer::IsValid() {
 			bool ret = true;
 			return ret;
@@ -473,6 +461,7 @@ export {
 
 		HeliumMinecraftServer::HeliumMinecraftServer() {
 			this->stat = HeliumServerStat::TERMINATED;
+			this->serveruuid = RequestUUID(UUIDInfoType::SERVER, (void*)this);
 		}
 		HeliumMinecraftServer::~HeliumMinecraftServer() {
 			if (this->stat != HeliumServerStat::TERMINATED) this->StopServer();

@@ -13,11 +13,11 @@ namespace TestExtension {
 		HeliumExtensionDebugPrint("Hello World!");
 		string lname = "TestExtension";
 		CreateExtLogger(lname);
-		ExtLoggerDebug(lname, "Logging test");
 		ExtLoggerInfo(lname, "Logging test");
-		ExtLoggerWarn(lname, "Logging test");
-		ExtLoggerCrit(lname, "Logging test");
-		ExtLoggerFatal(lname, "Logging test");
+		ExtLoggerInfo(lname, "Logging test");
+		ExtLoggerInfo(lname, "Logging test");
+		ExtLoggerInfo(lname, "Logging test");
+		ExtLoggerInfo(lname, "Logging test");
 		DeleteExtLogger(lname);
 		return 0;
 	}

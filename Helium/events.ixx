@@ -33,301 +33,60 @@ import Helium.UUIDManager;
 import Helium.Extension;
 
 import <vector>;
+import <list>;
 
 using namespace std;
 using namespace boost::uuids;
 
 export{
 	namespace Helium {
-		enum HeliumEvents;
-
-		class _BasicHeliumEvent;
-		/*
-		class _ExtensionEvent;
-		class _ServerEvent;
-		class _HeliumEvent;
-
-		class ExtensionLoaded;
-		class ExtensionUnloaded;
-
-		class ServerOutput;
-		class UserOutput;
-		class ServerStart;
-		class ServerInited;
-		class ServerPause;
-		class ServerResume;
-		class ServerStop;
-		class PlayerJoined;
-		class PlayerLeft;
-
-		class HeliumStart;
-		class HeliumStop;
-
-		class UndefinedEvent;
-		*/
-
-		enum HeliumEvents {
-			UndefinedEvent,
-			ExtensionLoaded,
-			ExtensionUnloaded,
-			ServerOutput,
-			UserOutput,
-			ServerStart,
-			ServerInited,
-			ServerPause,
-			ServerResume,
-			ServerStop,
-			HeliumStart,
-			HeliumStop,
-			PlayerJoined,
-			PlayerLeft
-		};
-		
 		class _BasicHeliumEvent {
+			virtual int AddListenerFunc(void* func);
+			virtual int CallAllListenerFunc();
 		protected:
-			bool globalblock;
-			vector<uuid> blockexts;
-			vector<uuid> blockservers;
-		public:
-			_BasicHeliumEvent() {
-
-			}
-			virtual ~_BasicHeliumEvent() {
-
-			}
-			virtual HeliumEvents GetEventType() = 0;
-
-			virtual bool IsGlobalBlockable();
-			virtual bool IsGlobalBlocked();
-			virtual bool EnableGlobalBlock();
-			virtual bool DisableGlobalBlock();
-
-			virtual bool IsExtensionBlockable();
-			virtual vector<uuid> GetBlockedExtensionList();
-			virtual bool IsExtensionBlocked(uuid extuuid);
-			virtual bool IsExtensionUnblocked(uuid extuuid);
-			virtual int BlockExtension(uuid extuuid);
-			virtual int UnblockExtension(uuid extuuid);
-
-			virtual bool IsServerBlockable();
-			virtual vector<uuid> GetBlockedServerList();
-			virtual bool IsServerBlocked(uuid serveruuid);
-			virtual bool IsServerUnblocked(uuid serveruuid);
-			virtual int BlockServer(uuid serveruuid);
-			virtual int UnblockServer(uuid serveruuid);
-		};
-		/*
-		class UndefinedEvent : public _BasicHeliumEvent {
-		public:
-			UndefinedEvent() {
-
-			}
-			virtual ~UndefinedEvent() {
-
-			}
-
-			virtual HeliumEvents GetEventType() { return HeliumEvents::UndefinedEvent; }
-		};
-		
-		class _ExtensionEvent : public _BasicHeliumEvent {
-		public:
-			virtual HeliumEvents GetEventType() = 0;
-		};
-		class _ServerEvent : public _BasicHeliumEvent {
-		public:
-			virtual HeliumEvents GetEventType() = 0;
-		};
-		class _HeliumEvent : public _BasicHeliumEvent {
-		public:
-			virtual HeliumEvents GetEventType() = 0;
-		};
-		
-		class ExtensionLoaded : public _ExtensionEvent {
-		public:
-			virtual HeliumEvents GetEventType() { return HeliumEvents::ExtensionLoaded; }
-		};
-		class ExtensionUnloaded : public _ExtensionEvent {
-		public:
-			virtual HeliumEvents GetEventType() { return HeliumEvents::ExtensionUnloaded; }
+			list<void*> listenerfunc;
 		};
 
-		class ServerOutput : public _ServerEvent {
-		public:
-			virtual HeliumEvents GetEventType() { return HeliumEvents::ServerOutput; }
+		class _HeliumEventInput : public _BasicHeliumEvent{
+
 		};
-		class UserOutput : public _ServerEvent {
-		public:
-			virtual HeliumEvents GetEventType() { return HeliumEvents::UserOutput; }
+		class _HeliumSelfEvent : public _BasicHeliumEvent{
+
 		};
-		class ServerStart : public _ServerEvent {
-		public:
-			virtual HeliumEvents GetEventType() { return HeliumEvents::ServerStart; }
+		class _HeliumServerEvent : public _BasicHeliumEvent {
+
 		};
-		class ServerInited : public _ServerEvent {
-		public:
-			virtual HeliumEvents GetEventType() { return HeliumEvents::ServerInited; }
+		class _HeliumExtensionEvent : public _BasicHeliumEvent {
+
 		};
-		class ServerPause : public _ServerEvent {
-		public:
-			virtual HeliumEvents GetEventType() { return HeliumEvents::ServerPause; }
-		};
-		class ServerResume : public _ServerEvent {
-		public:
-			virtual HeliumEvents GetEventType() { return HeliumEvents::ServerResume; }
-		};
-		class ServerStop : public _ServerEvent {
-		public:
-			virtual HeliumEvents GetEventType() { return HeliumEvents::ServerStop; }
-		};
-		class PlayerJoined : public _ServerEvent {
-		public:
-			virtual HeliumEvents GetEventType() { return HeliumEvents::PlayerJoined; }
-		};
-		class PlayerLeft : public _ServerEvent {
-		public:
-			virtual HeliumEvents GetEventType() { return HeliumEvents::PlayerLeft; }
+		class _HeliumEventTransmission : public _BasicHeliumEvent {
+
 		};
 
-		class HeliumStart : public _HeliumEvent {
-		public:
-			virtual HeliumEvents GetEventType() { return HeliumEvents::HeliumStart; }
-		};
-		class HeliumStop : public _HeliumEvent {
-		public:
-			virtual HeliumEvents GetEventType() { return HeliumEvents::HeliumStop; }
-		}
-		*/;
+		vector<_BasicHeliumEvent> eventlist;
 
-		bool _BasicHeliumEvent::IsGlobalBlockable() {
-			return true;
-		}
-		bool _BasicHeliumEvent::IsGlobalBlocked() {
-			if (this->IsGlobalBlockable())
-				return this->globalblock;
-			else
-				return false;
-		}
-		bool _BasicHeliumEvent::EnableGlobalBlock() {
-			if (this->IsGlobalBlockable()) {
-				auto ogb = this->globalblock;
-				this->globalblock = true;
-				return ogb;
-			}
-			else
-				return false;
-		}
-		bool _BasicHeliumEvent::DisableGlobalBlock() {
-			if (this->IsGlobalBlockable()) {
-				auto ogb = this->globalblock;
-				this->globalblock = false;
-				return ogb;
-			}
-			else
-				return false;
-		}
-
-		bool _BasicHeliumEvent::IsExtensionBlockable() {
-			return true;
-		}
-		vector<uuid> _BasicHeliumEvent::GetBlockedExtensionList() {
-			return this->blockexts;
-		}
-		bool _BasicHeliumEvent::IsExtensionBlocked(uuid extuuid) {
-			if (this->IsExtensionBlockable() && IsExtensionUUIDExists(extuuid)) {
-				for (auto blockuuid : this->blockexts) {
-					if (blockuuid == extuuid) return true;
-				}
-				return false;
-			}
-			else {
-				return false;
-			}
-		}
-		bool _BasicHeliumEvent::IsExtensionUnblocked(uuid extuuid) {
-			if (this->IsExtensionBlockable() && IsExtensionUUIDExists(extuuid)) {
-				for (auto blockuuid : this->blockexts) {
-					if (blockuuid == extuuid) return false;
-				}
-				return true;
-			}
-			else {
-				return false;
-			}
-		}
-		int _BasicHeliumEvent::BlockExtension(uuid extuuid) {
-			if (this->IsExtensionBlockable() && IsExtensionUUIDExists(extuuid)) {
-				this->blockexts.push_back(extuuid);
-				return 0;
-			}
-			else {
-				return -1;
-			}
-		}
-		int _BasicHeliumEvent::UnblockExtension(uuid extuuid) {
-			if (this->IsExtensionBlockable() && IsExtensionUUIDExists(extuuid)) {
-				for (auto it = this->blockexts.begin(); it != this->blockexts.end(); it++) {
-					if (*it == extuuid) {
-						this->blockexts.erase(it);
-						return 0;
-					}
-				}
-				return -1;
-			}
-			else {
-				return -1;
-			}
-		}
-
-		bool _BasicHeliumEvent::IsServerBlockable() {
-			return true;
-		}
-		vector<uuid> _BasicHeliumEvent::GetBlockedServerList() {
-			return this->blockservers;
-		}
-		bool _BasicHeliumEvent::IsServerBlocked(uuid serveruuid) {
-			if (this->IsServerBlockable() && IsServerUUIDExists(serveruuid)) {
-				for (auto blockuuid : this->blockservers) {
-					if (blockuuid == serveruuid) return true;
-				}
-				return false;
-			}
-			else {
-				return false;
-			}
-		}
-		bool _BasicHeliumEvent::IsServerUnblocked(uuid serveruuid) {
-			if (this->IsServerBlockable() && IsServerUUIDExists(serveruuid)) {
-				for (auto blockuuid : this->blockservers) {
-					if (blockuuid == serveruuid) return false;
-				}
-				return true;
-			}
-			else {
-				return false;
-			}
-		}
-		int _BasicHeliumEvent::BlockServer(uuid serveruuid) {
-			if (this->IsServerBlockable() && IsServerUUIDExists(serveruuid)) {
-				this->blockservers.push_back(serveruuid);
-				return 0;
-			}
-			else {
-				return -1;
-			}
-		}
-		int _BasicHeliumEvent::UnblockServer(uuid serveruuid) {
-			if (this->IsServerBlockable() && IsServerUUIDExists(serveruuid)) {
-				for (auto it = this->blockservers.begin(); it != this->blockservers.end(); it++) {
-					if (*it == serveruuid) {
-						this->blockservers.erase(it);
-						return 0;
-					}
-				}
-				return -1;
-			}
-			else {
-				return -1;
-			}
-		}
+		int InitEventEnv();
+		int CreateEvent();
+		int EventDispatcherThread();
 	}
+}
+
+namespace Helium {
+	int _BasicHeliumEvent::AddListenerFunc(void* func) {
+		this->listenerfunc.push_back(func);
+		return 0;
+	}
+	int _BasicHeliumEvent::CallAllListenerFunc() {
+		int count = 0;
+		for (auto ptr : this->listenerfunc) {
+			int i = ptr();
+			count++;
+			if (i == -1) break;
+		}
+		return count;
+	}
+
+	int InitEventEnv();
+	int CreateEvent();
+	int EventDispatcherThread();
 }

@@ -108,19 +108,16 @@ export{
 }
 
 namespace Helium {
-	bool isinit = false;
+	//bool isinit = false;
 	vector<spdlog::sink_ptr> sinks;
 	map<string, HeliumLogger> extloggers;
 
 	HeliumLogger::HeliumLogger(string name) {
 		this->loggername = name;
-		if (!isinit) {
-			sinks.push_back(make_shared<spdlog::sinks::daily_file_sink_mt>("./logs/helium-log.log", 23, 59));
-			sinks.push_back(make_shared<spdlog::sinks::stdout_color_sink_mt>(spdlog::color_mode::automatic));
-			isinit = true;
-		}
+		sinks.clear();
+		sinks.push_back(make_shared<spdlog::sinks::daily_file_sink_mt>("./logs/helium-log.log", 23, 59));
+		sinks.push_back(make_shared<spdlog::sinks::stdout_color_sink_mt>(spdlog::color_mode::automatic));
 		this->logger = std::make_shared<spdlog::logger>(name, begin(sinks), end(sinks));
-		this->logger->critical("Test000");
 	}
 	void HeliumLogger::operator=(const HeliumLogger& l) {
 		this->logger = l.logger;
@@ -186,43 +183,41 @@ namespace Helium {
 
 	int CreateExtLogger(string name) {
 		if (extloggers.count(name) > 0) return -1;
-		log << "Enter create" << hendl;
-		HeliumLogger templ(name);
-		templ << LCRIT << "TEST" << hendl;
 		extloggers[name] = HeliumLogger(name);
 		return 0;
 	}
 	int DeleteExtLogger(string name) {
 		if (extloggers.count(name) > 0) return -1;
-		//delete extloggers[name];
+		extloggers[name].~HeliumLogger();
 		return 0;
 	}
 	int ExtLoggerDebug(string loggername, string raw) {
 		if (extloggers.count(loggername) == 0) return -1;
+		cout << raw << endl;
 		(extloggers[loggername]) << LDBG << raw << hendl;
 		return 0;
 	}
 	int ExtLoggerInfo(string loggername, string raw) {
 		if (extloggers.count(loggername) == 0) return -1;
-		log << "Enter info " << raw << hendl;
+		cout << raw << endl;
 		(extloggers[loggername]) << LINFO << raw << hendl;
 		return 0;
 	}
 	int ExtLoggerWarn(string loggername, string raw) {
 		if (extloggers.count(loggername) == 0) return -1;
-		log << "Enter warn " << raw << hendl;
+		cout << raw << endl;
 		(extloggers[loggername]) << LWARN << raw << hendl;
 		return 0;
 	}
 	int ExtLoggerCrit(string loggername, string raw) {
 		if (extloggers.count(loggername) == 0) return -1;
-		log << "Enter crit " << raw << hendl;
+		cout << raw << endl;
 		(extloggers[loggername]) << LCRIT << raw << hendl;
 		return 0;
 	}
 	int ExtLoggerFatal(string loggername, string raw) {
 		if (extloggers.count(loggername) == 0) return -1;
-		log << "Enter fatal " << raw << hendl;
+		cout << raw << endl;
 		(extloggers[loggername]) << LFATAL << raw << hendl;
 		return 0;
 	}

@@ -37,6 +37,8 @@ module;
 export module Helium.Extension;
 
 import <string>;
+
+import Helium.UUIDManager;
 import Helium.Logger;
 
 using namespace tinyxml2;
@@ -167,6 +169,7 @@ namespace Helium {
 		log << HLL::LL_INFO << "Reading extension config file : " << this->config.configpath.filename().string() << hendl;
 		if (auto ret = this->config.ReadConfig(); ret != 0)
 			return;
+		this->extuuid = RequestUUID(UUIDInfoType::EXTENSION, (void*)this);
 		log << HLL::LL_INFO << "Done." << hendl;
 		this->extstat = EXT_STATUS_UNLOADED;
 		uuid extuuid = random_generator()();

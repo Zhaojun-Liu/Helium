@@ -241,9 +241,6 @@ export{
 						tempins.SetRCONPassword(tempstr);
 					}
 				}
-
-				tempins.GenServerUUID();
-
 				AddServer(tempins);
 				servernode = servernode->NextSiblingElement("MinecraftServer");
 			}
