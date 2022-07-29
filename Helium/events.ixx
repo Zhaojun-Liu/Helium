@@ -25,68 +25,154 @@
 module;
 
 #include<boost/uuid/uuid.hpp>
+#include<boost/utility/result_of.hpp>
+#include<boost/typeof/typeof.hpp>
+#include<boost/assign.hpp>
+#include<boost/ref.hpp>
+#include<boost/bind.hpp>
+#include<boost/function.hpp>
+#include<boost/signals2.hpp>
 
 export module Helium.Events;
 
-import Helium.Extension;
 import Helium.UUIDManager;
-import Helium.Extension;
+import Helium.Logger;
 
+import <iostream>;
 import <vector>;
+import <thread>;
 import <list>;
 
 using namespace std;
 using namespace boost::uuids;
+using namespace boost::signals2;
 
 export{
 	namespace Helium {
+		thread dispatcher;
+
+		typedef int(*funcptr)();
+
 		class _BasicHeliumEvent {
-			virtual int AddListenerFunc(void* func);
-			virtual int CallAllListenerFunc();
+		public:
+			_BasicHeliumEvent() {
+
+			}
+
+			virtual ~_BasicHeliumEvent() {
+
+			}
+
+			virtual int AddListenerFunc(void* func) {
+				return 0;
+			}
+			virtual int DeleteListenerFunc(void* func) {
+				return 0;
+			}
+			virtual int CallAllListenerFunc() {
+				log << LWARN << "Enter CallAllListenerFunc()!" << hendl;
+				return 0;
+			}
+			virtual void BlockEvent() {
+				this->isblocked = true;
+			}
+			virtual void UnblockEvent() {
+				this->isblocked = false;
+			}
+			virtual bool IsEventBlocked() {
+				return this->isblocked;
+			}
 		protected:
-			list<void*> listenerfunc;
+			bool isblocked;
 		};
 
-		class _HeliumEventInput : public _BasicHeliumEvent{
+		class HeliumEventExtensionLoaded : public _BasicHeliumEvent {
+		public:
+			HeliumEventExtensionLoaded() {
+				this->innersigptr = make_shared<signal<int()>>();
+			}
+			virtual ~HeliumEventExtensionLoaded() {
+				this->innersigptr->disconnect_all_slots();
+			}
+
+			virtual int AddListenerFunc(void* func) {
+				funcptr ptr = (funcptr)func;
+				this->innersigptr->connect(ptr);
+				return 0;
+			};
+			virtual int DeleteListenerFunc(void* func) {
+				funcptr ptr = (funcptr)func;
+				this->innersigptr->disconnect(ptr);
+				return 0;
+			};
+			virtual int CallAllListenerFunc() {
+				log << LWARN << "Enter CallAllListenerFunc()!" << hendl;
+				if (!this->isblocked) {
+					auto tempptr = this->innersigptr;
+					log << LWARN << (int)tempptr->num_slots() << hendl;
+					(*tempptr)();
+				}
+				return 0;
+			};
+			
+		protected:
+			shared_ptr<signal<int()>> innersigptr;
+		};
+		class HeliumEventExtensionUnloaded : public _BasicHeliumEvent {
+		public:
+			virtual ~HeliumEventExtensionUnloaded() {
+				//this->innersignal.disconnect_all_slots();
+			}
+
+			virtual int AddListenerFunc(void* func) {
+				funcptr ptr = (funcptr)func;
+				//innersignal.connect(ptr);
+				return 0;
+			};
+			virtual int DeleteListenerFunc(void* func) {
+				funcptr ptr = (funcptr)func;
+				//innersignal.disconnect(ptr);
+				return 0;
+			};
+			virtual int CallAllListenerFunc() {
+				if (!this->isblocked)
+					//this->innersignal();
+				return 0;
+			};
+
+		protected:
 
 		};
-		class _HeliumSelfEvent : public _BasicHeliumEvent{
 
-		};
-		class _HeliumServerEvent : public _BasicHeliumEvent {
-
-		};
-		class _HeliumExtensionEvent : public _BasicHeliumEvent {
-
-		};
-		class _HeliumEventTransmission : public _BasicHeliumEvent {
-
-		};
-
-		vector<_BasicHeliumEvent> eventlist;
+		vector<shared_ptr<_BasicHeliumEvent>> eventlist;
 
 		int InitEventEnv();
-		int CreateEvent();
+		int CreateHeliumEvent(shared_ptr<_BasicHeliumEvent> eventins);
 		int EventDispatcherThread();
 	}
 }
 
 namespace Helium {
-	int _BasicHeliumEvent::AddListenerFunc(void* func) {
-		this->listenerfunc.push_back(func);
+	int InitEventEnv() {
+		log << LINFO << "Start initialize Helium event system." << hendl;
+		thread tempthread(EventDispatcherThread);
+		dispatcher = move(tempthread);
+		log << LINFO << "Successfully initialized Helium event system." << hendl;
 		return 0;
 	}
-	int _BasicHeliumEvent::CallAllListenerFunc() {
-		int count = 0;
-		for (auto ptr : this->listenerfunc) {
-			int i = ptr();
-			count++;
-			if (i == -1) break;
-		}
-		return count;
+	int CreateHeliumEvent(shared_ptr<_BasicHeliumEvent> eventins) {
+		eventlist.push_back(eventins);
+		return 0;
 	}
-
-	int InitEventEnv();
-	int CreateEvent();
-	int EventDispatcherThread();
+	int EventDispatcherThread() {
+		while (true) {
+			if (!eventlist.empty()) {
+				cout << "Get an event in eventlist!" << endl;
+				auto tempevent = eventlist.front();
+				tempevent->CallAllListenerFunc();
+				eventlist.erase(eventlist.begin());
+			}
+		}
+		return 0;
+	}
 }

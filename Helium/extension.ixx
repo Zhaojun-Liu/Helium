@@ -40,6 +40,7 @@ import <string>;
 
 import Helium.UUIDManager;
 import Helium.Logger;
+import Helium.Events;
 
 using namespace tinyxml2;
 using namespace std;
@@ -186,7 +187,10 @@ namespace Helium {
 		log << HLL::LL_INFO << "Enter LoadExt()" << hendl;
 		this->extins.load(this->config.extpath);
 		this->ScanEventFunc();
-		((funcptr)this->funcs["ExtensionLoad"])();
+		auto tempevent = new HeliumEventExtensionLoaded;
+		shared_ptr<HeliumEventExtensionLoaded> eventptr(tempevent);
+		eventptr->AddListenerFunc(this->extins.get<int()>("ExtensionLoad"));
+		CreateHeliumEvent(eventptr);
 		this->extstat = EXT_STATUS_LOADED;
 		return 0;
 	}
@@ -202,6 +206,7 @@ namespace Helium {
 	int HeliumExtension::ScanEventFunc() {
 		if (this->extins.has("ExtensionLoad")) {
 			this->funcs["ExtensionLoad"] = this->extins.get<int()>("ExtensionLoad");
+			
 		}
 		return 0;
 	}

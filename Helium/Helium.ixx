@@ -34,6 +34,7 @@ module;
 #include<spdlog/spdlog.h>
 #include<map>
 #include<thread>
+#include<boost/signals2.hpp>
 
 #include"semver/semver.hpp"
 #include"tinyxml2/tinyxml2.h"
@@ -108,6 +109,7 @@ export{
         int HeliumInit() {
             log << HLL::LL_INFO << "Start Helium initialization." << hendl;
 
+            InitEventEnv();
             InitShellEnv();
             InitBuiltinCommandTree();
 
@@ -141,7 +143,7 @@ export{
 
             InitServerEnv();
 
-            log << HLL::LL_INFO << "Finished Helium initialization." << hendl;
+            log << HLL::LL_INFO << "Finished Helium initialization stage." << hendl;
             return 0;
         }
         int HeliumStartServer() {
@@ -158,7 +160,7 @@ export{
         }
         int HeliumMain(int argc, char* argv[]) {
             int ret;
-
+            boost::signals2::signal<int(int, int)> sig;
             HeliumEnvInit();
 
             HeliumInitOutput();
