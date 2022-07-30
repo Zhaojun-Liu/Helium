@@ -106,8 +106,6 @@ namespace Helium {
 		auto iter = this->event_map.find(event_num);
 		log << HLL::LL_INFO << "Registering an event listener for event : " << event_num
 			<< "(" << helium_event_str[event_num] << ")" << hendl;
-		list<any> temp_param;
-		func(temp_param);
 		if (iter != this->event_map.end()) {
 			iter->second->connect(func);
 		}
@@ -119,7 +117,7 @@ namespace Helium {
 	}
 	int HeliumEventManager::CreateEvent(const int& event_num, const list<any> param) {
 		auto iter = this->event_map.find(event_num);
-		if (iter != this->event_map.find(event_num)) {
+		if (iter != this->event_map.end()) {
 			auto signal_ptr = iter->second;
 			(*signal_ptr)(param);
 		}
