@@ -24,9 +24,6 @@
 
 module;
 
-#include<vector>
-#include<map>
-#include<spdlog/spdlog.h>
 #include<boost/dll.hpp>
 #include<boost/uuid/uuid.hpp>
 #include<boost/uuid/uuid_io.hpp>
@@ -37,6 +34,10 @@ module;
 export module Helium.Extension;
 
 import <string>;
+import <vector>;
+import <list>;
+import <any>;
+import <map>;
 
 import Helium.UUIDManager;
 import Helium.Logger;
@@ -187,10 +188,14 @@ namespace Helium {
 		log << HLL::LL_INFO << "Enter LoadExt()" << hendl;
 		this->extins.load(this->config.extpath);
 		this->ScanEventFunc();
-		auto tempevent = new HeliumEventExtensionLoaded;
-		shared_ptr<HeliumEventExtensionLoaded> eventptr(tempevent);
-		eventptr->AddListenerFunc(this->extins.get<int()>("ExtensionLoad"));
-		CreateHeliumEvent(eventptr);
+		//auto tempevent = new HeliumEventExtensionLoaded;
+		//shared_ptr<HeliumEventExtensionLoaded> eventptr(tempevent);
+		//eventptr->AddListenerFunc(this->extins.get<int(list<any>)>("ExtensionLoad"));
+		//CreateHeliumEvent(eventptr);
+		helium_event_manager.RegisterEventListener(HeliumEventList::EXTENSION_LOAD
+			, this->extins.get<int(list<any>)>("ExtensionLoad"));
+		list<any> temp_param;
+		helium_event_manager.CreateEvent(HeliumEventList::EXTENSION_LOAD, temp_param);
 		this->extstat = EXT_STATUS_LOADED;
 		return 0;
 	}

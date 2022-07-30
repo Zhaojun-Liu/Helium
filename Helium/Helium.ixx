@@ -109,31 +109,34 @@ export{
         int HeliumInit() {
             log << HLL::LL_INFO << "Start Helium initialization." << hendl;
 
-            InitEventEnv();
             InitShellEnv();
             InitBuiltinCommandTree();
 
+            log << HLL::LL_WARN << "Test Output" << hendl;
             InitFuncMap();
+            log << HLL::LL_WARN << "Test Output" << hendl;
             LoadHeliumAPI();
+            log << HLL::LL_WARN << "Test Output" << hendl;
             TransferFuncMap();
+            log << HLL::LL_WARN << "Test Output" << hendl;
 
-            auto sucext = InitAllExtension();
-            log << HLL::LL_INFO << "Successfully initialized " << sucext << " extensions" << hendl;
-            sucext = LoadAllExtension();
-            log << HLL::LL_INFO << "Successfully loaded " << sucext << " extensions." << hendl;
-
-            log << HLL::LL_DBG << "Start adding dirs" << hendl;
+            log << HLL::LL_INFO << "Start adding dirs" << hendl;
             AddHeliumDirectory("./extensions", "The \"extension\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
             AddHeliumDirectory("./extensions/extconfigs", "The \"extensions/extconfigs\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
             AddHeliumDirectory("./logs", "The \"logs\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
             AddHeliumDirectory("./scripts", "The \"scripts\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
             AddHeliumDirectory("./scripts/initscripts", "The \"scripts/initscripts\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
-            log << HLL::LL_DBG << "End adding dirs" << hendl;
+            log << HLL::LL_INFO << "End adding dirs" << hendl;
 
             if (auto ret = InitHeliumDirectory(); ret != 0) {
                 HeliumErrorExit(true, true, "Failed to initialize directory,exiting...");
             }
 
+            auto sucext = InitAllExtension();
+            log << HLL::LL_INFO << "Successfully initialized " << sucext << " extensions" << hendl;
+            sucext = LoadAllExtension();
+            log << HLL::LL_INFO << "Successfully loaded " << sucext << " extensions." << hendl;
+            
             if (auto ret = ReadHeliumConfig(); ret != XMLError::XML_SUCCESS) {
                 if (auto iret = CreateHeliumConfig(); ret != XMLError::XML_SUCCESS) {
                     HeliumErrorExit(true, true, "Failed to create the helium config file.");
@@ -160,7 +163,7 @@ export{
         }
         int HeliumMain(int argc, char* argv[]) {
             int ret;
-            boost::signals2::signal<int(int, int)> sig;
+            log << HLL::LL_INFO << "Current Working Directory : " << argv[0] << hendl;
             HeliumEnvInit();
 
             HeliumInitOutput();
@@ -168,17 +171,22 @@ export{
             try {
                 ret = HeliumInit();
             }
-            catch (...) {
+            catch (exception& e) {
                 log << HLL::LL_CRIT << "Helium initialization failed with a exception." << hendl;
+                log << HLL::LL_CRIT << "Exception description : " << e.what() << hendl;
                 log << HLL::LL_CRIT << "THIS IS A CRASH, report it to us by : helium_devteam@outlook.com" << hendl;
                 ret = -1;
+                system("pause");
+                return ret;
             }
 
-            if (ret == 0) {
+            try {
                 HeliumStartServer();
             }
-            else {
-                log << HLL::LL_WARN << "Helium initialization failed, skip starting server." << hendl;
+            catch(exception& e) {
+                log << HLL::LL_ERR << "Minecraft server startup failed with a exception." << hendl;
+                log << HLL::LL_ERR << "Exception description : " << e.what() << hendl;
+                log << HLL::LL_ERR << "Please check your configuration and the server files' completeness." << hendl;
             }
 
             InitShell("Helium>");

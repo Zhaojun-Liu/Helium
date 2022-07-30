@@ -58,7 +58,7 @@ using namespace boost::dll;
 export {
 	namespace Helium {
 		shared_library heliumapilib;
-		fs::path apipath("./heliumapi.dll");
+		const fs::path apipath("./HeliumAPI.dll");
 		map<string, void*> HeliumExportFunctionMap;
 
 		int InitFuncMap();
@@ -68,7 +68,7 @@ export {
 
 		int InitFuncMap() {
 			HeliumEndline hendl;
-			log << "Building Helium API map..." << hendl;
+			log << HLL::LL_INFO << "Building Helium API map..." << hendl;
 			ADD_EXP_FUNC("HeliumExtensionDebugPrint", HeliumExtensionDebugPrint);
 			ADD_EXP_FUNC("CreateExtLogger", CreateExtLogger);
 			ADD_EXP_FUNC("DeleteExtLogger", DeleteExtLogger);
@@ -77,11 +77,12 @@ export {
 			ADD_EXP_FUNC("ExtLoggerWarn", ExtLoggerWarn);
 			ADD_EXP_FUNC("ExtLoggerCrit", ExtLoggerCrit);
 			ADD_EXP_FUNC("ExtLoggerFatal", ExtLoggerFatal);
-			log << "Helium API map was successfully built" << hendl;
+			log << HLL::LL_INFO << "Helium API map was successfully built" << hendl;
 			return 0;
 		}
 
 		int LoadHeliumAPI() {
+			log << HLL::LL_INFO << "Start Loading HeliumAPI.dll" << hendl;
 			heliumapilib.load(apipath);
 			if (heliumapilib.has("TransferFuncMap")) {
 				log << HLL::LL_INFO << "Successfully Loaded HeliumAPI!" << hendl;

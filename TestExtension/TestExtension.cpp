@@ -9,7 +9,7 @@ using namespace std;
 using namespace HeliumAPI;
 
 namespace TestExtension {
-	extern "C" TESTEXTENSION_API int ExtensionLoad() {
+	extern "C" TESTEXTENSION_API int ExtensionLoad(list<any>) {
 		cout << "Hello World from TestExtension!" << endl;
 		HeliumExtensionDebugPrint("Hello World!");
 		string lname = "TestExtension";

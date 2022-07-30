@@ -24,15 +24,6 @@
 
 module;
 
-#include<boost/uuid/uuid.hpp>
-#include<boost/utility/result_of.hpp>
-#include<boost/typeof/typeof.hpp>
-#include<boost/assign.hpp>
-#include<boost/ref.hpp>
-#include<boost/bind.hpp>
-#include<boost/function.hpp>
-#include<boost/signals2.hpp>
-
 export module Helium.Events;
 
 import Helium.UUIDManager;
@@ -42,136 +33,74 @@ import <iostream>;
 import <vector>;
 import <thread>;
 import <list>;
+import <any>;
+import <boost/function.hpp>;
+import <boost/signals2.hpp>;
 
 using namespace std;
-using namespace boost::uuids;
 using namespace boost::signals2;
 
 export{
 	namespace Helium {
-		thread dispatcher;
-
-		typedef int(*funcptr)();
-
-		class _BasicHeliumEvent {
-		public:
-			_BasicHeliumEvent() {
-
-			}
-
-			virtual ~_BasicHeliumEvent() {
-
-			}
-
-			virtual int AddListenerFunc(void* func) {
-				return 0;
-			}
-			virtual int DeleteListenerFunc(void* func) {
-				return 0;
-			}
-			virtual int CallAllListenerFunc() {
-				log << LWARN << "Enter CallAllListenerFunc()!" << hendl;
-				return 0;
-			}
-			virtual void BlockEvent() {
-				this->isblocked = true;
-			}
-			virtual void UnblockEvent() {
-				this->isblocked = false;
-			}
-			virtual bool IsEventBlocked() {
-				return this->isblocked;
-			}
-		protected:
-			bool isblocked;
+		enum HeliumEventList {
+			EMPTY_EVENT,
+			HELIUM_STARTUP,
+			HELIUM_INITIALIZATION_START,
+			HELIUM_INITIALIZATION_FINISH,
+			HELIUM_FINALIZATION_START,
+			HELIUM_FINALIZATION_FINISH,
+			EXTENSION_LOAD,
+			EXTENSION_UNLOAD,
+			SERVER_START,
+			SERVER_INITIALIZATION_FINISH,
+			SERVER_STOP,
+			PLAYER_JOIN,
+			PLAYER_LEAVE,
+			GENERAL_INPUT,
+			CONSOLE_INPUT,
+			SERVER_INPUT,
+			USER_DEFINED_MIN
 		};
 
-		class HeliumEventExtensionLoaded : public _BasicHeliumEvent {
+		class HeliumEventManager {
 		public:
-			HeliumEventExtensionLoaded() {
-				this->innersigptr = make_shared<signal<int()>>();
-			}
-			virtual ~HeliumEventExtensionLoaded() {
-				this->innersigptr->disconnect_all_slots();
-			}
+			typedef boost::function<int(const list<any>)> StandardHeliumListener;
+			typedef signal<int(const list<any>)> StandardHeliumSignal;
 
-			virtual int AddListenerFunc(void* func) {
-				funcptr ptr = (funcptr)func;
-				this->innersigptr->connect(ptr);
-				return 0;
-			};
-			virtual int DeleteListenerFunc(void* func) {
-				funcptr ptr = (funcptr)func;
-				this->innersigptr->disconnect(ptr);
-				return 0;
-			};
-			virtual int CallAllListenerFunc() {
-				log << LWARN << "Enter CallAllListenerFunc()!" << hendl;
-				if (!this->isblocked) {
-					auto tempptr = this->innersigptr;
-					log << LWARN << (int)tempptr->num_slots() << hendl;
-					(*tempptr)();
-				}
-				return 0;
-			};
-			
-		protected:
-			shared_ptr<signal<int()>> innersigptr;
-		};
-		class HeliumEventExtensionUnloaded : public _BasicHeliumEvent {
-		public:
-			virtual ~HeliumEventExtensionUnloaded() {
-				//this->innersignal.disconnect_all_slots();
-			}
+			HeliumEventManager() {};
+			~HeliumEventManager() {};
 
-			virtual int AddListenerFunc(void* func) {
-				funcptr ptr = (funcptr)func;
-				//innersignal.connect(ptr);
-				return 0;
-			};
-			virtual int DeleteListenerFunc(void* func) {
-				funcptr ptr = (funcptr)func;
-				//innersignal.disconnect(ptr);
-				return 0;
-			};
-			virtual int CallAllListenerFunc() {
-				if (!this->isblocked)
-					//this->innersignal();
-				return 0;
-			};
-
-		protected:
-
+			int RegisterEventListener(const int& event_num, const StandardHeliumListener func);
+			int CreateEvent(const int& event_num, const list<any> param);
+		private:
+			map<int, shared_ptr<StandardHeliumSignal>> event_map;
 		};
 
-		vector<shared_ptr<_BasicHeliumEvent>> eventlist;
-
-		int InitEventEnv();
-		int CreateHeliumEvent(shared_ptr<_BasicHeliumEvent> eventins);
-		int EventDispatcherThread();
+		HeliumEventManager helium_event_manager;
 	}
 }
 
 namespace Helium {
-	int InitEventEnv() {
-		log << LINFO << "Start initialize Helium event system." << hendl;
-		thread tempthread(EventDispatcherThread);
-		dispatcher = move(tempthread);
-		log << LINFO << "Successfully initialized Helium event system." << hendl;
+	int HeliumEventManager::RegisterEventListener(const int& event_num, const StandardHeliumListener func) {
+		auto iter = this->event_map.find(event_num);
+		if (iter != this->event_map.end()) {
+			iter->second->connect(func);
+		}
+		else {
+			this->event_map[event_num] = make_shared<StandardHeliumSignal>();
+			this->event_map[event_num]->connect(func);
+		}
 		return 0;
 	}
-	int CreateHeliumEvent(shared_ptr<_BasicHeliumEvent> eventins) {
-		eventlist.push_back(eventins);
-		return 0;
-	}
-	int EventDispatcherThread() {
-		while (true) {
-			if (!eventlist.empty()) {
-				cout << "Get an event in eventlist!" << endl;
-				auto tempevent = eventlist.front();
-				tempevent->CallAllListenerFunc();
-				eventlist.erase(eventlist.begin());
-			}
+	int HeliumEventManager::CreateEvent(const int& event_num, const list<any> param) {
+		auto iter = this->event_map.find(event_num);
+		if (iter != this->event_map.find(event_num)) {
+			auto signal_ptr = iter->second;
+			(*signal_ptr)(param);
+		}
+		else {
+			log << HLL::LL_ERR << "Cannot find the event : " << event_num << hendl;
+			return -1;
 		}
 		return 0;
 	}
