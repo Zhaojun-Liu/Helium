@@ -736,6 +736,7 @@ export{
 			auto document = new ConstantString("Helium Built-in Command \"documentation\"", "documentation", "doc", guest);
 			auto manual = new ConstantString("Helium Built-in Command \"manual\"", "manual", "man", guest);
 
+			exit->AddCallback(helium_exit);
 			help->AddCallback(helium_command_list);
 			status->AddCallback(helium_status);
 			update->AddCallback(helium_update);
@@ -1664,7 +1665,6 @@ export{
 		}
 
 		int ExecuteCommand(string rawcmd, string sender, int permission) {
-			HeliumEndline hendl;
 			istringstream iss(rawcmd);
 			list<string> words;
 			list<_BasicHeliumCommand*> cmdpath;
@@ -1672,6 +1672,10 @@ export{
 			string tempstr;
 			tree<_BasicHeliumCommand*>::fixed_depth_iterator pit = HeliumCommandTree.begin();
 			tree<_BasicHeliumCommand*>::fixed_depth_iterator tit;
+
+			if (rawcmd == "#helium exit") {
+				exit(0);
+			}
 
 			while (iss >> tempstr) {
 				words.push_back(tempstr);
