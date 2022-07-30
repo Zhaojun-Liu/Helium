@@ -18,5 +18,5 @@ namespace HeliumAPI {
 	HELIUMAPI_API int ExtLoggerInfo(string loggername, string raw);
 	HELIUMAPI_API int ExtLoggerWarn(string loggername, string raw);
 	HELIUMAPI_API int ExtLoggerCrit(string loggername, string raw);
-	HELIUMAPI_API int ExtLoggerFatal(string loggername, string raw);
+	HELIUMAPI_API int ExtLoggerError(string loggername, string raw);
 }

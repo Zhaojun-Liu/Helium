@@ -29,6 +29,7 @@ export module Helium.Events;
 import Helium.UUIDManager;
 import Helium.Logger;
 
+import <string>;
 import <iostream>;
 import <vector>;
 import <thread>;
@@ -62,6 +63,26 @@ export{
 			USER_DEFINED_MIN
 		};
 
+		const string helium_event_str[] = {
+			"EMPTY_EVENT",
+			"HELIUM_STARTUP",
+			"HELIUM_INITIALIZATION_START",
+			"HELIUM_INITIALIZATION_FINISH",
+			"HELIUM_FINALIZATION_START",
+			"HELIUM_FINALIZATION_FINISH",
+			"EXTENSION_LOAD",
+			"EXTENSION_UNLOAD",
+			"SERVER_START",
+			"SERVER_INITIALIZATION_FINISH",
+			"SERVER_STOP",
+			"PLAYER_JOIN",
+			"PLAYER_LEAVE",
+			"GENERAL_INPUT",
+			"CONSOLE_INPUT",
+			"SERVER_INPUT",
+			"USER_DEFINED_MIN"
+		};
+
 		class HeliumEventManager {
 		public:
 			typedef boost::function<int(const list<any>)> StandardHeliumListener;
@@ -83,6 +104,10 @@ export{
 namespace Helium {
 	int HeliumEventManager::RegisterEventListener(const int& event_num, const StandardHeliumListener func) {
 		auto iter = this->event_map.find(event_num);
+		log << HLL::LL_INFO << "Registering an event listener for event : " << event_num
+			<< "(" << helium_event_str[event_num] << ")" << hendl;
+		list<any> temp_param;
+		func(temp_param);
 		if (iter != this->event_map.end()) {
 			iter->second->connect(func);
 		}
@@ -99,7 +124,8 @@ namespace Helium {
 			(*signal_ptr)(param);
 		}
 		else {
-			log << HLL::LL_ERR << "Cannot find the event : " << event_num << hendl;
+			log << HLL::LL_ERR << "Cannot find the event : " << event_num
+				<< "(" << helium_event_str[event_num] << ")" << hendl;
 			return -1;
 		}
 		return 0;

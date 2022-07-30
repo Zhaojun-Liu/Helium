@@ -36,8 +36,8 @@ namespace HeliumAPI {
 		auto ptr = (loggingptr)HeliumAPIMap.at("ExtLoggerCrit");
 		return ptr(loggername, raw);
 	}
-	HELIUMAPI_API int ExtLoggerFatal(string loggername, string raw) {
-		auto ptr = (loggingptr)HeliumAPIMap.at("ExtLoggerFatal");
+	HELIUMAPI_API int ExtLoggerError(string loggername, string raw) {
+		auto ptr = (loggingptr)HeliumAPIMap.at("ExtLoggerError");
 		return ptr(loggername, raw);
 	}
 }

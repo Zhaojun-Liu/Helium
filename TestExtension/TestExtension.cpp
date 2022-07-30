@@ -15,10 +15,9 @@ namespace TestExtension {
 		string lname = "TestExtension";
 		CreateExtLogger(lname);
 		ExtLoggerInfo(lname, "Logging test");
-		ExtLoggerInfo(lname, "Logging test");
-		ExtLoggerInfo(lname, "Logging test");
-		ExtLoggerInfo(lname, "Logging test");
-		ExtLoggerInfo(lname, "Logging test");
+		ExtLoggerWarn(lname, "Logging test");
+		ExtLoggerCrit(lname, "Logging test");
+		ExtLoggerError(lname, "Logging test");
 		DeleteExtLogger(lname);
 		return 0;
 	}

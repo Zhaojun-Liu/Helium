@@ -103,7 +103,7 @@ export{
 		int ExtLoggerInfo(string loggername, string raw);
 		int ExtLoggerWarn(string loggername, string raw);
 		int ExtLoggerCrit(string loggername, string raw);
-		int ExtLoggerFatal(string loggername, string raw);
+		int ExtLoggerError(string loggername, string raw);
 	}
 }
 
@@ -174,8 +174,8 @@ namespace Helium {
 				break;
 			}
 		}
-		catch (...) {
-			cout << "Logging failed" << endl;
+		catch (exception& e) {
+			cout << "Logging failed with exception : " << e.what() << endl;
 		}
 		this->buffer.str("");
 		return *this;
@@ -193,32 +193,27 @@ namespace Helium {
 	}
 	int ExtLoggerDebug(string loggername, string raw) {
 		if (extloggers.count(loggername) == 0) return -1;
-		cout << raw << endl;
-		(extloggers[loggername]) << LDBG << raw << hendl;
+		(extloggers[loggername]) << HLL::LL_DBG << raw << hendl;
 		return 0;
 	}
 	int ExtLoggerInfo(string loggername, string raw) {
 		if (extloggers.count(loggername) == 0) return -1;
-		cout << raw << endl;
-		(extloggers[loggername]) << LINFO << raw << hendl;
+		(extloggers[loggername]) << HLL::LL_INFO << raw << hendl;
+		return 0;
+	}
+	int ExtLoggerError(string loggername, string raw) {
+		if (extloggers.count(loggername) == 0) return -1;
+		(extloggers[loggername]) << HLL::LL_ERR << raw << hendl;
 		return 0;
 	}
 	int ExtLoggerWarn(string loggername, string raw) {
 		if (extloggers.count(loggername) == 0) return -1;
-		cout << raw << endl;
-		(extloggers[loggername]) << LWARN << raw << hendl;
+		(extloggers[loggername]) << HLL::LL_WARN << raw << hendl;
 		return 0;
 	}
 	int ExtLoggerCrit(string loggername, string raw) {
 		if (extloggers.count(loggername) == 0) return -1;
-		cout << raw << endl;
-		(extloggers[loggername]) << LCRIT << raw << hendl;
-		return 0;
-	}
-	int ExtLoggerFatal(string loggername, string raw) {
-		if (extloggers.count(loggername) == 0) return -1;
-		cout << raw << endl;
-		(extloggers[loggername]) << LFATAL << raw << hendl;
+		(extloggers[loggername]) << HLL::LL_CRIT << raw << hendl;
 		return 0;
 	}
 }

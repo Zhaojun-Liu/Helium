@@ -27,14 +27,11 @@
 using namespace std;
 using namespace semver;
 
-constexpr version apiver = version{ 0, 0, 1, semver::prerelease::alpha };
-
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
                        LPVOID lpReserved
                      )
 {
-    cout << "Helium API " << to_string(apiver) << endl;
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:

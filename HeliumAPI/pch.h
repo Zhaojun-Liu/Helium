@@ -41,4 +41,6 @@
 #include<iostream>
 #include<boost/dll.hpp>
 
+constexpr semver::version apiver = semver::version{ 0, 0, 2, semver::prerelease::alpha };
+
 #endif
