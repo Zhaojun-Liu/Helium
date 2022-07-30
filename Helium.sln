@@ -12,8 +12,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestExtension", "TestExtens
 		{8519A658-8619-4E62-97B4-CBB5702AADF4} = {8519A658-8619-4E62-97B4-CBB5702AADF4}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Helium-Main", "Helium-Main\Helium-Main.vcxproj", "{646598F1-70FC-41E2-83EA-99EA2C3C8E65}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -46,14 +44,6 @@ Global
 		{4B7A1ADE-1361-4E74-9BAA-D46551009518}.Release|x64.Build.0 = Release|x64
 		{4B7A1ADE-1361-4E74-9BAA-D46551009518}.Release|x86.ActiveCfg = Release|Win32
 		{4B7A1ADE-1361-4E74-9BAA-D46551009518}.Release|x86.Build.0 = Release|Win32
-		{646598F1-70FC-41E2-83EA-99EA2C3C8E65}.Debug|x64.ActiveCfg = Debug|x64
-		{646598F1-70FC-41E2-83EA-99EA2C3C8E65}.Debug|x64.Build.0 = Debug|x64
-		{646598F1-70FC-41E2-83EA-99EA2C3C8E65}.Debug|x86.ActiveCfg = Debug|Win32
-		{646598F1-70FC-41E2-83EA-99EA2C3C8E65}.Debug|x86.Build.0 = Debug|Win32
-		{646598F1-70FC-41E2-83EA-99EA2C3C8E65}.Release|x64.ActiveCfg = Release|x64
-		{646598F1-70FC-41E2-83EA-99EA2C3C8E65}.Release|x64.Build.0 = Release|x64
-		{646598F1-70FC-41E2-83EA-99EA2C3C8E65}.Release|x86.ActiveCfg = Release|Win32
-		{646598F1-70FC-41E2-83EA-99EA2C3C8E65}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
