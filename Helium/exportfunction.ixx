@@ -58,7 +58,7 @@ using namespace boost::dll;
 export {
 	namespace Helium {
 		shared_library heliumapilib;
-		const fs::path apipath("./HeliumAPI.dll");
+		const fs::path apipath("./extensions/HeliumAPI.dll");
 		map<string, void*> HeliumExportFunctionMap;
 
 		int InitFuncMap();

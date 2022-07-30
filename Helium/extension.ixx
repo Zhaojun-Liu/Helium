@@ -138,7 +138,7 @@ namespace Helium {
 		tinyxml2::XMLElement* root = doc.FirstChildElement("HeliumExtension");
 		if (root == NULL) {
 			log << LCRIT << "Failed to get root element of extension config file : " << this->configpath.filename().string() << hendl;
-			log << LCRIT << "The extension will not be loaded" << hendl;
+			log << LCRIT << "The extension will not be loaded." << hendl;
 			return -1;
 		}
 
@@ -185,17 +185,32 @@ namespace Helium {
 	int HeliumExtension::LoadExt() {
 		this->extstat = EXT_STATUS_LOADING;
 		typedef int (*funcptr)();
-		log << HLL::LL_INFO << "Enter LoadExt()" << hendl;
-		this->extins.load(this->config.extpath);
+		log << HLL::LL_INFO << "Try loading extension : " << this->config.extpath.string()
+			<< "(" << this->config.extname << ")" << hendl;
+		try {
+			this->extins.load(this->config.extpath);
+		}
+		catch (exception& e) {
+			log << HLL::LL_ERR << "Extension " << this->config.extname
+				<< " loading failed with a exception." << hendl;
+			log << HLL::LL_ERR << e.what() << hendl;
+			log << "The extension will not be loaded." << hendl;
+			this->extstat = EXT_STATUS_EMPTY;
+			return -1;
+		}
 		this->ScanEventFunc();
-		//auto tempevent = new HeliumEventExtensionLoaded;
-		//shared_ptr<HeliumEventExtensionLoaded> eventptr(tempevent);
-		//eventptr->AddListenerFunc(this->extins.get<int(list<any>)>("ExtensionLoad"));
-		//CreateHeliumEvent(eventptr);
-		helium_event_manager.RegisterEventListener(HeliumEventList::EXTENSION_LOAD
-			, this->extins.get<int(list<any>)>("ExtensionLoad"));
-		list<any> temp_param;
-		helium_event_manager.CreateEvent(HeliumEventList::EXTENSION_LOAD, temp_param);
+		try {
+			helium_event_manager.RegisterEventListener(HeliumEventList::EXTENSION_LOAD
+				, this->extins.get<int(list<any>)>("ExtensionLoad"));
+			list<any> temp_param;
+			helium_event_manager.CreateEvent(HeliumEventList::EXTENSION_LOAD, temp_param);
+		}
+		catch (exception& e) {
+			log << HLL::LL_ERR << "Event listener function scanner for extension " << this->config.extname
+				<< " has failed" << hendl;
+			log << HLL::LL_ERR << e.what() << hendl;
+			log << HLL::LL_ERR << "The extension's behaviour might be incorrect." << hendl;
+		}
 		this->extstat = EXT_STATUS_LOADED;
 		return 0;
 	}
@@ -211,7 +226,6 @@ namespace Helium {
 	int HeliumExtension::ScanEventFunc() {
 		if (this->extins.has("ExtensionLoad")) {
 			this->funcs["ExtensionLoad"] = this->extins.get<int()>("ExtensionLoad");
-			
 		}
 		return 0;
 	}
@@ -252,6 +266,7 @@ namespace Helium {
 			log << LDBG << s << hendl;
 			extensions.push_back(tempext);
 		}
+		log << HLL::LL_INFO << "Finished extensions configuration stage." << hendl;
 		return ret;
 	}
 	int LoadAllExtension() {

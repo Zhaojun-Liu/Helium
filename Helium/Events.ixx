@@ -24,15 +24,6 @@
 
 module;
 
-#include<boost/uuid/uuid.hpp>
-#include<boost/utility/result_of.hpp>
-#include<boost/typeof/typeof.hpp>
-#include<boost/assign.hpp>
-#include<boost/ref.hpp>
-#include<boost/bind.hpp>
-#include<boost/function.hpp>
-#include<boost/signals2.hpp>
-
 export module Helium.Events;
 
 import Helium.UUIDManager;
@@ -42,43 +33,74 @@ import <iostream>;
 import <vector>;
 import <thread>;
 import <list>;
+import <any>;
+import <boost/function.hpp>;
+import <boost/signals2.hpp>;
 
 using namespace std;
-using namespace boost::uuids;
 using namespace boost::signals2;
 
 export{
 	namespace Helium {
-		thread dispatcher;
+		enum HeliumEventList {
+			EMPTY_EVENT,
+			HELIUM_STARTUP,
+			HELIUM_INITIALIZATION_START,
+			HELIUM_INITIALIZATION_FINISH,
+			HELIUM_FINALIZATION_START,
+			HELIUM_FINALIZATION_FINISH,
+			EXTENSION_LOAD,
+			EXTENSION_UNLOAD,
+			SERVER_START,
+			SERVER_INITIALIZATION_FINISH,
+			SERVER_STOP,
+			PLAYER_JOIN,
+			PLAYER_LEAVE,
+			GENERAL_INPUT,
+			CONSOLE_INPUT,
+			SERVER_INPUT,
+			USER_DEFINED_MIN
+		};
 
-		vector<shared_ptr<_BasicHeliumEvent>> eventlist;
+		class HeliumEventManager {
+		public:
+			typedef boost::function<int(const list<any>)> StandardHeliumListener;
+			typedef signal<int(const list<any>)> StandardHeliumSignal;
 
-		int InitEventEnv();
-		int CreateHeliumEvent(shared_ptr<_BasicHeliumEvent> eventins);
-		int EventDispatcherThread();
+			HeliumEventManager() {};
+			~HeliumEventManager() {};
+
+			int RegisterEventListener(const int& event_num, const StandardHeliumListener func);
+			int CreateEvent(const int& event_num, const list<any> param);
+		private:
+			map<int, shared_ptr<StandardHeliumSignal>> event_map;
+		};
+
+		HeliumEventManager helium_event_manager;
 	}
 }
 
 namespace Helium {
-	int InitEventEnv() {
-		log << LINFO << "Start initialize Helium event system." << hendl;
-		thread tempthread(EventDispatcherThread);
-		dispatcher = move(tempthread);
-		log << LINFO << "Successfully initialized Helium event system." << hendl;
+	int HeliumEventManager::RegisterEventListener(const int& event_num, const StandardHeliumListener func) {
+		auto iter = this->event_map.find(event_num);
+		if (iter != this->event_map.end()) {
+			iter->second->connect(func);
+		}
+		else {
+			this->event_map[event_num] = make_shared<StandardHeliumSignal>();
+			this->event_map[event_num]->connect(func);
+		}
 		return 0;
 	}
-	int CreateHeliumEvent(shared_ptr<_BasicHeliumEvent> eventins) {
-		eventlist.push_back(eventins);
-		return 0;
-	}
-	int EventDispatcherThread() {
-		while (true) {
-			if (!eventlist.empty()) {
-				cout << "Get an event in eventlist!" << endl;
-				auto tempevent = eventlist.front();
-				tempevent->CallAllListenerFunc();
-				eventlist.erase(eventlist.begin());
-			}
+	int HeliumEventManager::CreateEvent(const int& event_num, const list<any> param) {
+		auto iter = this->event_map.find(event_num);
+		if (iter != this->event_map.find(event_num)) {
+			auto signal_ptr = iter->second;
+			(*signal_ptr)(param);
+		}
+		else {
+			log << HLL::LL_ERR << "Cannot find the event : " << event_num << hendl;
+			return -1;
 		}
 		return 0;
 	}

@@ -112,21 +112,17 @@ export{
             InitShellEnv();
             InitBuiltinCommandTree();
 
-            log << HLL::LL_WARN << "Test Output" << hendl;
             InitFuncMap();
-            log << HLL::LL_WARN << "Test Output" << hendl;
             LoadHeliumAPI();
-            log << HLL::LL_WARN << "Test Output" << hendl;
             TransferFuncMap();
-            log << HLL::LL_WARN << "Test Output" << hendl;
 
-            log << HLL::LL_INFO << "Start adding dirs" << hendl;
+            log << HLL::LL_DBG << "Start adding dirs" << hendl;
             AddHeliumDirectory("./extensions", "The \"extension\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
             AddHeliumDirectory("./extensions/extconfigs", "The \"extensions/extconfigs\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
             AddHeliumDirectory("./logs", "The \"logs\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
             AddHeliumDirectory("./scripts", "The \"scripts\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
             AddHeliumDirectory("./scripts/initscripts", "The \"scripts/initscripts\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);
-            log << HLL::LL_INFO << "End adding dirs" << hendl;
+            log << HLL::LL_DBG << "End adding dirs" << hendl;
 
             if (auto ret = InitHeliumDirectory(); ret != 0) {
                 HeliumErrorExit(true, true, "Failed to initialize directory,exiting...");
