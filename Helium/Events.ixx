@@ -60,7 +60,6 @@ export{
 			PLAYER_LEAVE,
 			GENERAL_INPUT,
 			CONSOLE_INPUT,
-			SERVER_INPUT,
 			PLAYER_INPUT,
 			USER_DEFINED_MIN
 		};
@@ -82,7 +81,6 @@ export{
 			"PLAYER_LEAVE",
 			"GENERAL_INPUT",
 			"CONSOLE_INPUT",
-			"SERVER_INPUT",
 			"PLAYER_INPUT",
 			"USER_DEFINED_MIN"
 		};
@@ -104,7 +102,6 @@ export{
 			"PlayerLeave",
 			"GeneralInput",
 			"ConsoleInput",
-			"ServerInput",
 			"PlayerInput",
 			""
 		};
