@@ -23,4 +23,6 @@ namespace TestExtension {
 	extern "C" TESTEXTENSION_API int ConsoleInput(list<any> argument);
 	extern "C" TESTEXTENSION_API int ServerInput(list<any> argument);
 	extern "C" TESTEXTENSION_API int ExtensionLoad(list<any> argument);
+	extern "C" TESTEXTENSION_API int ServerOutput(list<any> argument);
+	extern "C" TESTEXTENSION_API int PlayerInput(list<any> argument);
 }

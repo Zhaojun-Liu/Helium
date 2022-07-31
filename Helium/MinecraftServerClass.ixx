@@ -40,6 +40,7 @@ export module Helium.MinecraftServer:Class;
 
 import Helium.Logger;
 import Helium.UUIDManager;
+import Helium.Parser;
 
 import <string>;
 import <vector>;
@@ -104,28 +105,6 @@ export {
 
 		class HeliumMinecraftServer {
 			friend int ProcessServerOutput(HeliumMinecraftServer* ptr, string servername, HANDLE stdread, HANDLE hproc);
-
-		protected:
-			string name;
-			string dir;
-			string startcommand;
-
-			HeliumServerType type;
-			HeliumServerStat stat;
-
-			bool visi;
-			bool autostart;
-
-			HANDLE proc;
-			HANDLE thread;
-			DWORD  pid;
-			DWORD  retv;
-
-			RedirectInformation redir;
-
-			uuid serveruuid;
-
-			RCONInfo rcon;
 		public:
 			HeliumMinecraftServer();
 			virtual ~HeliumMinecraftServer();
@@ -183,6 +162,29 @@ export {
 			int ResumeServer();
 
 			void operator=(HeliumMinecraftServer server);			
+		private:
+			string name;
+			string dir;
+			string startcommand;
+
+			HeliumServerType type;
+			HeliumServerStat stat;
+
+			bool visi;
+			bool autostart;
+
+			HANDLE proc;
+			HANDLE thread;
+			DWORD  pid;
+			DWORD  retv;
+
+			RedirectInformation redir;
+
+			uuid serveruuid;
+
+			RCONInfo rcon;
+
+			std::shared_ptr<VanillaParser> parser_ptr;
 		};
 		
 		CRITICAL_SECTION cs;
@@ -462,6 +464,14 @@ export {
 		HeliumMinecraftServer::HeliumMinecraftServer() {
 			this->stat = HeliumServerStat::TERMINATED;
 			this->serveruuid = RequestUUID(UUIDInfoType::SERVER, (void*)this);
+			try {
+				this->parser_ptr = make_shared<VanillaParser>(this->name);
+			}
+			catch (std::exception& e) {
+				log << HLL::LL_ERR << "Failed to generate parser for server "
+					<< this->name << hendl;
+				log << HLL::LL_ERR << e.what() << hendl;
+			}
 		}
 		HeliumMinecraftServer::~HeliumMinecraftServer() {
 			if (this->stat != HeliumServerStat::TERMINATED) this->StopServer();
@@ -483,6 +493,7 @@ export {
 				split(lines, output, is_any_of("\n"), token_compress_on);
 
 				for (auto s : lines) {
+					ptr->parser_ptr->Parse(s);
 					EnterCriticalSection(&cs);
 					cout << servername << " > " << s << endl;
 					LeaveCriticalSection(&cs);

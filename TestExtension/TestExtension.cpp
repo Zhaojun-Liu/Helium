@@ -67,4 +67,10 @@ namespace TestExtension {
 	extern "C" TESTEXTENSION_API int ServerInput(list<any> argument) {
 		return 0;
 	}
+	extern "C" TESTEXTENSION_API int ServerOutput(list<any> argument) {
+		return 0;
+	}
+	extern "C" TESTEXTENSION_API int PlayerInput(list<any> argument) {
+		return 0;
+	}
 }

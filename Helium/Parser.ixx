@@ -26,20 +26,42 @@ module;
 
 export module Helium.Parser;
 
-import Helium.MinecraftServer;
 import Helium.Events;
+import Helium.Logger;
 
 import <string>;
+import <list>;
+import <any>;
 import <regex>;
 
 using namespace std;
 
 export{
 	namespace Helium {
+		class BasicHeliumParser {
 
+		};
+		class VanillaParser : public BasicHeliumParser{
+		public:
+			VanillaParser() : server_name("empty_server_name") {}
+			VanillaParser(string server_name) : server_name(server_name) {}
+			int Parse(const string& rawtext);
+		private:
+			string server_name;
+		};
 	}
 }
 
 namespace Helium {
-
+	int VanillaParser::Parse(const string& rawtext) {
+		auto ret = 0;
+		list<any> param;
+		any temp_any = 0;
+		log << HLL::LL_INFO << "Start parse : " << rawtext << hendl;
+		regex done("Done \\([0-9.]*s\\)! For help, type \"help\"( or \"\\ ? \")?");
+		if (regex_search(rawtext, done)) {
+			log << HLL::LL_WARN << "Recognized a done pharse." << hendl;
+		}
+		return ret;
+	}
 }

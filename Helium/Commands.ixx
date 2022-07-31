@@ -1,7 +1,7 @@
 /*
 * Helium is a customizable extension system for Minecraft server.
 * You can get the lastest source code and releases of Helium at :
-* https://github.com/Minecraft1248/Helium
+* https://github.com/Helium-DevTeam/Helium
 * ----------------------------------------------------------------------------------------
 * Helium Copyright (C) 2021-2022 HeliumDevTeam
 *
@@ -24,16 +24,8 @@
 
 module;
 
-#include<regex>
-#include<iostream>
-#include<sstream>
 #include"tree.hh/tree.hh"
 #include"replxx/replxx.hxx"
-#include<any>
-#include<map>
-#include<list>
-#include<iostream>
-#include<functional>
 #include<boost/uuid/uuid.hpp>
 #include<boost/uuid/uuid_io.hpp>
 #include<boost/uuid/uuid_generators.hpp>
@@ -45,7 +37,17 @@ module;
 export module Helium.Commands;
 
 import <string>;
+import <regex>;
+import <iostream>;
+import <sstream>;
+import <any>;
+import <map>;
+import <list>;
+import <iostream>;
+import <functional>;
+
 import Helium.Config;
+import Helium.Events;
 import Helium.Utils;
 import Helium.Logger;
 import Helium.CommandCallback;
@@ -721,6 +723,7 @@ export{
 
 			auto root = new ConstantString("Helium Built-in Command \"#helium\"", "#helium", "#hel");
 			auto help = new ConstantString("Helium Built-in Command \"#help\"", "#help", "", guest);
+			auto rootexit = new ConstantString("Helium Built-in Command \"#exit\"", "#exit", "", guest);
 
 			auto command = new ConstantString("Helium Built-in Command \"command\"", "command", "cmd");
 			auto events = new ConstantString("Helium Built-in Command \"event\"", "event", "ent");
@@ -746,6 +749,7 @@ export{
 
 			auto rootit = AddCommand(root);
 			auto helpit = AddCommand(help);
+			AddCommand(rootexit);
 
 			auto cmdit = AddCommand(command, rootit);
 			auto entit = AddCommand(events, rootit);
@@ -1273,6 +1277,14 @@ export{
 				string input(cinput);
 				if (input.empty()) continue;
 
+				list<any> temp_param;
+				any temp_any = input;
+				temp_param.push_back(temp_any);
+				helium_event_manager.CreateEvent(HeliumEventList::CONSOLE_INPUT, temp_param);
+				temp_any = string("console");
+				temp_param.push_back(temp_any);
+				helium_event_manager.CreateEvent(HeliumEventList::GENERAL_INPUT, temp_param);
+
 				if (auto ret = ExecuteCommand(input, "Helium_Shell", 4); ret != 0) {
 					log << HLL::LL_ERR << "Failed to execute command : " << input << hendl;
 				}
@@ -1673,8 +1685,8 @@ export{
 			tree<_BasicHeliumCommand*>::fixed_depth_iterator pit = HeliumCommandTree.begin();
 			tree<_BasicHeliumCommand*>::fixed_depth_iterator tit;
 
-			if (rawcmd == "#helium exit") {
-				exit(0);
+			if (rawcmd == "#exit") {
+				::exit(0);
 			}
 
 			while (iss >> tempstr) {
