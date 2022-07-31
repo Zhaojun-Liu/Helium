@@ -91,11 +91,11 @@ export{
 
 		HeliumEndline hendl;
 		HeliumLogger log("Helium");
-		auto LDBG = HLL::LL_DBG;
-		auto LINFO = HLL::LL_INFO;
-		auto LWARN = HLL::LL_DBG;
-		auto LCRIT = HLL::LL_DBG;
-		auto LFATAL = HLL::LL_DBG;
+		const auto LDBG = HLL::LL_DBG;
+		const auto LINFO = HLL::LL_INFO;
+		const auto LWARN = HLL::LL_DBG;
+		const auto LCRIT = HLL::LL_DBG;
+		const auto LFATAL = HLL::LL_DBG;
 
 		int CreateExtLogger(string name);
 		int DeleteExtLogger(string name);

@@ -24,16 +24,8 @@
 
 module;
 
-#include<regex>
-#include<iostream>
-#include<sstream>
 #include"tree.hh/tree.hh"
 #include"replxx/replxx.hxx"
-#include<any>
-#include<map>
-#include<list>
-#include<iostream>
-#include<functional>
 #include<boost/uuid/uuid.hpp>
 #include<boost/uuid/uuid_io.hpp>
 #include<boost/uuid/uuid_generators.hpp>
@@ -45,7 +37,17 @@ module;
 export module Helium.Commands;
 
 import <string>;
+import <regex>;
+import <iostream>;
+import <sstream>;
+import <any>;
+import <map>;
+import <list>;
+import <iostream>;
+import <functional>;
+
 import Helium.Config;
+import Helium.Events;
 import Helium.Utils;
 import Helium.Logger;
 import Helium.CommandCallback;
@@ -1274,6 +1276,14 @@ export{
 				if (cinput == NULL) continue;
 				string input(cinput);
 				if (input.empty()) continue;
+
+				list<any> temp_param;
+				any temp_any = input;
+				temp_param.push_back(temp_any);
+				helium_event_manager.CreateEvent(HeliumEventList::CONSOLE_INPUT, temp_param);
+				temp_any = string("console");
+				temp_param.push_back(temp_any);
+				helium_event_manager.CreateEvent(HeliumEventList::GENERAL_INPUT, temp_param);
 
 				if (auto ret = ExecuteCommand(input, "Helium_Shell", 4); ret != 0) {
 					log << HLL::LL_ERR << "Failed to execute command : " << input << hendl;

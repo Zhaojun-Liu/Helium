@@ -60,6 +60,7 @@ export{
 			GENERAL_INPUT,
 			CONSOLE_INPUT,
 			SERVER_INPUT,
+			PLAYER_INPUT,
 			USER_DEFINED_MIN
 		};
 
@@ -80,6 +81,7 @@ export{
 			"GENERAL_INPUT",
 			"CONSOLE_INPUT",
 			"SERVER_INPUT",
+			"PLAYER_INPUT",
 			"USER_DEFINED_MIN"
 		};
 
@@ -100,6 +102,7 @@ export{
 			"GeneralInput",
 			"ConsoleInput",
 			"ServerInput",
+			"PlayerInput",
 			""
 		};
 
@@ -113,8 +116,13 @@ export{
 
 			int RegisterEventListener(const int& event_num, const StandardHeliumListener func);
 			int CreateEvent(const int& event_num, const list<any> param);
+
+			void TraceEvent(const int& event_num) noexcept;
+			void UntraceEvent(const int& event_num) noexcept;
+			bool IsEventTraced(const int& event_num) noexcept;
 		private:
 			map<int, shared_ptr<StandardHeliumSignal>> event_map;
+			static map<int, bool> is_traced;
 		};
 
 		HeliumEventManager helium_event_manager;
@@ -124,6 +132,8 @@ export{
 }
 
 namespace Helium {
+	map<int, bool> HeliumEventManager::is_traced = map<int, bool>();
+
 	int HeliumEventManager::RegisterEventListener(const int& event_num, const StandardHeliumListener func) {
 		auto iter = this->event_map.find(event_num);
 		if (iter != this->event_map.end()) {
@@ -137,6 +147,10 @@ namespace Helium {
 	}
 	int HeliumEventManager::CreateEvent(const int& event_num, const list<any> param) {
 		auto iter = this->event_map.find(event_num);
+		if (this->is_traced.count(event_num) > 0 && this->is_traced[event_num]) {
+			log << HLL::LL_WARN << "Traced event created " << event_num
+				<< "(" << EventIDToDesc(event_num) << ")." << hendl;
+		}
 		if (iter != this->event_map.end()) {
 			auto signal_ptr = iter->second;
 			(*signal_ptr)(param);
@@ -147,6 +161,19 @@ namespace Helium {
 			return -1;
 		}
 		return 0;
+	}
+
+	void HeliumEventManager::TraceEvent(const int& event_num) noexcept {
+		this->is_traced[event_num] = true;
+	}
+	void HeliumEventManager::UntraceEvent(const int& event_num) noexcept {
+		this->is_traced[event_num] = false;
+	}
+	bool HeliumEventManager::IsEventTraced(const int& event_num) noexcept {
+		if (this->is_traced.count(event_num) > 0) {
+			if (this->is_traced[event_num]) return true;
+		}
+		return false;
 	}
 
 	string EventIDToDesc(const int& id) {

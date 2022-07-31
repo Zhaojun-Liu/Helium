@@ -194,8 +194,17 @@ export {
 			return 0;
 		}
 		int helium_event_trace(string rawcmd, string sender, int permission, list<any> arguments) {
-			
-			log << HLL::LL_INFO << "This command hasn't been implemented yet :(helium_event_trace" << hendl;
+			long event_id = any_cast<long>(arguments.front());
+			if (helium_event_manager.IsEventTraced(event_id)) {
+				helium_event_manager.UntraceEvent(event_id);
+				log << HLL::LL_INFO << "Untracing event " << EventIDToDesc(event_id)
+					<< "(" << event_id << ")" << hendl;
+			}
+			else {
+				helium_event_manager.TraceEvent(event_id);
+				log << HLL::LL_INFO << "Tracing event " << EventIDToDesc(event_id)
+					<< "(" << event_id << ")" << hendl;
+			}
 			return 0;
 		}
 
@@ -355,8 +364,6 @@ export {
 		}
 
 		int helium_show_warranty(string rawcmd, string sender, int permission, list<any> arguments) {
-			
-
 			log << HLL::LL_INFO << "Disclaimer of Warranty." << hendl;
 			log << HLL::LL_INFO << "THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW." << hendl;
 			log << HLL::LL_INFO << "EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER" << hendl;
@@ -365,14 +372,9 @@ export {
 			log << HLL::LL_INFO << "MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE" << hendl;
 			log << HLL::LL_INFO << "QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE" << hendl;
 			log << HLL::LL_INFO << "DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION." << hendl;
-
 			return 0;
 		}
 		int helium_show_condition(string rawcmd, string sender, int permission, list<any> arguments) {
-			
-
-
-
 			return 0;
 		}
 
