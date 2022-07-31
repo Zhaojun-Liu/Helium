@@ -75,8 +75,8 @@ export {
 			ADD_EXP_FUNC("ExtLoggerDebug", ExtLoggerDebug);
 			ADD_EXP_FUNC("ExtLoggerInfo", ExtLoggerInfo);
 			ADD_EXP_FUNC("ExtLoggerWarn", ExtLoggerWarn);
-			ADD_EXP_FUNC("ExtLoggerCrit", ExtLoggerCrit);
 			ADD_EXP_FUNC("ExtLoggerError", ExtLoggerError);
+			ADD_EXP_FUNC("ExtLoggerCrit", ExtLoggerCrit);
 			log << HLL::LL_INFO << "Helium API map was successfully built" << hendl;
 			return 0;
 		}

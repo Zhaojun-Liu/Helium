@@ -1,7 +1,7 @@
 /*
 * Helium is a customizable extension system for Minecraft server.
 * You can get the lastest source code and releases of Helium at :
-* https://github.com/Minecraft1248/Helium
+* https://github.com/Helium-DevTeam/Helium
 * ----------------------------------------------------------------------------------------
 * Helium Copyright (C) 2021-2022 HeliumDevTeam
 *
@@ -65,7 +65,7 @@ export{
 		class HeliumExtension {
 		public:
 			HeliumExtension() {
-
+				this->extension_eventmgr = make_shared<HeliumEventManager>();
 			}
 			HeliumExtension(string cfgname);
 			~HeliumExtension();
@@ -110,6 +110,7 @@ export{
 			int extstat;
 			uuid extuuid;
 			shared_library extins;
+			shared_ptr<HeliumEventManager> extension_eventmgr;
 		};
 
 		vector<HeliumExtension> extensions;
@@ -174,8 +175,7 @@ namespace Helium {
 		this->extuuid = RequestUUID(UUIDInfoType::EXTENSION, (void*)this);
 		log << HLL::LL_INFO << "Done." << hendl;
 		this->extstat = EXT_STATUS_UNLOADED;
-		uuid extuuid = random_generator()();
-		this->extuuid = extuuid;
+		this->extension_eventmgr = make_shared<HeliumEventManager>();
 		return;
 	}
 	HeliumExtension::~HeliumExtension() {
@@ -198,12 +198,11 @@ namespace Helium {
 			this->extstat = EXT_STATUS_EMPTY;
 			return -1;
 		}
-		this->ScanEventFunc();
 		try {
-			helium_event_manager.RegisterEventListener(HeliumEventList::EXTENSION_LOAD
-				, this->extins.get<int(list<any>)>("ExtensionLoad"));
+			this->ScanEventFunc();
+			
 			list<any> temp_param;
-			helium_event_manager.CreateEvent(HeliumEventList::EXTENSION_LOAD, temp_param);
+			this->extension_eventmgr->CreateEvent(HeliumEventList::EXTENSION_LOAD, temp_param);
 		}
 		catch (exception& e) {
 			log << HLL::LL_ERR << "Event listener function scanner for extension " << this->config.extname
@@ -218,16 +217,32 @@ namespace Helium {
 		return 0;
 	}
 	int HeliumExtension::UnloadExt() {
+		this->extstat = EXT_STATUS_UNLOADING;
+		list<any> temp_param;
+		this->extension_eventmgr->CreateEvent(HeliumEventList::EXTENSION_UNLOAD, temp_param);
+		this->extstat = EXT_STATUS_UNLOADED;
 		return 0;
 	}
 	int HeliumExtension::UnlockExt() {
 		return 0;
 	}
 	int HeliumExtension::ScanEventFunc() {
-		if (this->extins.has("ExtensionLoad")) {
-			this->funcs["ExtensionLoad"] = this->extins.get<int()>("ExtensionLoad");
+		auto ret = 0;
+		for (int i = HeliumEventList::HELIUM_STARTUP;
+			i < HeliumEventList::USER_DEFINED_MIN;
+			i++) {
+			if (this->extins.has(EventIDToListenerFunc(i))) {
+				log << HLL::LL_INFO << "Find a event listener "
+					<< EventIDToListenerFunc(i) << " in the extension "
+					<< this->config.extname << hendl;
+				helium_event_manager.RegisterEventListener(i
+					, this->extins.get<int(list<any>)>(EventIDToListenerFunc(i)));
+				this->extension_eventmgr->RegisterEventListener(i
+					, this->extins.get<int(list<any>)>(EventIDToListenerFunc(i)));
+				ret++;
+			}
 		}
-		return 0;
+		return ret;
 	}
 	string HeliumExtension::GetExtName(){
 		return this->config.extname;

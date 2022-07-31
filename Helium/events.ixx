@@ -1,7 +1,7 @@
 /*
 * Helium is a customizable extension system for Minecraft server.
 * You can get the lastest source code and releases of Helium at :
-* https://github.com/Minecraft1248/Helium
+* https://github.com/Helium-DevTeam/Helium
 * ----------------------------------------------------------------------------------------
 * Helium Copyright (C) 2021-2022 HeliumDevTeam
 *
@@ -83,6 +83,26 @@ export{
 			"USER_DEFINED_MIN"
 		};
 
+		const string helium_event_listener_str[] = {
+			"",
+			"HeliumStartup",
+			"HeliumInitializationStart",
+			"HeliumInitializationFinish",
+			"HeliumFinalizationStart",
+			"HeliumFinalizationFinish",
+			"ExtensionLoad",
+			"ExtensionUnload",
+			"ServerStart",
+			"ServerInitializationFinish",
+			"ServerStop",
+			"PlayerJoin",
+			"PlayerLeave",
+			"GeneralInput",
+			"ConsoleInput",
+			"ServerInput",
+			""
+		};
+
 		class HeliumEventManager {
 		public:
 			typedef boost::function<int(const list<any>)> StandardHeliumListener;
@@ -98,14 +118,14 @@ export{
 		};
 
 		HeliumEventManager helium_event_manager;
+		string EventIDToDesc(const int& id);
+		string EventIDToListenerFunc(const int& id);
 	}
 }
 
 namespace Helium {
 	int HeliumEventManager::RegisterEventListener(const int& event_num, const StandardHeliumListener func) {
 		auto iter = this->event_map.find(event_num);
-		log << HLL::LL_INFO << "Registering an event listener for event : " << event_num
-			<< "(" << helium_event_str[event_num] << ")" << hendl;
 		if (iter != this->event_map.end()) {
 			iter->second->connect(func);
 		}
@@ -127,5 +147,18 @@ namespace Helium {
 			return -1;
 		}
 		return 0;
+	}
+
+	string EventIDToDesc(const int& id) {
+		if (id >= HeliumEventList::EMPTY_EVENT && id <= HeliumEventList::USER_DEFINED_MIN) {
+			return helium_event_str[id];
+		}
+		return "";
+	}
+	string EventIDToListenerFunc(const int& id) {
+		if (id >= HeliumEventList::EMPTY_EVENT && id <= HeliumEventList::USER_DEFINED_MIN) {
+			return helium_event_listener_str[id];
+		}
+		return "";
 	}
 }
