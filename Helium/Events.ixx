@@ -1,7 +1,7 @@
 /*
 * Helium is a customizable extension system for Minecraft server.
 * You can get the lastest source code and releases of Helium at :
-* https://github.com/Minecraft1248/Helium
+* https://github.com/Helium-DevTeam/Helium
 * ----------------------------------------------------------------------------------------
 * Helium Copyright (C) 2021-2022 HeliumDevTeam
 *
@@ -29,6 +29,7 @@ export module Helium.Events;
 import Helium.UUIDManager;
 import Helium.Logger;
 
+import <string>;
 import <iostream>;
 import <vector>;
 import <thread>;
@@ -54,12 +55,58 @@ export{
 			SERVER_START,
 			SERVER_INITIALIZATION_FINISH,
 			SERVER_STOP,
+			SERVER_OUTPUT,
 			PLAYER_JOIN,
 			PLAYER_LEAVE,
 			GENERAL_INPUT,
 			CONSOLE_INPUT,
 			SERVER_INPUT,
+			PLAYER_INPUT,
 			USER_DEFINED_MIN
+		};
+
+		const string helium_event_str[] = {
+			"EMPTY_EVENT",
+			"HELIUM_STARTUP",
+			"HELIUM_INITIALIZATION_START",
+			"HELIUM_INITIALIZATION_FINISH",
+			"HELIUM_FINALIZATION_START",
+			"HELIUM_FINALIZATION_FINISH",
+			"EXTENSION_LOAD",
+			"EXTENSION_UNLOAD",
+			"SERVER_START",
+			"SERVER_INITIALIZATION_FINISH",
+			"SERVER_STOP",
+			"SERVER_OUTPUT",
+			"PLAYER_JOIN",
+			"PLAYER_LEAVE",
+			"GENERAL_INPUT",
+			"CONSOLE_INPUT",
+			"SERVER_INPUT",
+			"PLAYER_INPUT",
+			"USER_DEFINED_MIN"
+		};
+
+		const string helium_event_listener_str[] = {
+			"",
+			"HeliumStartup",
+			"HeliumInitializationStart",
+			"HeliumInitializationFinish",
+			"HeliumFinalizationStart",
+			"HeliumFinalizationFinish",
+			"ExtensionLoad",
+			"ExtensionUnload",
+			"ServerStart",
+			"ServerInitializationFinish",
+			"ServerStop",
+			"ServerOutput",
+			"PlayerJoin",
+			"PlayerLeave",
+			"GeneralInput",
+			"ConsoleInput",
+			"ServerInput",
+			"PlayerInput",
+			""
 		};
 
 		class HeliumEventManager {
@@ -72,15 +119,24 @@ export{
 
 			int RegisterEventListener(const int& event_num, const StandardHeliumListener func);
 			int CreateEvent(const int& event_num, const list<any> param);
+
+			void TraceEvent(const int& event_num) noexcept;
+			void UntraceEvent(const int& event_num) noexcept;
+			bool IsEventTraced(const int& event_num) noexcept;
 		private:
 			map<int, shared_ptr<StandardHeliumSignal>> event_map;
+			static map<int, bool> is_traced;
 		};
 
 		HeliumEventManager helium_event_manager;
+		string EventIDToDesc(const int& id);
+		string EventIDToListenerFunc(const int& id);
 	}
 }
 
 namespace Helium {
+	map<int, bool> HeliumEventManager::is_traced = map<int, bool>();
+
 	int HeliumEventManager::RegisterEventListener(const int& event_num, const StandardHeliumListener func) {
 		auto iter = this->event_map.find(event_num);
 		if (iter != this->event_map.end()) {
@@ -94,14 +150,45 @@ namespace Helium {
 	}
 	int HeliumEventManager::CreateEvent(const int& event_num, const list<any> param) {
 		auto iter = this->event_map.find(event_num);
-		if (iter != this->event_map.find(event_num)) {
+		if (this->is_traced.count(event_num) > 0 && this->is_traced[event_num]) {
+			log << HLL::LL_WARN << "Traced event created " << event_num
+				<< "(" << EventIDToDesc(event_num) << ")." << hendl;
+		}
+		if (iter != this->event_map.end()) {
 			auto signal_ptr = iter->second;
 			(*signal_ptr)(param);
 		}
 		else {
-			log << HLL::LL_ERR << "Cannot find the event : " << event_num << hendl;
+			log << HLL::LL_ERR << "Cannot find the event : " << event_num
+				<< "(" << helium_event_str[event_num] << ")" << hendl;
 			return -1;
 		}
 		return 0;
+	}
+
+	void HeliumEventManager::TraceEvent(const int& event_num) noexcept {
+		this->is_traced[event_num] = true;
+	}
+	void HeliumEventManager::UntraceEvent(const int& event_num) noexcept {
+		this->is_traced[event_num] = false;
+	}
+	bool HeliumEventManager::IsEventTraced(const int& event_num) noexcept {
+		if (this->is_traced.count(event_num) > 0) {
+			if (this->is_traced[event_num]) return true;
+		}
+		return false;
+	}
+
+	string EventIDToDesc(const int& id) {
+		if (id >= HeliumEventList::EMPTY_EVENT && id <= HeliumEventList::USER_DEFINED_MIN) {
+			return helium_event_str[id];
+		}
+		return "";
+	}
+	string EventIDToListenerFunc(const int& id) {
+		if (id >= HeliumEventList::EMPTY_EVENT && id <= HeliumEventList::USER_DEFINED_MIN) {
+			return helium_event_listener_str[id];
+		}
+		return "";
 	}
 }
