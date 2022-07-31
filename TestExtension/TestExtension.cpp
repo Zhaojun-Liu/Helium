@@ -64,10 +64,14 @@ namespace TestExtension {
 		ExtLoggerInfo(lname, input);
 		return 0;
 	}
-	extern "C" TESTEXTENSION_API int ServerInput(list<any> argument) {
-		return 0;
-	}
 	extern "C" TESTEXTENSION_API int ServerOutput(list<any> argument) {
+		string server_name = any_cast<string>(argument.front())
+			, server_output = any_cast<string>(argument.back())
+			, logger_output = "Get an output from server ";
+		logger_output.append(server_name)
+			.append(" ")
+			.append(server_output);
+		ExtLoggerError(lname, logger_output);
 		return 0;
 	}
 	extern "C" TESTEXTENSION_API int PlayerInput(list<any> argument) {

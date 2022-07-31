@@ -57,10 +57,31 @@ namespace Helium {
 		auto ret = 0;
 		list<any> param;
 		any temp_any = 0;
-		log << HLL::LL_INFO << "Start parse : " << rawtext << hendl;
+		log << HLL::LL_WARN << "Start parse : " << rawtext << hendl;
 		regex done("Done \\([0-9.]*s\\)! For help, type \"help\"( or \"\\ ? \")?");
-		if (regex_search(rawtext, done)) {
-			log << HLL::LL_WARN << "Recognized a done pharse." << hendl;
+		regex time("\\[[0-9]*:[0-9]*:[0-9]*\\] ");
+		regex thd_src("\\[[A-Za-z ]*/[A-Za-z ]*\\]: ");
+		smatch m;
+		string time_str, thread_source_str, text = rawtext;
+		try {
+			if (regex_search(text, m, time)) {
+				time_str = m.str();
+				log << HLL::LL_WARN << "Recognized a timestamp " << time_str << "." << hendl;
+				text = regex_replace(text, time, "");
+			}
+			log << HLL::LL_WARN << "Parsing : " << text << hendl;
+			if (regex_search(text, m, thd_src)) {
+				thread_source_str = m.str();
+				log << HLL::LL_WARN << "Recognized a log source " << thread_source_str << "." << hendl;
+				text = regex_replace(text, thd_src, "");
+			}
+			log << HLL::LL_WARN << "Parsing : " << text << hendl;
+			if (regex_search(text, done)) {
+				log << HLL::LL_WARN << "Recognized a done pharse." << hendl;
+			}
+		}
+		catch (exception& e) {
+			log << HLL::LL_ERR << e.what() << hendl;
 		}
 		return ret;
 	}

@@ -38,11 +38,14 @@ module;
 
 export module Helium.MinecraftServer:Class;
 
+import Helium.Events;
 import Helium.Logger;
 import Helium.UUIDManager;
 import Helium.Parser;
 
 import <string>;
+import <list>;
+import <any>;
 import <vector>;
 
 using namespace std;
@@ -493,10 +496,18 @@ export {
 				split(lines, output, is_any_of("\n"), token_compress_on);
 
 				for (auto s : lines) {
-					ptr->parser_ptr->Parse(s);
+					list<any> param;
+					any temp_any;
+					temp_any = ptr->name;
+					param.push_back(temp_any);
+					temp_any = s;
+					param.push_back(temp_any);
+#undef CreateEvent
+					helium_event_manager.CreateEvent(HeliumEventList::SERVER_OUTPUT, param);
 					EnterCriticalSection(&cs);
 					cout << servername << " > " << s << endl;
 					LeaveCriticalSection(&cs);
+					ptr->parser_ptr->Parse(s);
 				}
 			}
 
