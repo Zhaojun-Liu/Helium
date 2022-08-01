@@ -44,33 +44,27 @@ using namespace boost::signals2;
 export{
 	namespace Helium {
 		enum HeliumEventList {
-			EMPTY_EVENT,
-			HELIUM_STARTUP,
-			HELIUM_INITIALIZATION_START,
-			HELIUM_INITIALIZATION_FINISH,
-			HELIUM_FINALIZATION_START,
-			HELIUM_FINALIZATION_FINISH,
-			EXTENSION_LOAD,
-			EXTENSION_UNLOAD,
-			SERVER_START,
-			SERVER_INITIALIZATION_FINISH,
-			SERVER_STOP,
-			SERVER_OUTPUT,
-			PLAYER_JOIN,
-			PLAYER_LEAVE,
-			GENERAL_INPUT,
-			CONSOLE_INPUT,
-			PLAYER_INPUT,
-			USER_DEFINED_MIN
+			EMPTY_EVENT,	//done
+			HELIUM_START,	//done
+			HELIUM_STOP,	//done
+			EXTENSION_LOAD,	//done
+			EXTENSION_UNLOAD,	//done
+			SERVER_START,	//done
+			SERVER_INITIALIZATION_FINISH,	//done
+			SERVER_STOP,	//done
+			SERVER_OUTPUT,	//done
+			PLAYER_JOIN,	//wait for parser
+			PLAYER_LEAVE,	//wait for parser
+			GENERAL_INPUT,	//wait for parser
+			CONSOLE_INPUT,	//done
+			PLAYER_INPUT,	//wait for parser
+			USER_DEFINED_MIN	//reserved
 		};
 
 		const string helium_event_str[] = {
 			"EMPTY_EVENT",
-			"HELIUM_STARTUP",
-			"HELIUM_INITIALIZATION_START",
-			"HELIUM_INITIALIZATION_FINISH",
-			"HELIUM_FINALIZATION_START",
-			"HELIUM_FINALIZATION_FINISH",
+			"HELIUM_START",
+			"HELIUM_STOP",
 			"EXTENSION_LOAD",
 			"EXTENSION_UNLOAD",
 			"SERVER_START",
@@ -87,11 +81,8 @@ export{
 
 		const string helium_event_listener_str[] = {
 			"",
-			"HeliumStartup",
-			"HeliumInitializationStart",
-			"HeliumInitializationFinish",
-			"HeliumFinalizationStart",
-			"HeliumFinalizationFinish",
+			"HeliumStart",
+			"HeliumStop",
 			"ExtensionLoad",
 			"ExtensionUnload",
 			"ServerStart",
@@ -115,7 +106,7 @@ export{
 			~HeliumEventManager() {};
 
 			int RegisterEventListener(const int& event_num, const StandardHeliumListener func);
-			int CreateEvent(const int& event_num, const list<any> param);
+			int DispatchEvent(const int& event_num, const list<any> param);
 
 			void TraceEvent(const int& event_num) noexcept;
 			void UntraceEvent(const int& event_num) noexcept;
@@ -145,7 +136,7 @@ namespace Helium {
 		}
 		return 0;
 	}
-	int HeliumEventManager::CreateEvent(const int& event_num, const list<any> param) {
+	int HeliumEventManager::DispatchEvent(const int& event_num, const list<any> param) {
 		auto iter = this->event_map.find(event_num);
 		if (this->is_traced.count(event_num) > 0 && this->is_traced[event_num]) {
 			log << HLL::LL_WARN << "Traced event created " << event_num

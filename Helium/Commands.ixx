@@ -48,6 +48,8 @@ import <functional>;
 
 import Helium.Config;
 import Helium.Events;
+import Helium.Extension;
+import Helium.MinecraftServer;
 import Helium.Utils;
 import Helium.Logger;
 import Helium.CommandCallback;
@@ -1280,12 +1282,12 @@ export{
 				list<any> temp_param;
 				any temp_any = input;
 				temp_param.push_back(temp_any);
-				helium_event_manager.CreateEvent(HeliumEventList::CONSOLE_INPUT, temp_param);
+				helium_event_manager.DispatchEvent(HeliumEventList::CONSOLE_INPUT, temp_param);
 				temp_any = string("console");
 				temp_param.push_back(temp_any);
-				helium_event_manager.CreateEvent(HeliumEventList::GENERAL_INPUT, temp_param);
+				helium_event_manager.DispatchEvent(HeliumEventList::GENERAL_INPUT, temp_param);
 
-				if (auto ret = ExecuteCommand(input, "Helium_Shell", 4); ret != 0) {
+				if (auto ret = ExecuteCommand(input, "console", 4); ret != 0) {
 					log << HLL::LL_ERR << "Failed to execute command : " << input << hendl;
 				}
 
@@ -1686,6 +1688,11 @@ export{
 			tree<_BasicHeliumCommand*>::fixed_depth_iterator tit;
 
 			if (rawcmd == "#exit") {
+				list<any> param;
+				helium_event_manager.DispatchEvent(HeliumEventList::HELIUM_STOP, param);
+				StopAllServer();
+				UnloadAllExtension();
+				log << HLL::LL_INFO << "Exiting Helium." << hendl;
 				::exit(0);
 			}
 
