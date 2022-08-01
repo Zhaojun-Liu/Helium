@@ -408,6 +408,7 @@ export {
 		int exit(string rawcmd, string sender, int permission, list<any> arguments) {
 			list<any> param;
 			helium_event_manager.DispatchEvent(HeliumEventList::HELIUM_STOP, param);
+			//StopAllServer();
 			UnloadAllExtension();
 			log << HLL::LL_INFO << "Exiting Helium." << hendl;
 			::exit(0);

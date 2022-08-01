@@ -60,9 +60,12 @@ namespace Helium {
 		auto ret = 0;
 		list<any> param;
 		any temp_any = 0;
-		regex done("Done \\([0-9.]*s\\)! For help, type \"help\"( or \"\\ ? \")?");
-		regex time("\\[[0-9][0-9]:[0-9][0-9]:[0-9][0-9]\\] ");
-		regex thd_src("\\[[A-Za-z ]*/[A-Za-z ]*\\]: ");
+		regex rdone("Done \\([0-9.]*s\\)! For help, type \"help\"( or \"\\ ? \")?");
+		regex rtime("\\[[0-9][0-9]:[0-9][0-9]:[0-9][0-9]\\] ");
+		regex rthd_src("\\[[A-Za-z ]*/[A-Za-z ]*\\]: ");
+		regex rjoin("[A-Za-z0-9_]* joined the game");
+		regex rleave("[A-Za-z0-9_]* left the game");
+		regex rplayer_info("<[A-Za-z0-9_]*> ");
 		smatch m;
 		string time_str, thread_source_str, text = rawtext, thrd, srce;
 		tm timestamp;
@@ -71,12 +74,12 @@ namespace Helium {
 		param.push_back(temp_any);
 
 		try {
-			if (regex_search(text, m, time)) {
+			if (regex_search(text, m, rtime)) {
 				time_str = m.str();
-				text = regex_replace(text, time, "");
-				regex split_time("[0-9][0-9]");
+				text = regex_replace(text, rtime, "");
+				regex rsplit_time("[0-9][0-9]");
 				smatch temp_m;
-				sregex_iterator it(time_str.begin(), time_str.end(), split_time), end;
+				sregex_iterator it(time_str.begin(), time_str.end(), rsplit_time), end;
 				int tempi = 1;
 				for (; it != end; it++) {
 					stringstream sstr;
@@ -95,9 +98,9 @@ namespace Helium {
 				temp_any = timestamp;
 				param.push_back(temp_any);
 			}
-			if (regex_search(text, m, thd_src)) {
+			if (regex_search(text, m, rthd_src)) {
 				thread_source_str = m.str();
-				text = regex_replace(text, thd_src, "");
+				text = regex_replace(text, rthd_src, "");
 				regex rthread("[A-Za-z ]*/"), rsource("/[A-Za-z ]*");
 				smatch temp_m;
 				regex_search(thread_source_str, temp_m, rthread);
@@ -111,10 +114,10 @@ namespace Helium {
 				temp_any = srce;
 				param.push_back(temp_any);
 			}
-			if (regex_search(text, done)) {
-				regex split_usetime("[0-9]*.[0-9]*s");
+			if (regex_search(text, rdone)) {
+				regex rsplit_usetime("[0-9]*.[0-9]*s");
 				smatch temp_m;
-				regex_search(text, temp_m, split_usetime);
+				regex_search(text, temp_m, rsplit_usetime);
 				string temp_str = temp_m.str();
 				temp_str.erase(temp_str.end() - 1);
 				stringstream sstr;
@@ -124,6 +127,30 @@ namespace Helium {
 				temp_any = temp_d;
 				param.push_back(temp_any);
 				helium_event_manager.DispatchEvent(HeliumEventList::SERVER_INITIALIZATION_FINISH, param);
+			}
+			if (regex_search(text, rjoin)) {
+				regex rsplit(" joined the game");
+				text = regex_replace(text, rsplit, "");
+				temp_any = text;
+				param.push_back(temp_any);
+				helium_event_manager.DispatchEvent(HeliumEventList::PLAYER_JOIN, param);
+			}
+			if (regex_search(text, rleave)) {
+				regex rsplit(" left the game");
+				text = regex_replace(text, rsplit, "");
+				temp_any = text;
+				param.push_back(temp_any);
+				helium_event_manager.DispatchEvent(HeliumEventList::PLAYER_LEAVE, param);
+			}
+			if (regex_search(text, m, rplayer_info)) {
+				string player_name = m.str();
+				text = regex_replace(text, rplayer_info, "");
+				string player_info = text;
+				temp_any = player_name;
+				param.push_back(temp_any);
+				temp_any = player_info;
+				param.push_back(temp_any);
+				helium_event_manager.DispatchEvent(HeliumEventList::PLAYER_INPUT, param);
 			}
 		}
 		catch (exception& e) {

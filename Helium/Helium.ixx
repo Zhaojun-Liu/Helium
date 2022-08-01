@@ -65,7 +65,7 @@ using namespace tinyxml2;
 
 export{
 	namespace Helium {
-        version heliumversion = { 0, 7, 2, prerelease::alpha };
+        version heliumversion = { 0, 7, 3, prerelease::alpha };
 
 		int ProcessServerOutput(HeliumMinecraftServer*, string, HANDLE, HANDLE);
 		int HeliumMain(int argc, char* argv[]);

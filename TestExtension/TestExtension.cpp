@@ -60,9 +60,21 @@ namespace TestExtension {
 		return 0;
 	}
 	extern "C" TESTEXTENSION_API int PlayerJoin(list<any> argument) {
+		try {
+			cout << "Player Name:" << any_cast<string>(argument.back()) << endl;
+		}
+		catch (...) {
+			;
+		}
 		return 0;
 	}
 	extern "C" TESTEXTENSION_API int PlayerLeave(list<any> argument) {
+		try {
+			cout << "Player Name:" << any_cast<string>(argument.back()) << endl;
+		}
+		catch (...) {
+			;
+		}
 		return 0;
 	}
 	extern "C" TESTEXTENSION_API int GeneralInput(list<any> argument) {
@@ -84,6 +96,16 @@ namespace TestExtension {
 		return 0;
 	}
 	extern "C" TESTEXTENSION_API int PlayerInput(list<any> argument) {
+		try {
+			auto it = argument.end();
+			it--;
+			it--;
+			cout << any_cast<string>(*it) << endl;
+			cout << any_cast<string>(argument.back()) << endl;
+		}
+		catch (...) {
+			;
+		}
 		return 0;
 	}
 }
