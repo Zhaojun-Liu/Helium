@@ -125,7 +125,7 @@ export{
 		tree<_BasicHeliumCommand*>::pre_order_iterator 
 			ReplaceCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator it, tree<_BasicHeliumCommand*>::pre_order_iterator subtree);
 
-		int ExecuteCommand(string rawcmd, string sender, int permission);
+		int ExecuteCommand(string rawcmd, string sender, int permission, string servername = "");
 
 		typedef int (*HeliumCommandCallback)(string rawcmd, string sender, int permission, list<any> arguments);
 
@@ -443,7 +443,7 @@ export{
 
 		};
 		class ConstantString : public _CommandConstantString {
-			friend int ExecuteCommand(string rawcmd, string sender, int permission);
+			friend int ExecuteCommand(string rawcmd, string sender, int permission, string servername);
 		public:
 			ConstantString() {
 				this->commanddesc = "Default Command Description";
@@ -1678,7 +1678,7 @@ export{
 			return ret;
 		}
 
-		int ExecuteCommand(string rawcmd, string sender, int permission) {
+		int ExecuteCommand(string rawcmd, string sender, int permission, string servername) {
 			istringstream iss(rawcmd);
 			list<string> words;
 			list<_BasicHeliumCommand*> cmdpath;

@@ -144,6 +144,9 @@ namespace Helium {
 			}
 			if (regex_search(text, m, rplayer_info)) {
 				string player_name = m.str();
+				player_name.erase(player_name.begin());
+				player_name.erase(player_name.end() - 1);
+				player_name.erase(player_name.end() - 1);
 				text = regex_replace(text, rplayer_info, "");
 				string player_info = text;
 				temp_any = player_name;

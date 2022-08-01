@@ -53,11 +53,11 @@ export{
 			SERVER_INITIALIZATION_FINISH,	//done
 			SERVER_STOP,	//done
 			SERVER_OUTPUT,	//done
-			PLAYER_JOIN,	//wait for parser
-			PLAYER_LEAVE,	//wait for parser
-			GENERAL_INPUT,	//wait for parser
+			PLAYER_JOIN,	//done
+			PLAYER_LEAVE,	//done
+			GENERAL_INPUT,	//done
 			CONSOLE_INPUT,	//done
-			PLAYER_INPUT,	//wait for parser
+			PLAYER_INPUT,	//done
 			USER_DEFINED_MIN	//reserved
 		};
 
