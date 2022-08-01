@@ -32,6 +32,7 @@ export module Helium.CommandCallback;
 import <string>;
 import Helium.Logger;
 import Helium.Events;
+import Helium.Extension;
 
 using namespace std;
 
@@ -180,7 +181,7 @@ export {
 			log << HLL::LL_INFO << "Creating event " << EventIDToDesc(event_id)
 				<< "(" << event_id << ")" << hendl;
 			list<any> temp_param;
-			helium_event_manager.CreateEvent(event_id, temp_param);
+			helium_event_manager.DispatchEvent(event_id, temp_param);
 			return 0;
 		}
 		int helium_event_detail(string rawcmd, string sender, int permission, list<any> arguments) {
@@ -405,6 +406,9 @@ export {
 		}
 
 		int exit(string rawcmd, string sender, int permission, list<any> arguments) {
+			list<any> param;
+			helium_event_manager.DispatchEvent(HeliumEventList::HELIUM_STOP, param);
+			UnloadAllExtension();
 			log << HLL::LL_INFO << "Exiting Helium." << hendl;
 			::exit(0);
 			return 0;

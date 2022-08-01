@@ -202,7 +202,7 @@ namespace Helium {
 			this->ScanEventFunc();
 			
 			list<any> temp_param;
-			this->extension_eventmgr->CreateEvent(HeliumEventList::EXTENSION_LOAD, temp_param);
+			this->extension_eventmgr->DispatchEvent(HeliumEventList::EXTENSION_LOAD, temp_param);
 		}
 		catch (exception& e) {
 			log << HLL::LL_ERR << "Event listener function scanner for extension " << this->config.extname
@@ -219,7 +219,7 @@ namespace Helium {
 	int HeliumExtension::UnloadExt() {
 		this->extstat = EXT_STATUS_UNLOADING;
 		list<any> temp_param;
-		this->extension_eventmgr->CreateEvent(HeliumEventList::EXTENSION_UNLOAD, temp_param);
+		this->extension_eventmgr->DispatchEvent(HeliumEventList::EXTENSION_UNLOAD, temp_param);
 		this->extstat = EXT_STATUS_UNLOADED;
 		return 0;
 	}
@@ -228,7 +228,7 @@ namespace Helium {
 	}
 	int HeliumExtension::ScanEventFunc() {
 		auto ret = 0;
-		for (int i = HeliumEventList::HELIUM_STARTUP;
+		for (int i = HeliumEventList::EMPTY_EVENT + 1;
 			i < HeliumEventList::USER_DEFINED_MIN;
 			i++) {
 			if (this->extins.has(EventIDToListenerFunc(i))) {
@@ -289,15 +289,25 @@ namespace Helium {
 		for (auto& ext : extensions) {
 			if (!ext.LoadExt()) {
 				ret++;
-				log << LINFO << "Successfully loaded extension : " << ext.GetExtName() << hendl;
+				log << LINFO << "Successfully loaded extension " << ext.GetExtName() << hendl;
 			}
 			else {
-				log << LWARN << "Failed to load extension : " << ext.GetExtName() << hendl;
+				log << LWARN << "Failed to load extension " << ext.GetExtName() << hendl;
 			}
 		}
 		return ret;
 	}
 	int UnloadAllExtension() {
+		auto ret = 0;
+		for (auto& ext : extensions) {
+			if (!ext.UnloadExt()) {
+				ret++;
+				log << LINFO << "Successfully unloaded extension " << ext.GetExtName() << hendl;
+			}
+			else {
+				log << LWARN << "Failed to unload extension " << ext.GetExtName() << hendl;
+			}
+		}
 		return 0;
 	}
 	int LockAllExtension() {

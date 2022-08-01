@@ -11,6 +11,7 @@
 #include <iostream>
 #include <list>
 #include <any>
+#include <ctime>
 
 #undef HELIUMAPI_EXPORTS
 #include "HeliumAPI.h"

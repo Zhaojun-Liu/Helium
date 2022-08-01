@@ -32,7 +32,7 @@ export module Helium.Config;
 
 import <string>;
 import <vector>;
-import <strstream>;
+import <sstream>;
 
 import Helium.MinecraftServer;
 import Helium.Logger;
@@ -104,7 +104,7 @@ namespace Helium {
 		XMLElement* server;
 		XMLElement* servernode;
 		XMLElement* permns;
-		strstream sstr;
+		stringstream sstr;
 		string tempstr;
 		int tempi;
 
@@ -239,6 +239,7 @@ namespace Helium {
 					tempins.SetRCONPassword(tempstr);
 				}
 			}
+			tempins.GenerateParser();
 			AddServer(tempins);
 			servernode = servernode->NextSiblingElement("MinecraftServer");
 		}

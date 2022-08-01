@@ -164,6 +164,8 @@ export {
 			int PauseServer();
 			int ResumeServer();
 
+			int GenerateParser();
+
 			void operator=(HeliumMinecraftServer server);			
 		private:
 			string name;
@@ -420,12 +422,23 @@ export {
 				std::thread outthread(ProcessServerOutput, this, this->name, this->redir.hStdOutRead, this->proc);
 				outputthreads.push_back(std::move(outthread));
 				outputthreads.back().detach();
+
+				list<any> param;
+				any temp_any = this->name;
+				param.push_back(temp_any);
+				helium_event_manager.DispatchEvent(HeliumEventList::SERVER_START, param);
 			}
 
 			return 0;
 		}
 		int HeliumMinecraftServer::StopServer() {
 			int ret = 0;
+
+			TerminateProcess(this->proc, 0);
+			list<any> param;
+			any temp_any = this->name;
+			param.push_back(temp_any);
+			helium_event_manager.DispatchEvent(HeliumEventList::SERVER_STOP, param);
 
 			this->stat = HeliumServerStat::TERMINATED;
 			return ret;
@@ -467,6 +480,12 @@ export {
 		HeliumMinecraftServer::HeliumMinecraftServer() {
 			this->stat = HeliumServerStat::TERMINATED;
 			this->serveruuid = RequestUUID(UUIDInfoType::SERVER, (void*)this);
+		}
+		HeliumMinecraftServer::~HeliumMinecraftServer() {
+			if (this->stat != HeliumServerStat::TERMINATED) this->StopServer();
+		}
+
+		int HeliumMinecraftServer::GenerateParser() {
 			try {
 				this->parser_ptr = make_shared<VanillaParser>(this->name);
 			}
@@ -475,9 +494,7 @@ export {
 					<< this->name << hendl;
 				log << HLL::LL_ERR << e.what() << hendl;
 			}
-		}
-		HeliumMinecraftServer::~HeliumMinecraftServer() {
-			if (this->stat != HeliumServerStat::TERMINATED) this->StopServer();
+			return 0;
 		}
 
 		int ProcessServerOutput(HeliumMinecraftServer* ptr, string servername, HANDLE stdread, HANDLE hproc) {
@@ -498,12 +515,11 @@ export {
 				for (auto s : lines) {
 					list<any> param;
 					any temp_any;
-					temp_any = ptr->name;
-					param.push_back(temp_any);
 					temp_any = s;
 					param.push_back(temp_any);
-#undef CreateEvent
-					helium_event_manager.CreateEvent(HeliumEventList::SERVER_OUTPUT, param);
+					temp_any = ptr->name;
+					param.push_back(temp_any);
+					helium_event_manager.DispatchEvent(HeliumEventList::SERVER_OUTPUT, param);
 					EnterCriticalSection(&cs);
 					cout << servername << " > " << s << endl;
 					LeaveCriticalSection(&cs);

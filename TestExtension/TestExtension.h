@@ -8,10 +8,7 @@
 
 namespace TestExtension {
 	extern "C" TESTEXTENSION_API int HeliumStartup(list<any> argument);
-	extern "C" TESTEXTENSION_API int HeliumInitializationStart(list<any> argument);
-	extern "C" TESTEXTENSION_API int HeliumInitializationFinish(list<any> argument);
-	extern "C" TESTEXTENSION_API int HeliumFinalizationStart(list<any> argument);
-	extern "C" TESTEXTENSION_API int HeliumFinalizationFinish(list<any> argument);
+	extern "C" TESTEXTENSION_API int HeliumStop(list<any> argument);
 	extern "C" TESTEXTENSION_API int ExtensionLoad(list<any> argument);
 	extern "C" TESTEXTENSION_API int ExtensionUnload(list<any> argument);
 	extern "C" TESTEXTENSION_API int ServerStart(list<any> argument);

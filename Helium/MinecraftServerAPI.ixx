@@ -157,7 +157,7 @@ export {
 		int StopAllServer() {
 			int r = 0;
 			for (auto it = heliumservers.begin(); it < heliumservers.end(); it++) {
-				if (it->GetServerStat() == HeliumServerStat::RUNNING)
+				if (it->GetServerStat() != HeliumServerStat::TERMINATED)
 					if (auto ret = it->StopServer(); ret != 0) r = ret;
 			}
 			return r;

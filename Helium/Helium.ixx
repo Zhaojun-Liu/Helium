@@ -24,20 +24,11 @@
 
 module;
 
-#define WIN32_LEAN_AND_MEAN
 #define BUFSIZE 8192
-#define NOT_STABLE
 
-#include<Windows.h>
-#include<thread>
-#include<strstream>
 #include<spdlog/spdlog.h>
-#include<map>
-#include<thread>
-#include<boost/signals2.hpp>
-
-#include"semver/semver.hpp"
 #include"tinyxml2/tinyxml2.h"
+#include"semver/semver.hpp"
 
 export module Helium;
 
@@ -61,6 +52,12 @@ export import Helium.XMLUtils;
 import Helium.ExportFunction;
 
 import <string>;
+import <any>;
+import <list>;
+import <thread>;
+import <strstream>;
+import <map>;
+import <thread>;
 
 using namespace std;
 using namespace semver;
@@ -68,7 +65,7 @@ using namespace tinyxml2;
 
 export{
 	namespace Helium {
-        version heliumversion = { 0, 7, 1, prerelease::alpha };
+        version heliumversion = { 0, 7, 2, prerelease::alpha };
 
 		int ProcessServerOutput(HeliumMinecraftServer*, string, HANDLE, HANDLE);
 		int HeliumMain(int argc, char* argv[]);
@@ -96,7 +93,6 @@ export{
         }
         int HeliumEnvInit() {
             HeliumEndline hendl;
-            SetConsoleTitleA("Helium");
 
 #ifdef NOT_STABLE
             log << HLL::LL_INFO << "This is a unstable version of helium, log level set to debug." << hendl;
@@ -142,6 +138,9 @@ export{
 
             InitServerEnv();
 
+            list<any> param;
+            helium_event_manager.DispatchEvent(HeliumEventList::HELIUM_START, param);
+
             log << HLL::LL_INFO << "Finished Helium initialization stage." << hendl;
             return 0;
         }
@@ -151,6 +150,9 @@ export{
             return ret;
         }
         int HeliumFin() {
+            list<any> param;
+            helium_event_manager.DispatchEvent(HeliumEventList::HELIUM_STOP, param);
+
             UnloadAllExtension();
             FinShell();
             StopAllServer();
