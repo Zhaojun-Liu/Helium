@@ -114,20 +114,6 @@ namespace Helium {
 				temp_any = srce;
 				param.push_back(temp_any);
 			}
-			if (regex_search(text, rdone)) {
-				regex rsplit_usetime("[0-9]*.[0-9]*s");
-				smatch temp_m;
-				regex_search(text, temp_m, rsplit_usetime);
-				string temp_str = temp_m.str();
-				temp_str.erase(temp_str.end() - 1);
-				stringstream sstr;
-				double temp_d;
-				sstr << temp_str;
-				sstr >> temp_d;
-				temp_any = temp_d;
-				param.push_back(temp_any);
-				helium_event_manager.DispatchEvent(HeliumEventList::SERVER_INITIALIZATION_FINISH, param);
-			}
 			if (regex_search(text, rjoin)) {
 				regex rsplit(" joined the game");
 				text = regex_replace(text, rsplit, "");
@@ -154,6 +140,20 @@ namespace Helium {
 				temp_any = player_info;
 				param.push_back(temp_any);
 				helium_event_manager.DispatchEvent(HeliumEventList::PLAYER_INPUT, param);
+			}
+			if (regex_search(text, rdone)) {
+				regex rsplit_usetime("[0-9]*.[0-9]*s");
+				smatch temp_m;
+				regex_search(text, temp_m, rsplit_usetime);
+				string temp_str = temp_m.str();
+				temp_str.erase(temp_str.end() - 1);
+				stringstream sstr;
+				double temp_d;
+				sstr << temp_str;
+				sstr >> temp_d;
+				temp_any = temp_d;
+				param.push_back(temp_any);
+				helium_event_manager.DispatchEvent(HeliumEventList::SERVER_INITIALIZATION_FINISH, param);
 			}
 		}
 		catch (exception& e) {

@@ -515,9 +515,9 @@ export {
 				for (auto s : lines) {
 					list<any> param;
 					any temp_any;
-					temp_any = s;
-					param.push_back(temp_any);
 					temp_any = ptr->name;
+					param.push_back(temp_any);
+					temp_any = s;
 					param.push_back(temp_any);
 					helium_event_manager.DispatchEvent(HeliumEventList::SERVER_OUTPUT, param);
 					EnterCriticalSection(&cs);

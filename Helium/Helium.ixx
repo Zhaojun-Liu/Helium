@@ -65,7 +65,7 @@ using namespace tinyxml2;
 
 export{
 	namespace Helium {
-        version heliumversion = { 0, 7, 3, prerelease::alpha };
+        version heliumversion = { 0, 7, 5, prerelease::alpha };
 
 		int ProcessServerOutput(HeliumMinecraftServer*, string, HANDLE, HANDLE);
 		int HeliumMain(int argc, char* argv[]);
@@ -111,6 +111,8 @@ export{
             InitFuncMap();
             LoadHeliumAPI();
             TransferFuncMap();
+
+            helium_event_manager.RegisterEventListener(HeliumEventList::PLAYER_INPUT, PlayerInput);
 
             log << HLL::LL_DBG << "Start adding dirs" << hendl;
             AddHeliumDirectory("./extensions", "The \"extension\" folder doesn't exists, creating...", HDIP::HDIP_CREATE_WARING);

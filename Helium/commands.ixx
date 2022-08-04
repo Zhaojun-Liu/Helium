@@ -53,6 +53,7 @@ import Helium.MinecraftServer;
 import Helium.Utils;
 import Helium.Logger;
 import Helium.CommandCallback;
+import Helium.CommandQueue;
 
 using namespace std;
 using namespace replxx;
@@ -74,6 +75,7 @@ export{
 		class CommandArgumentString;
 		class CommandArgumentQuotableString;
 		class CommandArgumentGreedyString;
+		class CommandArgumentAny;
 
 		class _CommandEntry;
 		class CommandEntry;
@@ -126,6 +128,7 @@ export{
 			ReplaceCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator it, tree<_BasicHeliumCommand*>::pre_order_iterator subtree);
 
 		int ExecuteCommand(string rawcmd, string sender, int permission, string servername = "");
+		int PlayerInput(list<any> param);
 
 		typedef int (*HeliumCommandCallback)(string rawcmd, string sender, int permission, list<any> arguments);
 
@@ -1677,6 +1680,20 @@ export{
 				}
 			return ret;
 		}
+		//string server_name	tm timestamp	string thread	string source	string player_name	string player_input
+		int PlayerInput(const list<any> param) {
+			log << HLL::LL_WARN << "PlayerInput()!" << hendl;
+			auto it = param.begin();
+			string server_name = any_cast<string>(*it);
+			it++;
+			it++;
+			it++;
+			it++;
+			string sender = any_cast<string>(*it);
+			it++;
+			string rawcmd = any_cast<string>(*it);
+			return ExecuteCommand(rawcmd, sender, HPL::HELIUMOWNER, server_name);
+		}
 
 		int ExecuteCommand(string rawcmd, string sender, int permission, string servername) {
 			istringstream iss(rawcmd);
@@ -1686,6 +1703,7 @@ export{
 			string tempstr;
 			tree<_BasicHeliumCommand*>::fixed_depth_iterator pit = HeliumCommandTree.begin();
 			tree<_BasicHeliumCommand*>::fixed_depth_iterator tit;
+			log << HLL::LL_WARN << "rawcmd : " << rawcmd << hendl;
 
 			if (rawcmd == "#exit") {
 				list<any> param;

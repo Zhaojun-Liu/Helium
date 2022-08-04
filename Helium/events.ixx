@@ -44,21 +44,21 @@ using namespace boost::signals2;
 export{
 	namespace Helium {
 		enum HeliumEventList {
-			EMPTY_EVENT,	//done
-			HELIUM_START,	//done
-			HELIUM_STOP,	//done
-			EXTENSION_LOAD,	//done
-			EXTENSION_UNLOAD,	//done
-			SERVER_START,	//done
-			SERVER_INITIALIZATION_FINISH,	//done
-			SERVER_STOP,	//done
-			SERVER_OUTPUT,	//done
-			PLAYER_JOIN,	//done
-			PLAYER_LEAVE,	//done
-			GENERAL_INPUT,	//done
-			CONSOLE_INPUT,	//done
-			PLAYER_INPUT,	//done
-			USER_DEFINED_MIN	//reserved
+			EMPTY_EVENT = 0,	//done
+			HELIUM_START = 1,	//done
+			HELIUM_STOP = 2,	//done
+			EXTENSION_LOAD = 3,	//done
+			EXTENSION_UNLOAD = 4,	//done
+			SERVER_START = 5,	//done
+			SERVER_INITIALIZATION_FINISH = 6,	//done
+			SERVER_STOP = 7,	//done
+			SERVER_OUTPUT = 8,	//done
+			PLAYER_JOIN = 9,	//done
+			PLAYER_LEAVE = 10,	//done
+			GENERAL_INPUT = 11,	//done
+			CONSOLE_INPUT = 12,	//done
+			PLAYER_INPUT = 13,	//done
+			USER_DEFINED_MIN = 25565	//reserved
 		};
 
 		const string helium_event_str[] = {
@@ -80,7 +80,7 @@ export{
 		};
 
 		const string helium_event_listener_str[] = {
-			"",
+			"EmptyEvent",
 			"HeliumStart",
 			"HeliumStop",
 			"ExtensionLoad",
