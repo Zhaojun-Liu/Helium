@@ -1682,7 +1682,6 @@ export{
 		}
 		//string server_name	tm timestamp	string thread	string source	string player_name	string player_input
 		int PlayerInput(const list<any> param) {
-			log << HLL::LL_WARN << "PlayerInput()!" << hendl;
 			auto it = param.begin();
 			string server_name = any_cast<string>(*it);
 			it++;
@@ -1703,7 +1702,6 @@ export{
 			string tempstr;
 			tree<_BasicHeliumCommand*>::fixed_depth_iterator pit = HeliumCommandTree.begin();
 			tree<_BasicHeliumCommand*>::fixed_depth_iterator tit;
-			log << HLL::LL_WARN << "rawcmd : " << rawcmd << hendl;
 
 			if (rawcmd == "#exit") {
 				list<any> param;

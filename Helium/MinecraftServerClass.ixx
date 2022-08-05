@@ -166,6 +166,12 @@ export {
 
 			int GenerateParser();
 
+			int SendToServer(const string& text);
+			int Say(const string& text);
+			int Boardcast(const string& text);
+			int Tellraw(const string& text);
+			int Execute();
+
 			void operator=(HeliumMinecraftServer server);			
 		private:
 			string name;
