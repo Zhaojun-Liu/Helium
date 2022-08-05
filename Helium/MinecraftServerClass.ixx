@@ -132,7 +132,7 @@ export {
 			HeliumServerType GetServerType();
 			HeliumServerType SetServerType(HeliumServerType type);
 
-			HeliumServerStat GetServerStat();
+			HeliumServerStat GetServerStat();  
 
 			uuid GetServerUUID();
 
