@@ -79,6 +79,24 @@ export{
 			"USER_DEFINED_MIN"
 		};
 
+		const string helium_event_name_str[] = {
+			"EmptyEvent",
+			"HeliumStart",
+			"HeliumStop",
+			"ExtensionLoad",
+			"ExtensionUnload",
+			"ServerStart",
+			"ServerInitializationFinish",
+			"ServerStop",
+			"ServerOutput",
+			"PlayerJoin",
+			"PlayerLeave",
+			"GeneralInput",
+			"ConsoleInput",
+			"PlayerInput",
+			"UserDefinedMin"
+		};
+
 		const string helium_event_listener_str[] = {
 			"EmptyEvent",
 			"HeliumStart",
@@ -97,9 +115,12 @@ export{
 			""
 		};
 
+		map<int, string> user_defined_name;
+		map<int, string> user_defined_desc;
+		typedef boost::function<int(const list<any>)> StandardHeliumListener;
+
 		class HeliumEventManager {
 		public:
-			typedef boost::function<int(const list<any>)> StandardHeliumListener;
 			typedef signal<int(const list<any>)> StandardHeliumSignal;
 
 			HeliumEventManager() {};
@@ -111,19 +132,39 @@ export{
 			void TraceEvent(const int& event_num) noexcept;
 			void UntraceEvent(const int& event_num) noexcept;
 			bool IsEventTraced(const int& event_num) noexcept;
+
+			void BlockEvent(const int& event_num) noexcept;
+			void UnblockEvent(const int& event_num) noexcept;
+			bool IsEventBlocked(const int& event_num) noexcept;
 		private:
 			map<int, shared_ptr<StandardHeliumSignal>> event_map;
 			static map<int, bool> is_traced;
+			static map<int, bool> is_blocked;
 		};
 
 		HeliumEventManager helium_event_manager;
 		string EventIDToDesc(const int& id);
 		string EventIDToListenerFunc(const int& id);
+		string EventIDToName(const int& id);
+
+		void TraceEvent(const int& event_num) noexcept;
+		void UntraceEvent(const int& event_num) noexcept;
+		bool IsEventTraced(const int& event_num) noexcept;
+
+		void BlockEvent(const int& event_num) noexcept;
+		void UnblockEvent(const int& event_num) noexcept;
+		bool IsEventBlocked(const int& event_num) noexcept;
+
+		void SetEventDesc(const int& id, const string& str);
+		void SetEventName(const int& id, const string& str);
+		void DispatchEvent(const int& id, list<any>& param);
+		void RegisterEventListner(const int& id, StandardHeliumListener funcptr);
 	}
 }
 
 namespace Helium {
 	map<int, bool> HeliumEventManager::is_traced = map<int, bool>();
+	map<int, bool> HeliumEventManager::is_blocked = map<int, bool>();
 
 	int HeliumEventManager::RegisterEventListener(const int& event_num, const StandardHeliumListener func) {
 		auto iter = this->event_map.find(event_num);
@@ -144,6 +185,7 @@ namespace Helium {
 		}
 		if (iter != this->event_map.end()) {
 			auto signal_ptr = iter->second;
+			if (this->is_blocked.count(event_num) > 0 && this->is_blocked[event_num]) return -1;
 			(*signal_ptr)(param);
 		}
 		else {
@@ -167,9 +209,34 @@ namespace Helium {
 		return false;
 	}
 
+	void HeliumEventManager::BlockEvent(const int& event_num) noexcept {
+		this->is_blocked[event_num] = true;
+	}
+	void HeliumEventManager::UnblockEvent(const int& event_num) noexcept {
+		this->is_blocked[event_num] = false;
+	}
+	bool HeliumEventManager::IsEventBlocked(const int& event_num) noexcept {
+		if (this->is_blocked.count(event_num) > 0) {
+			if (this->is_blocked[event_num]) return true;
+		}
+		return false;
+	}
+
 	string EventIDToDesc(const int& id) {
 		if (id >= HeliumEventList::EMPTY_EVENT && id <= HeliumEventList::USER_DEFINED_MIN) {
 			return helium_event_str[id];
+		}
+		if (user_defined_desc.count(id) > 0) {
+			return user_defined_desc.at(id);
+		}
+		return "";
+	}
+	string EventIDToName(const int& id) {
+		if (id >= HeliumEventList::EMPTY_EVENT && id <= HeliumEventList::USER_DEFINED_MIN) {
+			return helium_event_name_str[id];
+		}
+		if (user_defined_name.count(id) > 0) {
+			return user_defined_name.at(id);
 		}
 		return "";
 	}
@@ -178,5 +245,42 @@ namespace Helium {
 			return helium_event_listener_str[id];
 		}
 		return "";
+	}
+
+	void SetEventDesc(const int& id, const string& str) {
+		if (id > USER_DEFINED_MIN) {
+			user_defined_desc[id] = str;
+		}
+	}
+	void SetEventName(const int& id, const string& str) {
+		if (id > USER_DEFINED_MIN) {
+			user_defined_name[id] = str;
+		}
+	}
+	void DispatchEvent(const int& id, list<any>& param) {
+		helium_event_manager.DispatchEvent(id, param);
+	}
+	void RegisterEventListner(const int& id, StandardHeliumListener funcptr) {
+		helium_event_manager.RegisterEventListener(id, funcptr);
+	}
+
+	void TraceEvent(const int& event_num) noexcept {
+		helium_event_manager.TraceEvent(event_num);
+	}
+	void UntraceEvent(const int& event_num) noexcept {
+		helium_event_manager.UntraceEvent(event_num);
+	}
+	bool IsEventTraced(const int& event_num) noexcept {
+		return helium_event_manager.IsEventTraced(event_num);
+	}
+
+	void BlockEvent(const int& event_num) noexcept {
+		helium_event_manager.BlockEvent(event_num);
+	}
+	void UnblockEvent(const int& event_num) noexcept {
+		helium_event_manager.UnblockEvent(event_num);
+	}
+	bool IsEventBlocked(const int& event_num) noexcept {
+		return helium_event_manager.IsEventBlocked(event_num);
 	}
 }
