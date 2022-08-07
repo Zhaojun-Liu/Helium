@@ -35,11 +35,15 @@
 #include"semver/semver.hpp"
 #include"_TransferFuncMap.h"
 
+#include<any>
 #include<map>
 #include<strstream>
 #include<string>
 #include<iostream>
+
 #include<boost/dll.hpp>
+#include<boost/function.hpp>
+#include<boost/signals2.hpp>
 
 constexpr semver::version apiver = semver::version{ 0, 0, 3, semver::prerelease::alpha };
 

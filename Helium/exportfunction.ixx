@@ -51,6 +51,7 @@ import Helium.Parser;
 import Helium.Utils;
 import Helium.UUIDManager;
 import Helium.XMLUtils;
+import Helium.Version;
 
 using namespace std;
 using namespace boost::dll;
@@ -77,6 +78,22 @@ export {
 			ADD_EXP_FUNC("ExtLoggerWarn", ExtLoggerWarn);
 			ADD_EXP_FUNC("ExtLoggerError", ExtLoggerError);
 			ADD_EXP_FUNC("ExtLoggerCrit", ExtLoggerCrit);
+
+			ADD_EXP_FUNC("GetHeliumVersion", GetHeliumVersion);
+
+			ADD_EXP_FUNC("EventIDToDesc", EventIDToDesc);
+			ADD_EXP_FUNC("EventIDToName", EventIDToName);
+			ADD_EXP_FUNC("TraceEvent", TraceEvent);
+			ADD_EXP_FUNC("UntraceEvent", UntraceEvent);
+			ADD_EXP_FUNC("IsEventTraced", IsEventTraced);
+			ADD_EXP_FUNC("BlockEvent", BlockEvent);
+			ADD_EXP_FUNC("UnblockEvent", UnblockEvent);
+			ADD_EXP_FUNC("IsEventBlocked", IsEventBlocked);
+			ADD_EXP_FUNC("SetEventDesc", SetEventDesc);
+			ADD_EXP_FUNC("SetEventName", SetEventName);
+			ADD_EXP_FUNC("DispatchEvent", DispatchEvent);
+			ADD_EXP_FUNC("RegisterEventListner", RegisterEventListner);
+
 			log << HLL::LL_INFO << "Helium API map was successfully built" << hendl;
 			return 0;
 		}

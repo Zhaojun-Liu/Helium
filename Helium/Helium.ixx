@@ -28,7 +28,7 @@ module;
 
 #include<spdlog/spdlog.h>
 #include"tinyxml2/tinyxml2.h"
-#include"semver/semver.hpp"
+
 
 export module Helium;
 
@@ -48,6 +48,7 @@ export import Helium.Parser;
 export import Helium.Utils;
 export import Helium.UUIDManager;
 export import Helium.XMLUtils;
+export import Helium.Version;
 
 import Helium.ExportFunction;
 
@@ -60,13 +61,10 @@ import <map>;
 import <thread>;
 
 using namespace std;
-using namespace semver;
 using namespace tinyxml2;
 
 export{
 	namespace Helium {
-        version heliumversion = { 0, 7, 5, prerelease::alpha };
-
 		int ProcessServerOutput(HeliumMinecraftServer*, string, HANDLE, HANDLE);
 		int HeliumMain(int argc, char* argv[]);
 		void HeliumInitOutput();
@@ -82,7 +80,7 @@ export{
             log << "| |_| |/ _ \\ | | | | | '_ ` _ \\" << hendl;
             log << "|  _  |  __/ | | |_| | | | | | |" << hendl;
             log << "|_| |_|\\___|_|_|\\__,_|_| |_| |_|" << hendl;
-            log << heliumversion.to_string() << hendl;
+            log << GetHeliumVersion().to_string() << hendl;
             log << "Copyright(C) 2021-2022 HeliumDevTeam" << hendl;
             log << "This program comes with ABSOLUTELY NO WARRANTY;" << hendl;
             log << "for details type \'#Helium show warranty\'." << hendl;

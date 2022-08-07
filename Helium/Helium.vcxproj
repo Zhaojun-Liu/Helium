@@ -197,6 +197,7 @@
     <ClCompile Include="tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="Utils.ixx" />
     <ClCompile Include="UUIDManager.ixx" />
+    <ClCompile Include="Version.ixx" />
     <ClCompile Include="XMLUtils.ixx" />
   </ItemGroup>
   <ItemGroup>

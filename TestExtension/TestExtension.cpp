@@ -10,6 +10,8 @@ namespace TestExtension {
 	extern "C" TESTEXTENSION_API int ExtensionLoad(list<any> argument) {
 		CreateExtensionLogger(lname);
 		ExtensionLogWarn(lname, "Logging test");
+		list<any> param;
+		DispatchEvent(1, param);
 		return 0;
 	}
 	extern "C" TESTEXTENSION_API int HeliumStart(list<any> argument) {
