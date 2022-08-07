@@ -149,6 +149,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <AdditionalIncludeDirectories>$(SolutionDir)\HeliumAPI</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -164,8 +165,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
-    <ClInclude Include="HeliumAPI.h" />
-    <ClInclude Include="HeliumLogger.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="TestExtension.h" />
   </ItemGroup>

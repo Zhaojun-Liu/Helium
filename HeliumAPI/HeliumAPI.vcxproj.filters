@@ -37,6 +37,24 @@
     <ClInclude Include="_TransferFuncMap.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Command.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Event.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Server.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Extension.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Misc.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -49,6 +67,21 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="_TransferFuncMap.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Command.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Event.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Extension.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Misc.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

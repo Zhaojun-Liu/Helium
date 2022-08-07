@@ -1,9 +1,6 @@
-﻿// TestExtension.cpp : 定义 DLL 的导出函数。
-//
-
-#include "pch.h"
-#include "framework.h"
-#include "TestExtension.h"
+﻿#include"pch.h"
+#include"framework.h"
+#include"TestExtension.h"
 
 using namespace std;
 using namespace HeliumAPI;
@@ -11,26 +8,26 @@ using namespace HeliumAPI;
 namespace TestExtension {
 	string lname = "TestExtension";
 	extern "C" TESTEXTENSION_API int ExtensionLoad(list<any> argument) {
-		CreateExtLogger(lname);
-		ExtLoggerWarn(lname, "Logging test");
+		CreateExtensionLogger(lname);
+		ExtensionLogWarn(lname, "Logging test");
 		return 0;
 	}
 	extern "C" TESTEXTENSION_API int HeliumStart(list<any> argument) {
-		ExtLoggerCrit(lname, "HeliumStart()!");
+		ExtensionLogCrit(lname, "HeliumStart()!");
 		return 0;
 	}
 	extern "C" TESTEXTENSION_API int HeliumStop(list<any> argument) {
-		ExtLoggerCrit(lname, "HeliumStop()!");
+		ExtensionLogCrit(lname, "HeliumStop()!");
 		return 0;
 	}
 	extern "C" TESTEXTENSION_API int ExtensionUnload(list<any> argument) {
-		ExtLoggerCrit(lname, "ExtensionUnload()!");
-		ExtLoggerInfo(lname, "Destructing the extension logger.");
-		DeleteExtLogger(lname);
+		ExtensionLogCrit(lname, "ExtensionUnload()!");
+		ExtensionLogInfo(lname, "Destructing the extension logger.");
+		DeleteExtensionLogger(lname);
 		return 0;
 	}
 	extern "C" TESTEXTENSION_API int ServerStart(list<any> argument) {
-		ExtLoggerCrit(lname, "ServerStart()!");
+		ExtensionLogCrit(lname, "ServerStart()!");
 		return 0;
 	}
 	extern "C" TESTEXTENSION_API int ServerInitializationFinish(list<any> argument) {
@@ -56,7 +53,7 @@ namespace TestExtension {
 		return 0;
 	}
 	extern "C" TESTEXTENSION_API int ServerStop(list<any> argument) {
-		ExtLoggerCrit(lname, "ServerStop()!");
+		ExtensionLogCrit(lname, "ServerStop()!");
 		return 0;
 	}
 	extern "C" TESTEXTENSION_API int PlayerJoin(list<any> argument) {
@@ -83,7 +80,7 @@ namespace TestExtension {
 	extern "C" TESTEXTENSION_API int ConsoleInput(list<any> argument) {
 		string input = "Get input from console : ";
 		input.append(any_cast<string>(argument.front()));
-		ExtLoggerInfo(lname, input);
+		ExtensionLogInfo(lname, input);
 		return 0;
 	}
 	extern "C" TESTEXTENSION_API int ServerOutput(list<any> argument) {
