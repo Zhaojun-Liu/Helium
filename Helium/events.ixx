@@ -58,6 +58,7 @@ export{
 			GENERAL_INPUT = 11,	//done
 			CONSOLE_INPUT = 12,	//done
 			PLAYER_INPUT = 13,	//done
+			BUILT_IN_MAX,
 			USER_DEFINED_MIN = 25565	//reserved
 		};
 
@@ -226,7 +227,7 @@ namespace Helium {
 	}
 
 	string EventIDToDesc(const int& id) {
-		if (id >= HeliumEventList::EMPTY_EVENT && id <= HeliumEventList::USER_DEFINED_MIN) {
+		if (id >= HeliumEventList::EMPTY_EVENT && id < HeliumEventList::BUILT_IN_MAX) {
 			return helium_event_str[id];
 		}
 		if (user_defined_desc.count(id) > 0) {
@@ -235,7 +236,7 @@ namespace Helium {
 		return "";
 	}
 	string EventIDToName(const int& id) {
-		if (id >= HeliumEventList::EMPTY_EVENT && id <= HeliumEventList::USER_DEFINED_MIN) {
+		if (id >= HeliumEventList::EMPTY_EVENT && id <= HeliumEventList::BUILT_IN_MAX) {
 			return helium_event_name_str[id];
 		}
 		if (user_defined_name.count(id) > 0) {
@@ -244,7 +245,7 @@ namespace Helium {
 		return "";
 	}
 	string EventIDToListenerFunc(const int& id) {
-		if (id >= HeliumEventList::EMPTY_EVENT && id <= HeliumEventList::USER_DEFINED_MIN) {
+		if (id >= HeliumEventList::EMPTY_EVENT && id <= HeliumEventList::BUILT_IN_MAX) {
 			return helium_event_listener_str[id];
 		}
 		return "";

@@ -94,6 +94,26 @@ export {
 			ADD_EXP_FUNC("DispatchEvent", DispatchEvent);
 			ADD_EXP_FUNC("RegisterEventListner", RegisterEventListner);
 
+			ADD_EXP_FUNC("GetExtensionMetadata", GetExtensionMetadata);
+			ADD_EXP_FUNC("GetExtensionDirectory", GetExtensionDirectory);
+			ADD_EXP_FUNC("GetExtensionConfigDirectory", GetExtensionConfigDirectory);
+			ADD_EXP_FUNC("GetExtensionStatus", GetExtensionStatus);
+			ADD_EXP_FUNC("InitExtension", InitExtension);
+			ADD_EXP_FUNC("ReinitExtension", ReinitExtension);
+			ADD_EXP_FUNC("LoadExtension", LoadExtension);
+			ADD_EXP_FUNC("UnloadExtension", UnloadExtension);
+			ADD_EXP_FUNC("ReloadExtension", ReloadExtension);
+			ADD_EXP_FUNC("LockExtension", LockExtension);
+			ADD_EXP_FUNC("UnlockExtension", UnlockExtension);
+			ADD_EXP_FUNC("InitAllExtension", InitAllExtension);
+			ADD_EXP_FUNC("ReinitAllExtension", ReinitAllExtension);
+			ADD_EXP_FUNC("LoadAllExtension", LoadAllExtension);
+			ADD_EXP_FUNC("UnloadAllExtension", UnloadAllExtension);
+			ADD_EXP_FUNC("ReloadAllExtension", ReloadAllExtension);
+			ADD_EXP_FUNC("LockAllExtension", LockAllExtension);
+			ADD_EXP_FUNC("LockAllExtension", LockAllExtension);
+			ADD_EXP_FUNC("UnlockAllExtension", UnlockAllExtension);
+
 			log << HLL::LL_INFO << "Helium API map was successfully built" << hendl;
 			return 0;
 		}

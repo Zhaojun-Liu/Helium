@@ -115,11 +115,28 @@ export{
 
 		vector<HeliumExtension> extensions;
 
+		list<any> GetExtensionMetadata();
+		string GetExtensionDirectory();
+		string GetExtensionConfigDirectory();
+		int GetExtensionStatus();
+
+		int InitExtension();
+		int ReinitExtension();
+		int LoadExtension();
+		int UnloadExtension();
+		int ReloadExtension();
+		int LockExtension();
+		int UnlockExtension();
+
 		int InitAllExtension();
+		int ReinitAllExtension();
 		int LoadAllExtension();
 		int UnloadAllExtension();
+		int ReloadAllExtension();
 		int LockAllExtension();
 		int UnlockAllExtension();
+
+		vector<string> GetExtensionList();
 	}
 }
 
@@ -206,7 +223,7 @@ namespace Helium {
 		}
 		catch (exception& e) {
 			log << HLL::LL_ERR << "Event listener function scanner for extension " << this->config.extname
-				<< " has failed" << hendl;
+				<< " has failed with exception ";
 			log << HLL::LL_ERR << e.what() << hendl;
 			log << HLL::LL_ERR << "The extension's behaviour might be incorrect." << hendl;
 		}
@@ -229,17 +246,25 @@ namespace Helium {
 	int HeliumExtension::ScanEventFunc() {
 		auto ret = 0;
 		for (int i = HeliumEventList::EMPTY_EVENT + 1;
-			i < HeliumEventList::USER_DEFINED_MIN;
+			i < HeliumEventList::BUILT_IN_MAX;
 			i++) {
-			if (this->extins.has(EventIDToListenerFunc(i))) {
-				log << HLL::LL_INFO << "Find a event listener "
-					<< EventIDToListenerFunc(i) << " in the extension "
-					<< this->config.extname << hendl;
-				helium_event_manager.RegisterEventListener(i
-					, this->extins.get<int(list<any>)>(EventIDToListenerFunc(i)));
-				this->extension_eventmgr->RegisterEventListener(i
-					, this->extins.get<int(list<any>)>(EventIDToListenerFunc(i)));
-				ret++;
+			try {
+				if (this->extins.has(EventIDToListenerFunc(i))) {
+					log << HLL::LL_INFO << "Find a event listener "
+						<< EventIDToListenerFunc(i) << " in the extension "
+						<< this->config.extname << hendl;
+					helium_event_manager.RegisterEventListener(i
+						, this->extins.get<int(list<any>)>(EventIDToListenerFunc(i)));
+					this->extension_eventmgr->RegisterEventListener(i
+						, this->extins.get<int(list<any>)>(EventIDToListenerFunc(i)));
+					ret++;
+				}
+			}
+			catch (exception& e) {
+				log << HLL::LL_ERR << "Event listener function scanner for extension " << this->config.extname
+					<< " has failed with exception ";
+				log << HLL::LL_ERR << e.what() << hendl;
+				log << HLL::LL_ERR << "The extension's behaviour might be incorrect." << hendl;
 			}
 		}
 		return ret;
