@@ -115,18 +115,19 @@ export{
 
 		vector<HeliumExtension> extensions;
 
-		list<any> GetExtensionMetadata();
-		string GetExtensionDirectory();
-		string GetExtensionConfigDirectory();
-		int GetExtensionStatus();
+		list<any> GetExtensionMetadata(const string& ext_name);
+		string GetExtensionDirectory(const string& ext_name);
+		string GetExtensionConfigDirectory(const string& ext_name);
+		int GetExtensionStatus(const string& ext_name);
 
-		int InitExtension();
-		int ReinitExtension();
-		int LoadExtension();
-		int UnloadExtension();
-		int ReloadExtension();
-		int LockExtension();
-		int UnlockExtension();
+		list<any> CreateExtension(const string& ext_path);
+		int InitExtension(const string& ext_name);
+		int ReinitExtension(const string& ext_name);
+		int LoadExtension(const string& ext_name);
+		int UnloadExtension(const string& ext_name);
+		int ReloadExtension(const string& ext_name);
+		int LockExtension(const string& ext_name);
+		int UnlockExtension(const string& ext_name);
 
 		int InitAllExtension();
 		int ReinitAllExtension();
@@ -288,6 +289,45 @@ namespace Helium {
 		return false;
 	}
 
+
+	list<any> GetExtensionMetadata(const string& ext_name) {
+
+	}
+	string GetExtensionDirectory(const string& ext_name) {
+
+	}
+	string GetExtensionConfigDirectory(const string& ext_name) {
+
+	}
+	int GetExtensionStatus(const string& ext_name) {
+
+	}
+
+	list<any> CreateExtension(const string& ext_path) {
+
+	}
+	int InitExtension(const string& ext_name) {
+
+	}
+	int ReinitExtension(const string& ext_name) {
+
+	}
+	int LoadExtension(const string& ext_name) {
+
+	}
+	int UnloadExtension(const string& ext_name) {
+
+	}
+	int ReloadExtension(const string& ext_name) {
+
+	}
+	int LockExtension(const string& ext_name) {
+
+	}
+	int UnlockExtension(const string& ext_name) {
+
+	}
+
 	int InitAllExtension() {
 		auto ret = 0;
 		vector<string> files;
@@ -308,6 +348,9 @@ namespace Helium {
 		}
 		log << HLL::LL_INFO << "Finished extensions configuration stage." << hendl;
 		return ret;
+	}
+	int ReinitAllExtension() {
+
 	}
 	int LoadAllExtension() {
 		auto ret = 0;
@@ -335,10 +378,16 @@ namespace Helium {
 		}
 		return 0;
 	}
+	int ReloadAllExtension() {
+
+	}
 	int LockAllExtension() {
 		return 0;
 	}
 	int UnlockAllExtension() {
 		return 0;
+	}
+	vector<string> GetExtensionList() {
+
 	}
 }
