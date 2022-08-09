@@ -26,7 +26,11 @@
 #include"pch.h"
 
 namespace HeliumAPI {
-
+	typedef int(*t1)(string);
+	typedef string(*t2)(string);
+	typedef int(*t3)(string);
+	typedef int(*t4)();
+	typedef vector<string>(*t5)(int);
 
 	list<any> GetExtensionMetaData(string extname) {
 

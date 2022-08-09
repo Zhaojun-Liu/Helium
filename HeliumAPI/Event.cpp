@@ -44,7 +44,6 @@ namespace HeliumAPI {
 		ptr(eventid, descstr);
 	}
 	HELIUMAPI_API void DispatchEvent(const int& eventid, list<any>& param) {
-		cout << "Enter DispatchEvent()!" << endl;
 		DispatchPtr ptr = DispatchPtr(HeliumAPIMap.at("DispatchEvent"));
 		ptr(eventid, param);
 	}

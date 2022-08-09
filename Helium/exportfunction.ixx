@@ -98,6 +98,7 @@ export {
 			ADD_EXP_FUNC("GetExtensionDirectory", GetExtensionDirectory);
 			ADD_EXP_FUNC("GetExtensionConfigDirectory", GetExtensionConfigDirectory);
 			ADD_EXP_FUNC("GetExtensionStatus", GetExtensionStatus);
+			ADD_EXP_FUNC("CreateExtension", CreateExtension);
 			ADD_EXP_FUNC("InitExtension", InitExtension);
 			ADD_EXP_FUNC("ReinitExtension", ReinitExtension);
 			ADD_EXP_FUNC("LoadExtension", LoadExtension);
@@ -113,6 +114,7 @@ export {
 			ADD_EXP_FUNC("LockAllExtension", LockAllExtension);
 			ADD_EXP_FUNC("LockAllExtension", LockAllExtension);
 			ADD_EXP_FUNC("UnlockAllExtension", UnlockAllExtension);
+			ADD_EXP_FUNC("GetExtensionList", GetExtensionList);
 
 			log << HLL::LL_INFO << "Helium API map was successfully built" << hendl;
 			return 0;
