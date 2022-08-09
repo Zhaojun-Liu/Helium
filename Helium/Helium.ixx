@@ -80,7 +80,7 @@ export{
             log << "| |_| |/ _ \\ | | | | | '_ ` _ \\" << hendl;
             log << "|  _  |  __/ | | |_| | | | | | |" << hendl;
             log << "|_| |_|\\___|_|_|\\__,_|_| |_| |_|" << hendl;
-            log << GetHeliumVersion().to_string() << hendl;
+            log << "Helium " << GetHeliumVersion().to_string() << hendl;
             log << "Copyright(C) 2021-2022 HeliumDevTeam" << hendl;
             log << "This program comes with ABSOLUTELY NO WARRANTY;" << hendl;
             log << "for details type \'#Helium show warranty\'." << hendl;
@@ -124,8 +124,8 @@ export{
                 HeliumErrorExit(true, true, "Failed to initialize directory,exiting...");
             }
 
-            auto sucext = InitAllExtension();
-            log << HLL::LL_INFO << "Successfully initialized " << sucext << " extensions" << hendl;
+            auto sucext = FindAllExtensionConfig();
+            log << HLL::LL_INFO << "Finded " << sucext << " extension config file" << hendl;
             sucext = LoadAllExtension();
             log << HLL::LL_INFO << "Successfully loaded " << sucext << " extensions." << hendl;
             

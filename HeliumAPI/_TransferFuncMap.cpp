@@ -13,8 +13,8 @@ namespace HeliumAPI {
 		auto crt_ptr = (createptr)HeliumAPIMap.at("CreateExtLogger");
 		crt_ptr("HeliumAPI");
 		auto ptr = (loggingptr)HeliumAPIMap.at("ExtLoggerInfo");
-		string temp_str("Helium API Version : ");
-		temp_str.append(to_string(apiver));
+		string temp_str("Helium API ");
+		temp_str.append(to_string(apiver)).append(" Copyright(C) 2021-2022 HeliumDevTeam");
 		ptr("HeliumAPI", temp_str);
 		return 0;
 	}

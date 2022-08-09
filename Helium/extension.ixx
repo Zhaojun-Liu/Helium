@@ -70,11 +70,15 @@ export{
 			HeliumExtension(string cfgname);
 			~HeliumExtension();
 
+			int InitExt();
 			int LoadExt();
 			int LockExt();
 			int UnlockExt();
 			int UnloadExt();
 			int ScanEventFunc();
+			int GetExtStat() noexcept;
+			string GetExtConfigPath();
+			string GetExtPath();
 			void* GetFuncPtr(string funcname);
 			void* SetFuncPtr(string funcname, void* newptr);
 			bool HasFunc(string funcname);
@@ -83,17 +87,17 @@ export{
 			class HeliumExtensionConfig {
 				friend class HeliumExtension;
 			public:
-				string _stdcall GetExtConfigPath() {
+				string GetExtConfigPath() {
 					return configpath.string();
 				}
-				void _stdcall PutExtConfigPath(string path) {
+				void PutExtConfigPath(string path) {
 					this->configpath = path;
 				}
 
-				string _stdcall GetExtName() {
+				string GetExtName() {
 					return configpath.string();
 				}
-				void _stdcall PutExtName(string path) {
+				void PutExtName(string path) {
 					this->configpath = path;
 				}
 
@@ -111,16 +115,18 @@ export{
 			uuid extuuid;
 			shared_library extins;
 			shared_ptr<HeliumEventManager> extension_eventmgr;
+			bool isinited;
 		};
 
-		vector<HeliumExtension> extensions;
+		vector<shared_ptr<HeliumExtension>> extensions;
 
+		shared_ptr<HeliumExtension> GetExtensionPointerByName(const string& ext_name);
 		list<any> GetExtensionMetadata(const string& ext_name);
-		string GetExtensionDirectory(const string& ext_name);
+		string GetExtensionWorkingDirectory(const string& ext_name);
 		string GetExtensionConfigDirectory(const string& ext_name);
 		int GetExtensionStatus(const string& ext_name);
 
-		list<any> CreateExtension(const string& ext_path);
+		list<any> CreateExtension(const string& ext_config_path);
 		int InitExtension(const string& ext_name);
 		int ReinitExtension(const string& ext_name);
 		int LoadExtension(const string& ext_name);
@@ -129,6 +135,7 @@ export{
 		int LockExtension(const string& ext_name);
 		int UnlockExtension(const string& ext_name);
 
+		int FindAllExtensionConfig();
 		int InitAllExtension();
 		int ReinitAllExtension();
 		int LoadAllExtension();
@@ -137,7 +144,7 @@ export{
 		int LockAllExtension();
 		int UnlockAllExtension();
 
-		vector<string> GetExtensionList();
+		vector<string> GetExtensionList(int mask = -1);
 	}
 }
 
@@ -194,6 +201,7 @@ namespace Helium {
 		log << HLL::LL_INFO << "Done." << hendl;
 		this->extstat = EXT_STATUS_UNLOADED;
 		this->extension_eventmgr = make_shared<HeliumEventManager>();
+		this->isinited = true;
 		return;
 	}
 	HeliumExtension::~HeliumExtension() {
@@ -231,6 +239,21 @@ namespace Helium {
 		this->extstat = EXT_STATUS_LOADED;
 		return 0;
 	}
+	int HeliumExtension::InitExt() {
+		if (this->extstat == EXT_STATUS_LOADED) return -1;
+		this->extstat = EXT_STATUS_EMPTY;
+		auto cfgname = this->config.configpath;
+		this->config.configpath = fs::path(cfgname);
+		log << HLL::LL_INFO << "Reading extension config file : " << this->config.configpath.filename().string() << hendl;
+		if (auto ret = this->config.ReadConfig(); ret != 0)
+			return -1;
+		this->extuuid = RequestUUID(UUIDInfoType::EXTENSION, (void*)this);
+		log << HLL::LL_INFO << "Done." << hendl;
+		this->extstat = EXT_STATUS_UNLOADED;
+		this->extension_eventmgr = make_shared<HeliumEventManager>();
+		this->isinited = true;
+		return 0;
+	}
 	int HeliumExtension::LockExt() {
 		return 0;
 	}
@@ -251,9 +274,6 @@ namespace Helium {
 			i++) {
 			try {
 				if (this->extins.has(EventIDToListenerFunc(i))) {
-					log << HLL::LL_INFO << "Find a event listener "
-						<< EventIDToListenerFunc(i) << " in the extension "
-						<< this->config.extname << hendl;
 					helium_event_manager.RegisterEventListener(i
 						, this->extins.get<int(list<any>)>(EventIDToListenerFunc(i)));
 					this->extension_eventmgr->RegisterEventListener(i
@@ -288,47 +308,124 @@ namespace Helium {
 		if (this->funcs.count(funcname) > 0) return true;
 		return false;
 	}
-
-
-	list<any> GetExtensionMetadata(const string& ext_name) {
-
+	int HeliumExtension::GetExtStat() noexcept {
+		return this->extstat;
 	}
-	string GetExtensionDirectory(const string& ext_name) {
+	string HeliumExtension::GetExtConfigPath() {
+		return this->config.GetExtConfigPath();
+	}
+	string HeliumExtension::GetExtPath() {
+		return this->config.extpath.string();
+	}
 
+	shared_ptr<HeliumExtension> GetExtensionPointerByName(const string& ext_name) {
+		shared_ptr<HeliumExtension> nullret;
+		for (auto e : extensions) {
+			if (e->GetExtName() == ext_name) {
+				return e;
+			}
+		}
+		return nullret;
+	}
+	list<any> GetExtensionMetadata(const string& ext_name) {
+		list<any> ret;
+		auto ptr = GetExtensionPointerByName(ext_name);
+		if (ptr) {
+			any temp_any;
+			temp_any = ptr->GetExtName();
+			ret.push_back(temp_any);
+			temp_any = ptr->GetExtPath();
+			ret.push_back(temp_any);
+			temp_any = ptr->GetExtConfigPath();
+			ret.push_back(temp_any);
+		}
+		return ret;
+	}
+	string GetExtensionWorkingDirectory(const string& ext_name) {
+		string ret = "";
+		auto ptr = GetExtensionPointerByName(ext_name);
+		if (ptr) {
+			return ptr->GetExtPath();
+		}
+		return ret;
 	}
 	string GetExtensionConfigDirectory(const string& ext_name) {
-
+		string ret = "";
+		auto ptr = GetExtensionPointerByName(ext_name);
+		if (ptr) {
+			return ptr->GetExtConfigPath();
+		}
+		return ret;
 	}
 	int GetExtensionStatus(const string& ext_name) {
-
+		int ret = 0;
+		auto ptr = GetExtensionPointerByName(ext_name);
+		if (ptr) {
+			return ptr->GetExtStat();
+		}
+		return ret;
 	}
 
-	list<any> CreateExtension(const string& ext_path) {
-
+	list<any> CreateExtension(const string& ext_config_path) {
+		list<any> ret;
+		auto ptr = make_shared<HeliumExtension>(ext_config_path);
+		extensions.push_back(ptr);
+		ret = GetExtensionMetadata(ptr->GetExtName());
+		return ret;
 	}
 	int InitExtension(const string& ext_name) {
-
+		int ret = 0;
+		auto ptr = GetExtensionPointerByName(ext_name);
+		if (ptr) {
+			return ptr->InitExt();
+		}
+		return ret;
 	}
 	int ReinitExtension(const string& ext_name) {
-
+		int ret = 0;
+		auto ptr = GetExtensionPointerByName(ext_name);
+		if (ptr) {
+			ptr->UnloadExt();
+			return ptr->InitExt();
+		}
+		return ret;
 	}
 	int LoadExtension(const string& ext_name) {
-
+		int ret = 0;
+		auto ptr = GetExtensionPointerByName(ext_name);
+		if (ptr) {
+			return ptr->LoadExt();
+		}
+		return ret;
 	}
 	int UnloadExtension(const string& ext_name) {
-
+		int ret = 0;
+		auto ptr = GetExtensionPointerByName(ext_name);
+		if (ptr) {
+			return ptr->UnloadExt();
+		}
+		return ret;
 	}
 	int ReloadExtension(const string& ext_name) {
-
+		int ret = 0;
+		auto ptr = GetExtensionPointerByName(ext_name);
+		if (ptr) {
+			ptr->UnloadExt();
+			ptr->InitExt();
+			return ptr->LoadExt();
+		}
+		return ret;
 	}
 	int LockExtension(const string& ext_name) {
-
+		int ret = 0;
+		return ret;
 	}
 	int UnlockExtension(const string& ext_name) {
-
+		int ret = 0;
+		return ret;
 	}
 
-	int InitAllExtension() {
+	int FindAllExtensionConfig() {
 		auto ret = 0;
 		vector<string> files;
 		fs::path extcfgpath("./extensions/extconfigs");
@@ -342,52 +439,92 @@ namespace Helium {
 			ret++;
 		}
 		for (auto s : files) {
-			HeliumExtension tempext(s);
+			//HeliumExtension tempext(s);
 			log << LDBG << s << hendl;
-			extensions.push_back(tempext);
+			extensions.push_back(make_shared<HeliumExtension>(s));
 		}
 		log << HLL::LL_INFO << "Finished extensions configuration stage." << hendl;
 		return ret;
 	}
+	int InitAllExtension() {
+		int ret = 0;
+		for (auto e : extensions) {
+			if (e->InitExt() == 0)
+				ret++;
+		}
+		return ret;
+	}
 	int ReinitAllExtension() {
-
+		int ret = 0;
+		for (auto e : extensions) {
+			e->UnloadExt();
+			if (e->InitExt() == 0)
+				ret++;
+		}
+		return ret;
 	}
 	int LoadAllExtension() {
 		auto ret = 0;
-		for (auto& ext : extensions) {
-			if (!ext.LoadExt()) {
+		for (auto ext : extensions) {
+			if (!ext->LoadExt()) {
 				ret++;
-				log << LINFO << "Successfully loaded extension " << ext.GetExtName() << hendl;
+				log << LINFO << "Successfully loaded extension " << ext->GetExtName() << hendl;
 			}
 			else {
-				log << LWARN << "Failed to load extension " << ext.GetExtName() << hendl;
+				log << LWARN << "Failed to load extension " << ext->GetExtName() << hendl;
 			}
 		}
 		return ret;
 	}
 	int UnloadAllExtension() {
 		auto ret = 0;
-		for (auto& ext : extensions) {
-			if (!ext.UnloadExt()) {
+		for (auto ext : extensions) {
+			if (!ext->UnloadExt()) {
 				ret++;
-				log << LINFO << "Successfully unloaded extension " << ext.GetExtName() << hendl;
+				log << LINFO << "Successfully unloaded extension " << ext->GetExtName() << hendl;
 			}
 			else {
-				log << LWARN << "Failed to unload extension " << ext.GetExtName() << hendl;
+				log << LWARN << "Failed to unload extension " << ext->GetExtName() << hendl;
 			}
 		}
-		return 0;
+		return ret;
 	}
 	int ReloadAllExtension() {
-
+		int ret = 0;
+		for (auto e : extensions) {
+			e->UnloadExt();
+			if (e->LoadExt() == 0)
+				ret++;
+		}
+		return ret;
 	}
 	int LockAllExtension() {
-		return 0;
+		int ret;
+		for (auto e : extensions) {
+			ret = e->LockExt();
+		}
+		return ret;
 	}
 	int UnlockAllExtension() {
-		return 0;
+		int ret;
+		for (auto e : extensions) {
+			ret = e->UnlockExt();
+		}
+		return ret;
 	}
-	vector<string> GetExtensionList() {
-
+	vector<string> GetExtensionList(int mask) {
+		vector<string> ret;
+		if (mask == -1) {
+			for (auto e : extensions) {
+				ret.push_back(e->GetExtName());
+			}
+		}
+		else {
+			for (auto e : extensions) {
+				if (e->GetExtStat() == mask)
+					ret.push_back(e->GetExtName());
+			}
+		}
+		return ret;
 	}
 }
