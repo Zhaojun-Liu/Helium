@@ -94,38 +94,38 @@ export{
 		Replxx::hints_t HintCallBack(string const& context, int& len, Replxx::Color& color);
 		Replxx::completions_t CompletionCallBack(string const& context, int& len);
 		Replxx::ACTION_RESULT KeyMessage(Replxx& replxx, std::string s, char32_t);
-		
-		tree<_BasicHeliumCommand*>::pre_order_iterator 
+
+		tree<_BasicHeliumCommand*>::pre_order_iterator
 			AddCommand(_BasicHeliumCommand* cmd, uuid parentuuid);
-		tree<_BasicHeliumCommand*>::pre_order_iterator 
+		tree<_BasicHeliumCommand*>::pre_order_iterator
 			AddCommand(_BasicHeliumCommand* cmd, tree<_BasicHeliumCommand*>::pre_order_iterator parentit = HeliumCommandTree.begin());
-		tree<_BasicHeliumCommand*>::pre_order_iterator 
+		tree<_BasicHeliumCommand*>::pre_order_iterator
 			InsertCommand(_BasicHeliumCommand* cmd, uuid parentuuid);
-		tree<_BasicHeliumCommand*>::pre_order_iterator 
+		tree<_BasicHeliumCommand*>::pre_order_iterator
 			InsertCommand(_BasicHeliumCommand* cmd, tree<_BasicHeliumCommand*>::pre_order_iterator tit = HeliumCommandTree.begin());
-		tree<_BasicHeliumCommand*>::pre_order_iterator 
+		tree<_BasicHeliumCommand*>::pre_order_iterator
 			AddCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator subtree, uuid parentuuid);
-		tree<_BasicHeliumCommand*>::pre_order_iterator 
+		tree<_BasicHeliumCommand*>::pre_order_iterator
 			AddCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator subtree, tree<_BasicHeliumCommand*>::pre_order_iterator parentit = HeliumCommandTree.begin());
-		tree<_BasicHeliumCommand*>::pre_order_iterator 
+		tree<_BasicHeliumCommand*>::pre_order_iterator
 			DeleteCommand(uuid uuid);
-		tree<_BasicHeliumCommand*>::pre_order_iterator 
+		tree<_BasicHeliumCommand*>::pre_order_iterator
 			DeleteCommand(tree<_BasicHeliumCommand*>::pre_order_iterator it);
-		tree<_BasicHeliumCommand*>::pre_order_iterator 
+		tree<_BasicHeliumCommand*>::pre_order_iterator
 			DeleteCommandTree(uuid uuid);
-		tree<_BasicHeliumCommand*>::pre_order_iterator 
+		tree<_BasicHeliumCommand*>::pre_order_iterator
 			DeleteCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator it);
-		tree<_BasicHeliumCommand*>::pre_order_iterator 
+		tree<_BasicHeliumCommand*>::pre_order_iterator
 			QueryCommand(uuid uuid, tree<_BasicHeliumCommand*>::pre_order_iterator = HeliumCommandTree.begin());
-		tree<_BasicHeliumCommand*>::pre_order_iterator 
+		tree<_BasicHeliumCommand*>::pre_order_iterator
 			QueryCommand(string commandstr, tree<_BasicHeliumCommand*>::pre_order_iterator = HeliumCommandTree.begin());
-		tree<_BasicHeliumCommand*>::pre_order_iterator 
+		tree<_BasicHeliumCommand*>::pre_order_iterator
 			ReplaceCommand(uuid uuid, _BasicHeliumCommand* cmd);
-		tree<_BasicHeliumCommand*>::pre_order_iterator 
+		tree<_BasicHeliumCommand*>::pre_order_iterator
 			ReplaceCommand(tree<_BasicHeliumCommand*>::pre_order_iterator it, _BasicHeliumCommand* cmd);
-		tree<_BasicHeliumCommand*>::pre_order_iterator 
+		tree<_BasicHeliumCommand*>::pre_order_iterator
 			ReplaceCommandTree(uuid uuid, tree<_BasicHeliumCommand*>::pre_order_iterator subtree);
-		tree<_BasicHeliumCommand*>::pre_order_iterator 
+		tree<_BasicHeliumCommand*>::pre_order_iterator
 			ReplaceCommandTree(tree<_BasicHeliumCommand*>::pre_order_iterator it, tree<_BasicHeliumCommand*>::pre_order_iterator subtree);
 
 		int ExecuteCommand(string rawcmd, string sender, int permission, string servername = "");
@@ -152,7 +152,7 @@ export{
 		protected:
 			bool optional;
 			bool preprocenable;
-			
+
 			string argudesc;
 		public:
 			_CommandArgument() {
@@ -282,9 +282,7 @@ export{
 			HeliumPermissionLevel level;
 		};
 
-
 		class _CommandBind : public _CommandConstantString {
-
 		};
 		class _ArgumentString : public _CommandArgument {
 		public:
@@ -444,7 +442,6 @@ export{
 			}
 		};
 		class CommandBind : public _CommandBind {
-
 		};
 		class ConstantString : public _CommandConstantString {
 			friend int ExecuteCommand(string rawcmd, string sender, int permission, string servername);
@@ -1722,7 +1719,6 @@ export{
 			if (words.empty()) return 0;
 
 			for (auto it = words.begin(); it != words.end(); it++) {
-
 				string currword = *it;
 				bool iscstr = false;
 
