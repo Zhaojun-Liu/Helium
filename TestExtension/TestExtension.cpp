@@ -40,8 +40,8 @@ namespace TestExtension {
 			it = argument.begin();
 			cout << any_cast<string>(*it) << endl;
 			it++;
-			cout << any_cast<tm>(*it).tm_hour << ":" 
-			 	<< any_cast<tm>(*it).tm_min << ":" 
+			cout << any_cast<tm>(*it).tm_hour << ":"
+				<< any_cast<tm>(*it).tm_min << ":"
 				<< any_cast<tm>(*it).tm_sec << endl;
 			it++;
 			cout << any_cast<string>(*it) << endl;

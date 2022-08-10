@@ -33,57 +33,39 @@ namespace HeliumAPI {
 	typedef vector<string>(*t5)(int);
 
 	list<any> GetExtensionMetadata(string extname) {
-
 	}
 	string GetExtensionDirectory(string extname) {
-
 	}
 	string GetExtensionConfigDirectory(string extname) {
-
 	}
 	int GetExtensionStatus(string extname) {
-
 	}
 	int CreateExtension(string configpath) {
-
 	}
 	int LoadExtension(string extname) {
-
 	}
 	int UnloadExtension(string extname) {
-
 	}
 	int ReloadExtension(string extname) {
-
 	}
 	int LockExtension(string extname) {
-
 	}
 	int UnlockExtension(string extname) {
-
 	}
 	int InitializeAllExtension() {
-
 	}
 	int ReinitializeAllExtension() {
-
 	}
 	int LoadAllExtension() {
-
 	}
 	int UnloadAllExtension() {
-
 	}
 	int ReloadAllExtension() {
-
 	}
 	int LockAllExtension() {
-
 	}
 	int UnlockAllExtension() {
-
 	}
 	vector<string> GetExtensionList(int mask = -1) {
-
 	}
 }

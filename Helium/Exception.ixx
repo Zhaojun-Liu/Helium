@@ -28,10 +28,8 @@ export module Helium.Exception;
 
 export {
 	namespace Helium {
-
 	}
 }
 
 namespace Helium {
-
 }

@@ -28,10 +28,8 @@ export module Helium.Internationalization;
 
 export {
 	namespace Helium {
-
 	}
 }
 
 namespace Helium {
-
 }

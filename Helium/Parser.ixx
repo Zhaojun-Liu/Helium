@@ -42,9 +42,8 @@ using namespace std;
 export{
 	namespace Helium {
 		class BasicHeliumParser {
-
 		};
-		class VanillaParser : public BasicHeliumParser{
+		class VanillaParser : public BasicHeliumParser {
 		public:
 			VanillaParser() : server_name("empty_server_name") {}
 			VanillaParser(const string& server_name) : server_name(server_name) {}

@@ -67,7 +67,6 @@ export{
 			}
 
 			HeliumLogger() {
-
 			}
 			HeliumLogger(string name);
 			~HeliumLogger() {

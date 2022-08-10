@@ -67,8 +67,8 @@ export{
 		typedef int (*executor_funcptr)(shared_ptr<HeliumCommandQueue> queue_ptr);
 		list<shared_ptr<HeliumCommandQueue>>::iterator
 			CreateCommandQueue(const string& name, executor_funcptr executor);
-		void 
-			DeleteCommandQueue(list<shared_ptr<HeliumCommandQueue>>::iterator iter);		
+		void
+			DeleteCommandQueue(list<shared_ptr<HeliumCommandQueue>>::iterator iter);
 	}
 }
 
@@ -88,13 +88,13 @@ namespace Helium {
 	void HeliumCommandQueue::Delete() {
 		this->stat = HeliumCommandQueueStat::DELETED;
 	}
-	bool HeliumCommandQueue::IsQueueEmpty() const noexcept{
+	bool HeliumCommandQueue::IsQueueEmpty() const noexcept {
 		return this->cmd_queue.empty();
 	}
 	string HeliumCommandQueue::GetName() const noexcept {
 		return this->name;
 	}
-	void HeliumCommandQueue::SetName(const string& n) noexcept{
+	void HeliumCommandQueue::SetName(const string& n) noexcept {
 		this->name = n;
 	}
 

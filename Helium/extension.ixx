@@ -226,7 +226,7 @@ namespace Helium {
 		}
 		try {
 			this->ScanEventFunc();
-			
+
 			list<any> temp_param;
 			any temp_any;
 			temp_any = this->GetExtName();
@@ -305,7 +305,7 @@ namespace Helium {
 		}
 		return ret;
 	}
-	string HeliumExtension::GetExtName(){
+	string HeliumExtension::GetExtName() {
 		return this->config.extname;
 	}
 	void* HeliumExtension::GetFuncPtr(string funcname) {

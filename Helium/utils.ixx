@@ -63,104 +63,104 @@ export{
 		int ServerTypeStrToID(string str);
 		string ServerTypeIDToStr(int id);
 
-        string ReplaceString(string rawstr, string deststr, string repstr)
-        {
-            string text = rawstr;
-            auto iter = text.find(deststr);
-            text.replace(iter, iter + deststr.size(), repstr);
-            return text;
-        }
+		string ReplaceString(string rawstr, string deststr, string repstr)
+		{
+			string text = rawstr;
+			auto iter = text.find(deststr);
+			text.replace(iter, iter + deststr.size(), repstr);
+			return text;
+		}
 
-        bool have(string a, string b)
-        {
-            if (a.find(b) != string::npos)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+		bool have(string a, string b)
+		{
+			if (a.find(b) != string::npos)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
 
-        string makestring(list<string> list_, string spiliter)
-        {
-            string result;
-            for (auto iter = list_.begin(); iter != list_.end(); iter++)
-            {
-                result.append(iter->c_str());
-                if (iter == list_.end())
-                {
-                    //在结尾不加分隔符
-                }
-                else
-                {
-                    result.append(spiliter);
-                }
-            }
-            return result;
-        }
+		string makestring(list<string> list_, string spiliter)
+		{
+			string result;
+			for (auto iter = list_.begin(); iter != list_.end(); iter++)
+			{
+				result.append(iter->c_str());
+				if (iter == list_.end())
+				{
+					//在结尾不加分隔符
+				}
+				else
+				{
+					result.append(spiliter);
+				}
+			}
+			return result;
+		}
 
-        string makestring(vector<string> list_, string spiliter)
-        {
-            string result;
-            for (auto iter = list_.begin(); iter != list_.end(); iter++)
-            {
-                result.append(iter->c_str());
-                if (iter == list_.end())
-                {
-                    //在结尾不加分隔符
-                }
-                else
-                {
-                    result.append(spiliter);
-                }
-            }
-            return result;
-        }
+		string makestring(vector<string> list_, string spiliter)
+		{
+			string result;
+			for (auto iter = list_.begin(); iter != list_.end(); iter++)
+			{
+				result.append(iter->c_str());
+				if (iter == list_.end())
+				{
+					//在结尾不加分隔符
+				}
+				else
+				{
+					result.append(spiliter);
+				}
+			}
+			return result;
+		}
 
-        int ServerTypeStrToID(string str) {
-            if (str == "beta18") return SERVER_TYPE_BETA18;
-            if (str == "bukkit") return SERVER_TYPE_BUKKIT;
-            if (str == "bukkit14") return SERVER_TYPE_BUKKIT14;
-            if (str == "bungeecord") return SERVER_TYPE_BUNGEECORD;
-            if (str == "cat") return SERVER_TYPE_CAT;
-            if (str == "forge") return SERVER_TYPE_FORGE;
-            if (str == "vanilla") return SERVER_TYPE_VANILLA;
-            if (str == "waterfall") return SERVER_TYPE_WATERFALL;
-            return SERVER_TYPE_VANILLA;
-        }
+		int ServerTypeStrToID(string str) {
+			if (str == "beta18") return SERVER_TYPE_BETA18;
+			if (str == "bukkit") return SERVER_TYPE_BUKKIT;
+			if (str == "bukkit14") return SERVER_TYPE_BUKKIT14;
+			if (str == "bungeecord") return SERVER_TYPE_BUNGEECORD;
+			if (str == "cat") return SERVER_TYPE_CAT;
+			if (str == "forge") return SERVER_TYPE_FORGE;
+			if (str == "vanilla") return SERVER_TYPE_VANILLA;
+			if (str == "waterfall") return SERVER_TYPE_WATERFALL;
+			return SERVER_TYPE_VANILLA;
+		}
 
-        string ServerTypeIDToType(int id) {
-            switch (id) {
-            case SERVER_TYPE_BETA18:
-                return "beta18";
-                break;
-            case SERVER_TYPE_BUKKIT:
-                return "bukkit";
-                break;
-            case SERVER_TYPE_BUKKIT14:
-                return "bukkit14";
-                break;
-            case SERVER_TYPE_BUNGEECORD:
-                return "bungeecord";
-                break;
-            case SERVER_TYPE_CAT:
-                return "cat";
-                break;
-            case SERVER_TYPE_FORGE:
-                return "forge";
-                break;
-            case SERVER_TYPE_VANILLA:
-                return "vanilla";
-                break;
-            case SERVER_TYPE_WATERFALL:
-                return "waterfall";
-                break;
-            default:
-                return "vanilla";
-                break;
-            }
-        }
+		string ServerTypeIDToType(int id) {
+			switch (id) {
+			case SERVER_TYPE_BETA18:
+				return "beta18";
+				break;
+			case SERVER_TYPE_BUKKIT:
+				return "bukkit";
+				break;
+			case SERVER_TYPE_BUKKIT14:
+				return "bukkit14";
+				break;
+			case SERVER_TYPE_BUNGEECORD:
+				return "bungeecord";
+				break;
+			case SERVER_TYPE_CAT:
+				return "cat";
+				break;
+			case SERVER_TYPE_FORGE:
+				return "forge";
+				break;
+			case SERVER_TYPE_VANILLA:
+				return "vanilla";
+				break;
+			case SERVER_TYPE_WATERFALL:
+				return "waterfall";
+				break;
+			default:
+				return "vanilla";
+				break;
+			}
+		}
 	}
 }

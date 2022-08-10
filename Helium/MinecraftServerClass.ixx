@@ -74,14 +74,13 @@ export {
 
 		struct RedirectInformation
 		{
+			HANDLE hStdInRead = NULL;   //子进程用的stdin的读入端
+			HANDLE hStdInWrite = NULL;  //主程序用的stdin的读入端
 
-			HANDLE hStdInRead = NULL;   //子进程用的stdin的读入端  
-			HANDLE hStdInWrite = NULL;  //主程序用的stdin的读入端 
+			HANDLE hStdOutRead = NULL;  //主程序用的stdout的读入端
+			HANDLE hStdOutWrite = NULL; //子进程用的stdout的写入端
 
-			HANDLE hStdOutRead = NULL;  //主程序用的stdout的读入端  
-			HANDLE hStdOutWrite = NULL; //子进程用的stdout的写入端  
-
-			HANDLE hStdErrWrite = NULL; //子进程用的stderr的写入端  
+			HANDLE hStdErrWrite = NULL; //子进程用的stderr的写入端
 
 			RedirectInformation& operator=(RedirectInformation& a) {
 				if (this != &a)
@@ -132,7 +131,7 @@ export {
 			HeliumServerType GetServerType();
 			HeliumServerType SetServerType(HeliumServerType type);
 
-			HeliumServerStat GetServerStat();  
+			HeliumServerStat GetServerStat();
 
 			uuid GetServerUUID();
 
@@ -172,7 +171,7 @@ export {
 			int Tellraw(const string& text);
 			int Execute();
 
-			void operator=(HeliumMinecraftServer server);			
+			void operator=(HeliumMinecraftServer server);
 		private:
 			string name;
 			string dir;
@@ -197,7 +196,7 @@ export {
 
 			std::shared_ptr<VanillaParser> parser_ptr;
 		};
-		
+
 		CRITICAL_SECTION cs;
 		vector<thread> outputthreads;
 		bool isinit = false;
@@ -480,7 +479,6 @@ export {
 		}
 
 		void HeliumMinecraftServer::operator = (HeliumMinecraftServer server) {
-
 		}
 
 		HeliumMinecraftServer::HeliumMinecraftServer() {
