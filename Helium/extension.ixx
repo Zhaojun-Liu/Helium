@@ -454,7 +454,6 @@ namespace Helium {
 			ret++;
 		}
 		for (auto s : files) {
-			//HeliumExtension tempext(s);
 			log << LDBG << s << hendl;
 			extensions.push_back(make_shared<HeliumExtension>(s));
 		}

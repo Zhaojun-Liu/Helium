@@ -26,46 +26,82 @@
 #include"pch.h"
 
 namespace HeliumAPI {
-	typedef int(*t1)(string);
+	typedef list<any>(*t1)(string);
 	typedef string(*t2)(string);
 	typedef int(*t3)(string);
 	typedef int(*t4)();
 	typedef vector<string>(*t5)(int);
 
 	list<any> GetExtensionMetadata(string extname) {
+		t1 ptr = t1(HeliumAPIMap.at("GetExtensionMetadata"));
+		return ptr(extname);
 	}
 	string GetExtensionDirectory(string extname) {
+		t2 ptr = t2(HeliumAPIMap.at("GetExtensionDirectory"));
+		return ptr(extname);
 	}
 	string GetExtensionConfigDirectory(string extname) {
+		t2 ptr = t2(HeliumAPIMap.at("GetExtensionConfigDirectory"));
+		return ptr(extname);
 	}
 	int GetExtensionStatus(string extname) {
+		t3 ptr = t3(HeliumAPIMap.at("GetExtensionStatus"));
+		return ptr(extname);
 	}
 	int CreateExtension(string configpath) {
+		t3 ptr = t3(HeliumAPIMap.at("CreateExtension"));
+		return ptr(configpath);
 	}
 	int LoadExtension(string extname) {
+		t3 ptr = t3(HeliumAPIMap.at("LoadExtension"));
+		return ptr(extname);
 	}
 	int UnloadExtension(string extname) {
+		t3 ptr = t3(HeliumAPIMap.at("UnloadExtension"));
+		return ptr(extname);
 	}
 	int ReloadExtension(string extname) {
+		t3 ptr = t3(HeliumAPIMap.at("ReloadExtension"));
+		return ptr(extname);
 	}
 	int LockExtension(string extname) {
+		t3 ptr = t3(HeliumAPIMap.at("LockExtension"));
+		return ptr(extname);
 	}
 	int UnlockExtension(string extname) {
+		t3 ptr = t3(HeliumAPIMap.at("UnlockExtension"));
+		return ptr(extname);
 	}
 	int InitializeAllExtension() {
+		t4 ptr = t4(HeliumAPIMap.at("InitializeAllExtension"));
+		return ptr();
 	}
 	int ReinitializeAllExtension() {
+		t4 ptr = t4(HeliumAPIMap.at("ReinitializeAllExtension"));
+		return ptr();
 	}
 	int LoadAllExtension() {
+		t4 ptr = t4(HeliumAPIMap.at("LoadAllExtension"));
+		return ptr();
 	}
 	int UnloadAllExtension() {
+		t4 ptr = t4(HeliumAPIMap.at("UnloadAllExtension"));
+		return ptr();
 	}
 	int ReloadAllExtension() {
+		t4 ptr = t4(HeliumAPIMap.at("ReloadAllExtension"));
+		return ptr();
 	}
 	int LockAllExtension() {
+		t4 ptr = t4(HeliumAPIMap.at("LockAllExtension"));
+		return ptr();
 	}
 	int UnlockAllExtension() {
+		t4 ptr = t4(HeliumAPIMap.at("UnlockAllExtension"));
+		return ptr();
 	}
 	vector<string> GetExtensionList(int mask = -1) {
+		t5 ptr = t5(HeliumAPIMap.at("GetExtensionList"));
+		return ptr(mask);
 	}
 }

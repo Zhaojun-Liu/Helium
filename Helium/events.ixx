@@ -118,11 +118,11 @@ export{
 
 		map<int, string> user_defined_name;
 		map<int, string> user_defined_desc;
-		typedef boost::function<int(const list<any>)> StandardHeliumListener;
+		typedef boost::function<int(list<any>)> StandardHeliumListener;
 
 		class HeliumEventManager {
 		public:
-			typedef signal<int(const list<any>)> StandardHeliumSignal;
+			typedef signal<int(list<any>)> StandardHeliumSignal;
 
 			HeliumEventManager() {};
 			~HeliumEventManager() {};
@@ -185,7 +185,7 @@ namespace Helium {
 				<< "(" << EventIDToDesc(event_num) << ")." << hendl;
 		}
 		if (iter != this->event_map.end()) {
-			auto signal_ptr = iter->second;
+			shared_ptr<StandardHeliumSignal> signal_ptr = iter->second;
 			if (this->is_blocked.count(event_num) > 0 && this->is_blocked[event_num]) {
 				log << HLL::LL_WARN << "Blocked!" << hendl;
 				return -1;
