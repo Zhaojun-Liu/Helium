@@ -14,6 +14,10 @@ namespace TestExtension {
 		ExtensionLogWarn(lname, "Logging test");
 		list<any> param;
 		DispatchEvent(1, param);
+		param = GetExtensionMetadata("AnotherTestExtension");
+		for (auto s : param) {
+			ExtensionLogError(lname, any_cast<string>(s));
+		}
 		return 0;
 	}
 	extern "C" TESTEXTENSION_API int HeliumStart(list<any> argument) {
