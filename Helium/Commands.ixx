@@ -51,6 +51,7 @@ import Helium.Events;
 import Helium.Extension;
 import Helium.MinecraftServer;
 import Helium.Utils;
+import Helium.Version;
 import Helium.Logger;
 import Helium.CommandCallback;
 import Helium.CommandQueue;
@@ -1680,7 +1681,6 @@ export{
 				}
 			return ret;
 		}
-		//string server_name	tm timestamp	string thread	string source	string player_name	string player_input
 		int PlayerInput(const list<any> param) {
 			auto it = param.begin();
 			string server_name = any_cast<string>(*it);
@@ -1705,6 +1705,9 @@ export{
 
 			if (rawcmd == "#exit") {
 				list<any> param;
+				any temp_any;
+				temp_any = GetHeliumVersion();
+				param.push_back(temp_any);
 				helium_event_manager.DispatchEvent(HeliumEventList::HELIUM_STOP, param);
 				StopAllServer();
 				UnloadAllExtension();
