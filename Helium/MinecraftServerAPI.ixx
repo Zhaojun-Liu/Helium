@@ -76,6 +76,24 @@ export {
 		vector<HeliumMinecraftServer>::iterator ServerListBegin();
 		vector<HeliumMinecraftServer>::iterator ServerListEnd();
 
+		vector<string> GetServerList(const int& mask = -1);
+		int SendCommandToServer(const string& servername, const string& rawcmd);
+		int GetServerStatus(const string& servername);
+		int StartServer(const string& servername);
+		int StopServer(const string& servername);
+		int PauseServer(const string& servername);
+		int RestartServer(const string& servername);
+		int ActivateServer(const string& servername);
+		int DeactivateServer(const string& servername);
+		bool IsServerActivated(const string& servername);
+		size_t GetServerPID(const string& servername);
+		list<any> GetServerMetadata(const string& servername);
+		int Execute(const string& servername, const string& cmd);
+		int Tell(const string& servername, const string& cmd);
+		int Say(const string& servername, const string& cmd);
+		int Boardcast(const string& servername, const string& cmd);
+		int Reply(const string& servername, const string& cmd);
+
 		vector<HeliumMinecraftServer> heliumservers;
 
 		void AddServer(HeliumMinecraftServer server) {
@@ -273,6 +291,58 @@ export {
 		}
 		vector<HeliumMinecraftServer>::iterator ServerListEnd() {
 			return heliumservers.end();
+		}
+
+		vector<string> GetServerList(const int& mask) {
+
+		}
+		int SendCommandToServer(const string& servername, const string& rawcmd) {
+
+		}
+		int GetServerStatus(const string& servername) {
+
+		}
+		int StartServer(const string& servername) {
+
+		}
+		int StopServer(const string& servername) {
+
+		}
+		int PauseServer(const string& servername) {
+
+		}
+		int RestartServer(const string& servername) {
+
+		}
+		int ActivateServer(const string& servername) {
+
+		}
+		int DeactivateServer(const string& servername) {
+
+		}
+		bool IsServerActivated(const string& servername) {
+
+		}
+		size_t GetServerPID(const string& servername) {
+
+		}
+		list<any> GetServerMetadata(const string& servername) {
+
+		}
+		int Execute(const string& servername, const string& cmd) {
+
+		}
+		int Tell(const string& servername, const string& cmd) {
+
+		}
+		int Say(const string& servername, const string& cmd) {
+
+		}
+		int Boardcast(const string& servername, const string& cmd) {
+
+		}
+		int Reply(const string& servername, const string& cmd) {
+
 		}
 	}
 }
