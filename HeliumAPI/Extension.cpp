@@ -32,43 +32,43 @@ namespace HeliumAPI {
 	typedef int(*t4)();
 	typedef vector<string>(*t5)(int);
 
-	list<any> GetExtensionMetadata(string extname) {
+	list<any> GetExtensionMetadata(const string& extname) {
 		t1 ptr = t1(HeliumAPIMap.at("GetExtensionMetadata"));
 		return ptr(extname);
 	}
-	string GetExtensionDirectory(string extname) {
+	string GetExtensionDirectory(const string& extname) {
 		t2 ptr = t2(HeliumAPIMap.at("GetExtensionDirectory"));
 		return ptr(extname);
 	}
-	string GetExtensionConfigDirectory(string extname) {
+	string GetExtensionConfigDirectory(const string& extname) {
 		t2 ptr = t2(HeliumAPIMap.at("GetExtensionConfigDirectory"));
 		return ptr(extname);
 	}
-	int GetExtensionStatus(string extname) {
+	int GetExtensionStatus(const string& extname) {
 		t3 ptr = t3(HeliumAPIMap.at("GetExtensionStatus"));
 		return ptr(extname);
 	}
-	int CreateExtension(string configpath) {
+	int CreateExtension(const string& configpath) {
 		t3 ptr = t3(HeliumAPIMap.at("CreateExtension"));
 		return ptr(configpath);
 	}
-	int LoadExtension(string extname) {
+	int LoadExtension(const string& extname) {
 		t3 ptr = t3(HeliumAPIMap.at("LoadExtension"));
 		return ptr(extname);
 	}
-	int UnloadExtension(string extname) {
+	int UnloadExtension(const string& extname) {
 		t3 ptr = t3(HeliumAPIMap.at("UnloadExtension"));
 		return ptr(extname);
 	}
-	int ReloadExtension(string extname) {
+	int ReloadExtension(const string& extname) {
 		t3 ptr = t3(HeliumAPIMap.at("ReloadExtension"));
 		return ptr(extname);
 	}
-	int LockExtension(string extname) {
+	int LockExtension(const string& extname) {
 		t3 ptr = t3(HeliumAPIMap.at("LockExtension"));
 		return ptr(extname);
 	}
-	int UnlockExtension(string extname) {
+	int UnlockExtension(const string& extname) {
 		t3 ptr = t3(HeliumAPIMap.at("UnlockExtension"));
 		return ptr(extname);
 	}
@@ -100,7 +100,7 @@ namespace HeliumAPI {
 		t4 ptr = t4(HeliumAPIMap.at("UnlockAllExtension"));
 		return ptr();
 	}
-	vector<string> GetExtensionList(int mask = -1) {
+	vector<string> GetExtensionList(const int& mask = -1) {
 		t5 ptr = t5(HeliumAPIMap.at("GetExtensionList"));
 		return ptr(mask);
 	}

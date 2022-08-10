@@ -29,16 +29,16 @@
 using namespace std;
 
 namespace HeliumAPI {
-	list<any> GetExtensionMetadata(string extname);
-	string GetExtensionDirectory(string extname);
-	string GetExtensionConfigDirectory(string extname);
-	int GetExtensionStatus(string extname);
-	int CreateExtension(string configpath);
-	int LoadExtension(string extname);
-	int UnloadExtension(string extname);
-	int ReloadExtension(string extname);
-	int LockExtension(string extname);
-	int UnlockExtension(string extname);
+	list<any> GetExtensionMetadata(const string& extname);
+	string GetExtensionDirectory(const string& extname);
+	string GetExtensionConfigDirectory(const string& extname);
+	int GetExtensionStatus(const string& extname);
+	int CreateExtension(const string& configpath);
+	int LoadExtension(const string& extname);
+	int UnloadExtension(const string& extname);
+	int ReloadExtension(const string& extname);
+	int LockExtension(const string& extname);
+	int UnlockExtension(const string& extname);
 	int InitializeAllExtension();
 	int ReinitializeAllExtension();
 	int LoadAllExtension();
@@ -46,5 +46,5 @@ namespace HeliumAPI {
 	int ReloadAllExtension();
 	int LockAllExtension();
 	int UnlockAllExtension();
-	vector<string> GetExtensionList(int mask = -1);
+	vector<string> GetExtensionList(const int& mask = -1);
 }
