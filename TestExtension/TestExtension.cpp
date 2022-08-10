@@ -6,8 +6,10 @@ using namespace std;
 using namespace HeliumAPI;
 
 namespace TestExtension {
-	string lname = "TestExtension";
+	string lname;
 	extern "C" TESTEXTENSION_API int ExtensionLoad(list<any> argument) {
+		lname = any_cast<string>(argument.front());
+		cout << any_cast<string>(argument.front()) << endl;
 		CreateExtensionLogger(lname);
 		ExtensionLogWarn(lname, "Logging test");
 		list<any> param;

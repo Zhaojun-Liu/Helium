@@ -32,7 +32,7 @@ namespace HeliumAPI {
 	typedef int(*t4)();
 	typedef vector<string>(*t5)(int);
 
-	list<any> GetExtensionMetaData(string extname) {
+	list<any> GetExtensionMetadata(string extname) {
 
 	}
 	string GetExtensionDirectory(string extname) {

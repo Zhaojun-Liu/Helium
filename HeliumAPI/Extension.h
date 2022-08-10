@@ -29,7 +29,7 @@
 using namespace std;
 
 namespace HeliumAPI {
-	list<any> GetExtensionMetaData(string extname);
+	list<any> GetExtensionMetadata(string extname);
 	string GetExtensionDirectory(string extname);
 	string GetExtensionConfigDirectory(string extname);
 	int GetExtensionStatus(string extname);

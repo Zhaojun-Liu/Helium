@@ -139,6 +139,9 @@ export{
             InitServerEnv();
 
             list<any> param;
+            any temp_any;
+            temp_any = GetHeliumVersion();
+            param.push_back(temp_any);
             helium_event_manager.DispatchEvent(HeliumEventList::HELIUM_START, param);
 
             log << HLL::LL_INFO << "Finished Helium initialization stage." << hendl;
@@ -151,6 +154,9 @@ export{
         }
         int HeliumFin() {
             list<any> param;
+            any temp_any;
+            temp_any = GetHeliumVersion();
+            param.push_back(temp_any);
             helium_event_manager.DispatchEvent(HeliumEventList::HELIUM_STOP, param);
 
             UnloadAllExtension();

@@ -228,6 +228,14 @@ namespace Helium {
 			this->ScanEventFunc();
 			
 			list<any> temp_param;
+			any temp_any;
+			temp_any = this->GetExtName();
+			log << HLL::LL_WARN << this->GetExtName() << hendl;
+			temp_param.push_back(temp_any);
+			temp_any = this->GetExtPath();
+			temp_param.push_back(temp_any);
+			temp_any = this->GetExtConfigPath();
+			temp_param.push_back(temp_any);
 			this->extension_eventmgr->DispatchEvent(HeliumEventList::EXTENSION_LOAD, temp_param);
 		}
 		catch (exception& e) {
@@ -260,6 +268,13 @@ namespace Helium {
 	int HeliumExtension::UnloadExt() {
 		this->extstat = EXT_STATUS_UNLOADING;
 		list<any> temp_param;
+		any temp_any;
+		temp_any = this->GetExtName();
+		temp_param.push_back(temp_any);
+		temp_any = this->GetExtPath();
+		temp_param.push_back(temp_any);
+		temp_any = this->GetExtConfigPath();
+		temp_param.push_back(temp_any);
 		this->extension_eventmgr->DispatchEvent(HeliumEventList::EXTENSION_UNLOAD, temp_param);
 		this->extstat = EXT_STATUS_UNLOADED;
 		return 0;

@@ -24,15 +24,16 @@
 
 module;
 
-#include<any>
-#include<list>
-
 export module Helium.CommandCallback;
 
+import <any>;
+import <list>;
 import <string>;
 import Helium.Logger;
 import Helium.Events;
 import Helium.Extension;
+import Helium.Version;
+import Helium.MinecraftServer;
 
 using namespace std;
 
@@ -407,8 +408,11 @@ export {
 
 		int exit(string rawcmd, string sender, int permission, list<any> arguments) {
 			list<any> param;
+			any temp_any;
+			temp_any = GetHeliumVersion();
+			param.push_back(temp_any);
 			helium_event_manager.DispatchEvent(HeliumEventList::HELIUM_STOP, param);
-			//StopAllServer();
+			StopAllServer();
 			UnloadAllExtension();
 			log << HLL::LL_INFO << "Exiting Helium." << hendl;
 			::exit(0);
