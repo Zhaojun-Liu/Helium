@@ -120,7 +120,7 @@ export{
 
 		vector<shared_ptr<HeliumExtension>> extensions;
 
-		shared_ptr<HeliumExtension> GetExtensionPointerByName(const string& ext_name);
+		weak_ptr<HeliumExtension> GetExtensionPointerByName(const string& ext_name);
 		list<any> GetExtensionMetadata(const string& ext_name);
 		string GetExtensionWorkingDirectory(const string& ext_name);
 		string GetExtensionConfigDirectory(const string& ext_name);
@@ -333,7 +333,7 @@ namespace Helium {
 		return this->config.extpath.string();
 	}
 
-	shared_ptr<HeliumExtension> GetExtensionPointerByName(const string& ext_name) {
+	weak_ptr<HeliumExtension> GetExtensionPointerByName(const string& ext_name) {
 		shared_ptr<HeliumExtension> nullret;
 		for (auto e : extensions) {
 			if (e->GetExtName() == ext_name) {
@@ -344,7 +344,8 @@ namespace Helium {
 	}
 	list<any> GetExtensionMetadata(const string& ext_name) {
 		list<any> ret;
-		auto ptr = GetExtensionPointerByName(ext_name);
+		auto wptr = GetExtensionPointerByName(ext_name);
+		auto ptr = wptr.lock();
 		if (ptr) {
 			any temp_any;
 			temp_any = ptr->GetExtName();
@@ -358,7 +359,8 @@ namespace Helium {
 	}
 	string GetExtensionWorkingDirectory(const string& ext_name) {
 		string ret = "";
-		auto ptr = GetExtensionPointerByName(ext_name);
+		auto wptr = GetExtensionPointerByName(ext_name);
+		auto ptr = wptr.lock();
 		if (ptr) {
 			return ptr->GetExtPath();
 		}
@@ -366,7 +368,8 @@ namespace Helium {
 	}
 	string GetExtensionConfigDirectory(const string& ext_name) {
 		string ret = "";
-		auto ptr = GetExtensionPointerByName(ext_name);
+		auto wptr = GetExtensionPointerByName(ext_name);
+		auto ptr = wptr.lock();
 		if (ptr) {
 			return ptr->GetExtConfigPath();
 		}
@@ -374,7 +377,8 @@ namespace Helium {
 	}
 	int GetExtensionStatus(const string& ext_name) {
 		int ret = 0;
-		auto ptr = GetExtensionPointerByName(ext_name);
+		auto wptr = GetExtensionPointerByName(ext_name);
+		auto ptr = wptr.lock();
 		if (ptr) {
 			return ptr->GetExtStat();
 		}
@@ -383,14 +387,16 @@ namespace Helium {
 
 	list<any> CreateExtension(const string& ext_config_path) {
 		list<any> ret;
-		auto ptr = make_shared<HeliumExtension>(ext_config_path);
+		auto wptr = GetExtensionPointerByName(ext_config_path);
+		auto ptr = wptr.lock();
 		extensions.push_back(ptr);
 		ret = GetExtensionMetadata(ptr->GetExtName());
 		return ret;
 	}
 	int InitExtension(const string& ext_name) {
 		int ret = 0;
-		auto ptr = GetExtensionPointerByName(ext_name);
+		auto wptr = GetExtensionPointerByName(ext_name);
+		auto ptr = wptr.lock();
 		if (ptr) {
 			return ptr->InitExt();
 		}
@@ -398,7 +404,8 @@ namespace Helium {
 	}
 	int ReinitExtension(const string& ext_name) {
 		int ret = 0;
-		auto ptr = GetExtensionPointerByName(ext_name);
+		auto wptr = GetExtensionPointerByName(ext_name);
+		auto ptr = wptr.lock();
 		if (ptr) {
 			ptr->UnloadExt();
 			return ptr->InitExt();
@@ -407,7 +414,8 @@ namespace Helium {
 	}
 	int LoadExtension(const string& ext_name) {
 		int ret = 0;
-		auto ptr = GetExtensionPointerByName(ext_name);
+		auto wptr = GetExtensionPointerByName(ext_name);
+		auto ptr = wptr.lock();
 		if (ptr) {
 			return ptr->LoadExt();
 		}
@@ -415,7 +423,8 @@ namespace Helium {
 	}
 	int UnloadExtension(const string& ext_name) {
 		int ret = 0;
-		auto ptr = GetExtensionPointerByName(ext_name);
+		auto wptr = GetExtensionPointerByName(ext_name);
+		auto ptr = wptr.lock();
 		if (ptr) {
 			return ptr->UnloadExt();
 		}
@@ -423,7 +432,8 @@ namespace Helium {
 	}
 	int ReloadExtension(const string& ext_name) {
 		int ret = 0;
-		auto ptr = GetExtensionPointerByName(ext_name);
+		auto wptr = GetExtensionPointerByName(ext_name);
+		auto ptr = wptr.lock();
 		if (ptr) {
 			ptr->UnloadExt();
 			ptr->InitExt();

@@ -252,9 +252,9 @@ namespace Helium {
 			if (attr->Value()) {
 				string tempstr = attr->Value();
 				for (auto it = ServerListBegin(); it < ServerListEnd(); it++) {
-					if (it->GetServerName() == tempstr) {
+					if ((*it)->GetServerName() == tempstr) {
 						uuid suuid;
-						suuid = it->GetServerUUID();
+						suuid = (*it)->GetServerUUID();
 						tempns.serveruuid = suuid;
 					}
 				}

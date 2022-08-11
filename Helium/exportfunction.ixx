@@ -119,9 +119,9 @@ export {
 			ADD_EXP_FUNC("GetServerList"              , GetServerList);
 			ADD_EXP_FUNC("SendCommandToServer"        , SendCommandToServer);
 			ADD_EXP_FUNC("GetServerStatus"            , GetServerStatus);
-			ADD_EXP_FUNC("StartServer"                , StartServer);
-			ADD_EXP_FUNC("StopServer"                 , StopServer);
-			ADD_EXP_FUNC("PauseServer"                , PauseServer);
+			ADD_EXP_FUNC("StartServer"                , _StartServer);
+			ADD_EXP_FUNC("StopServer"                 , _StopServer);
+			ADD_EXP_FUNC("PauseServer"                , _PauseServer);
 			ADD_EXP_FUNC("RestartServer"              , RestartServer);
 			ADD_EXP_FUNC("ActivateServer"             , ActivateServer);
 			ADD_EXP_FUNC("DeactivateServer"           , DeactivateServer);

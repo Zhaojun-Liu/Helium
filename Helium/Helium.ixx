@@ -107,7 +107,6 @@ export{
 
 			InitFuncMap();
 			LoadHeliumAPI();
-			TransferFuncMap();
 
 			helium_event_manager.RegisterEventListener(HeliumEventList::PLAYER_INPUT, PlayerInput);
 

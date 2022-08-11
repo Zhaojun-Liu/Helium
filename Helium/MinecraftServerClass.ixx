@@ -169,7 +169,8 @@ export {
 			int Say(const string& text);
 			int Boardcast(const string& text);
 			int Tellraw(const string& text);
-			int Execute();
+			int Execute(const string& text);
+			int Save();
 
 			void operator=(HeliumMinecraftServer server);
 		private:
@@ -498,6 +499,25 @@ export {
 					<< this->name << hendl;
 				log << HLL::LL_ERR << e.what() << hendl;
 			}
+			return 0;
+		}
+
+		int HeliumMinecraftServer::SendToServer(const string& text) {
+			return 0;
+		}
+		int HeliumMinecraftServer::Say(const string& text) {
+			return 0;
+		}
+		int HeliumMinecraftServer::Boardcast(const string& text) {
+			return 0;
+		}
+		int HeliumMinecraftServer::Tellraw(const string& text) {
+			return 0;
+		}
+		int HeliumMinecraftServer::Execute(const string& text) {
+			return 0;
+		}
+		int HeliumMinecraftServer::Save() {
 			return 0;
 		}
 
