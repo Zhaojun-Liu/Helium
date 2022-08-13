@@ -41,10 +41,11 @@
 #include<string>
 #include<iostream>
 
+#include<boost/uuid/uuid.hpp>
 #include<boost/dll.hpp>
 #include<boost/function.hpp>
 #include<boost/signals2.hpp>
 
-constexpr semver::version apiver = semver::version{ 0, 0, 3, semver::prerelease::alpha };
+constexpr semver::version apiver = semver::version{ 0, 0, 5, semver::prerelease::alpha };
 
 #endif

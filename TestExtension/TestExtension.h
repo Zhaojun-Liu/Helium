@@ -7,7 +7,7 @@
 #include "pch.h"
 
 namespace TestExtension {
-	extern "C" TESTEXTENSION_API int HeliumStartup(list<any> argument);
+	extern "C" TESTEXTENSION_API int HeliumStart(list<any> argument);
 	extern "C" TESTEXTENSION_API int HeliumStop(list<any> argument);
 	extern "C" TESTEXTENSION_API int ExtensionLoad(list<any> argument);
 	extern "C" TESTEXTENSION_API int ExtensionUnload(list<any> argument);
