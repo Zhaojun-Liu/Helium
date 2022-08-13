@@ -33,7 +33,7 @@ using namespace semver;
 
 export {
 	namespace Helium {
-		version heliumversion = { 0, 7, 5, prerelease::alpha };
+		version heliumversion = { 0, 7, 6, prerelease::alpha };
 
 		version GetHeliumVersion();
 	}

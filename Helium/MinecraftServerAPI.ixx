@@ -95,6 +95,8 @@ export {
 		int Say(const string& servername, const string& cmd);
 		int Boardcast(const string& servername, const string& cmd);
 		int Reply(const string& servername, const string& cmd);
+		int Save(const string& servername);
+		bool CanDoCommandAction(const string& servername);
 
 		vector<shared_ptr<HeliumMinecraftServer>> heliumservers;
 
@@ -104,7 +106,7 @@ export {
 		}
 		int StartServer(string name) {
 			for (auto it = heliumservers.begin(); it < heliumservers.end(); it++) {
-				if ((*it)->GetServerStat() == HeliumServerStat::TERMINATED 
+				if ((*it)->GetServerStat() == HeliumServerStat::TERMINATED
 					&& (*it)->GetServerName() == name)
 					return (*it)->StartServer();
 			}
@@ -112,7 +114,7 @@ export {
 		}
 		int StartServer(uuid server) {
 			for (auto it = heliumservers.begin(); it < heliumservers.end(); it++) {
-				if ((*it)->GetServerStat() == HeliumServerStat::TERMINATED 
+				if ((*it)->GetServerStat() == HeliumServerStat::TERMINATED
 					&& (*it)->GetServerUUID() == server)
 					return (*it)->StartServer();
 			}
@@ -120,7 +122,7 @@ export {
 		}
 		int StartServer() {
 			for (auto it = heliumservers.begin(); it < heliumservers.end(); it++) {
-				if ((*it)->GetServerStat() == HeliumServerStat::TERMINATED) 
+				if ((*it)->GetServerStat() == HeliumServerStat::TERMINATED)
 					return (*it)->StartServer();
 			}
 			return -1;
@@ -136,26 +138,26 @@ export {
 
 		int AutoStartServer(string name) {
 			for (auto it = heliumservers.begin(); it < heliumservers.end(); it++) {
-				if ((*it)->GetServerStat() == HeliumServerStat::TERMINATED 
-					&& (*it)->GetServerName() == name 
-					&& (*it)->IsAutoStart()) 
+				if ((*it)->GetServerStat() == HeliumServerStat::TERMINATED
+					&& (*it)->GetServerName() == name
+					&& (*it)->IsAutoStart())
 					return (*it)->StartServer();
 			}
 			return -1;
 		}
 		int AutoStartServer(uuid server) {
 			for (auto it = heliumservers.begin(); it < heliumservers.end(); it++) {
-				if ((*it)->GetServerStat() == HeliumServerStat::TERMINATED 
-					&& (*it)->GetServerUUID() == server 
-					&& (*it)->IsAutoStart()) 
+				if ((*it)->GetServerStat() == HeliumServerStat::TERMINATED
+					&& (*it)->GetServerUUID() == server
+					&& (*it)->IsAutoStart())
 					return (*it)->StartServer();
 			}
 			return -1;
 		}
 		int AutoStartServer() {
 			for (auto it = heliumservers.begin(); it < heliumservers.end(); it++) {
-				if ((*it)->GetServerStat() == HeliumServerStat::TERMINATED 
-					&& (*it)->IsAutoStart()) 
+				if ((*it)->GetServerStat() == HeliumServerStat::TERMINATED
+					&& (*it)->IsAutoStart())
 					return (*it)->StartServer();
 			}
 			return -1;
@@ -163,7 +165,7 @@ export {
 		int AutoStartAllServer() {
 			int r = 0;
 			for (auto it = heliumservers.begin(); it < heliumservers.end(); it++) {
-				if ((*it)->GetServerStat() == HeliumServerStat::TERMINATED 
+				if ((*it)->GetServerStat() == HeliumServerStat::TERMINATED
 					&& (*it)->IsAutoStart())
 					if (auto ret = (*it)->StartServer(); ret != 0) r = ret;
 			}
@@ -172,7 +174,7 @@ export {
 
 		int StopServer(string name) {
 			for (auto it = heliumservers.begin(); it < heliumservers.end(); it++) {
-				if ((*it)->GetServerStat() == HeliumServerStat::RUNNING 
+				if ((*it)->GetServerStat() == HeliumServerStat::RUNNING
 					&& (*it)->GetServerName() == name)
 					return (*it)->StopServer();
 			}
@@ -180,15 +182,15 @@ export {
 		}
 		int StopServer(uuid server) {
 			for (auto it = heliumservers.begin(); it < heliumservers.end(); it++) {
-				if ((*it)->GetServerStat() == HeliumServerStat::RUNNING 
-					&& (*it)->GetServerUUID() == server) 
+				if ((*it)->GetServerStat() == HeliumServerStat::RUNNING
+					&& (*it)->GetServerUUID() == server)
 					return (*it)->StopServer();
 			}
 			return -1;
 		}
 		int StopServer() {
 			for (auto it = heliumservers.begin(); it < heliumservers.end(); it++) {
-				if ((*it)->GetServerStat() == HeliumServerStat::RUNNING) 
+				if ((*it)->GetServerStat() == HeliumServerStat::RUNNING)
 					return (*it)->StopServer();
 			}
 			return -1;
@@ -204,23 +206,23 @@ export {
 
 		int PauseServer(string name) {
 			for (auto it = heliumservers.begin(); it < heliumservers.end(); it++) {
-				if ((*it)->GetServerStat() == HeliumServerStat::RUNNING 
-					&& (*it)->GetServerName() == name) 
+				if ((*it)->GetServerStat() == HeliumServerStat::RUNNING
+					&& (*it)->GetServerName() == name)
 					return (*it)->PauseServer();
 			}
 			return -1;
 		}
 		int PauseServer(uuid server) {
 			for (auto it = heliumservers.begin(); it < heliumservers.end(); it++) {
-				if ((*it)->GetServerStat() == HeliumServerStat::RUNNING 
-					&& (*it)->GetServerUUID() == server) 
+				if ((*it)->GetServerStat() == HeliumServerStat::RUNNING
+					&& (*it)->GetServerUUID() == server)
 					return (*it)->PauseServer();
 			}
 			return -1;
 		}
 		int PauseServer() {
 			for (auto it = heliumservers.begin(); it < heliumservers.end(); it++) {
-				if ((*it)->GetServerStat() == HeliumServerStat::RUNNING) 
+				if ((*it)->GetServerStat() == HeliumServerStat::RUNNING)
 					return (*it)->PauseServer();
 			}
 			return -1;
@@ -236,16 +238,16 @@ export {
 
 		int ResumeServer(string name) {
 			for (auto it = heliumservers.begin(); it < heliumservers.end(); it++) {
-				if ((*it)->GetServerStat() == HeliumServerStat::PAUSED 
-					&& (*it)->GetServerName() == name) 
+				if ((*it)->GetServerStat() == HeliumServerStat::PAUSED
+					&& (*it)->GetServerName() == name)
 					return (*it)->ResumeServer();
 			}
 			return -1;
 		}
 		int ResumeServer(uuid server) {
 			for (auto it = heliumservers.begin(); it < heliumservers.end(); it++) {
-				if ((*it)->GetServerStat() == HeliumServerStat::PAUSED 
-					&& (*it)->GetServerUUID() == server) 
+				if ((*it)->GetServerStat() == HeliumServerStat::PAUSED
+					&& (*it)->GetServerUUID() == server)
 					return (*it)->ResumeServer();
 			}
 			return -1;
@@ -261,7 +263,7 @@ export {
 			int r = 0;
 			for (auto it = heliumservers.begin(); it < heliumservers.end(); it++) {
 				if ((*it)->GetServerStat() == HeliumServerStat::PAUSED)
-					if (auto ret = (*it)->ResumeServer(); ret != 0) 
+					if (auto ret = (*it)->ResumeServer(); ret != 0)
 						r = ret;
 			}
 			return r;
@@ -337,7 +339,7 @@ export {
 			if (mask != -1) {
 				for (auto ptr : heliumservers) {
 					if (ptr->GetServerStat() == mask)
-						ret.push_back(ptr->GetServerName);
+						ret.push_back(ptr->GetServerName());
 				}
 			}
 			else {
@@ -472,6 +474,22 @@ export {
 				return ptr->Reply(cmd);
 			}
 			return -1;
+		}
+		int Save(const string& servername) {
+			auto wptr = GetServerPointerByName(servername);
+			auto ptr = wptr.lock();
+			if (ptr) {
+				return ptr->Save();
+			}
+			return -1;
+		}
+		bool CanDoCommandAction(const string& servername) {
+			auto wptr = GetServerPointerByName(servername);
+			auto ptr = wptr.lock();
+			if (ptr) {
+				return ptr->CanDoCommandAction();
+			}
+			return false;
 		}
 	}
 }

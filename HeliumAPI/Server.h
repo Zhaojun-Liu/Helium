@@ -38,6 +38,12 @@ namespace HeliumAPI {
 	int RestartServer(const string& servername);
 	int ActivateServer(const string& servername);
 	int DeactivateServer(const string& servername);
+	int StartAllServer();
+	int StopAllServer();
+	int PauseAllServer();
+	int RestartAllServer();
+	int ActivateAllServer();
+	int DeactivateAllServer();
 	bool IsServerActivated(const string& servername);
 	size_t GetServerPID(const string& servername);
 	list<any> GetServerMetadata(const string& servername);
@@ -46,4 +52,6 @@ namespace HeliumAPI {
 	int Say(const string& servername, const string& cmd);
 	int Boardcast(const string& servername, const string& cmd);
 	int Reply(const string& servername, const string& cmd);
+	int Save(const string& servername);
+	bool CanDoCommandAction(const string& servername);
 }

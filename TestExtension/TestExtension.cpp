@@ -9,7 +9,6 @@ namespace TestExtension {
 	string lname;
 	extern "C" TESTEXTENSION_API int ExtensionLoad(list<any> argument) {
 		lname = any_cast<string>(argument.front());
-		cout << any_cast<string>(argument.front()) << endl;
 		CreateExtensionLogger(lname);
 		ExtensionLogWarn(lname, "Logging test");
 		list<any> param;
@@ -42,8 +41,10 @@ namespace TestExtension {
 		try {
 			list<any>::iterator it;
 			it = argument.begin();
+			string server_name = any_cast<string>(*it);
 			cout << any_cast<string>(*it) << endl;
 			it++;
+			cout << StopServer(server_name) << endl;
 			cout << any_cast<tm>(*it).tm_hour << ":"
 				<< any_cast<tm>(*it).tm_min << ":"
 				<< any_cast<tm>(*it).tm_sec << endl;

@@ -31,6 +31,7 @@ export module Helium.Parser;
 import Helium.Events;
 import Helium.Logger;
 
+import <memory>;
 import <string>;
 import <sstream>;
 import <list>;
@@ -45,11 +46,17 @@ export{
 		};
 		class VanillaParser : public BasicHeliumParser {
 		public:
-			VanillaParser() : server_name("empty_server_name") {}
-			VanillaParser(const string& server_name) : server_name(server_name) {}
+			VanillaParser()
+				: server_name("empty_server_name")
+				, is_inited(false) {}
+			VanillaParser(const string& server_name)
+				: server_name(server_name)
+				, is_inited(false) {}
 			int Parse(const string& rawtext);
+			bool IsInited() noexcept;
 		private:
 			string server_name;
+			int is_inited;
 		};
 	}
 }
@@ -159,5 +166,8 @@ namespace Helium {
 			log << HLL::LL_ERR << e.what() << hendl;
 		}
 		return ret;
+	}
+	bool VanillaParser::IsInited() noexcept {
+		return this->is_inited;
 	}
 }

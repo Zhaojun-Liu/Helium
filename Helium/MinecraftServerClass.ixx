@@ -168,9 +168,11 @@ export {
 			int SendToServer(const string& text);
 			int Say(const string& text);
 			int Boardcast(const string& text);
-			int Tellraw(const string& text);
+			int Tell(const string& text);
 			int Execute(const string& text);
+			int Reply(const string& text);
 			int Save();
+			bool CanDoCommandAction();
 
 			void operator=(HeliumMinecraftServer server);
 		private:
@@ -503,22 +505,35 @@ export {
 		}
 
 		int HeliumMinecraftServer::SendToServer(const string& text) {
+			if (!this->parser_ptr->IsInited()) return -1;
 			return 0;
 		}
 		int HeliumMinecraftServer::Say(const string& text) {
+			if (!this->parser_ptr->IsInited()) return -1;
 			return 0;
 		}
 		int HeliumMinecraftServer::Boardcast(const string& text) {
+			if (!this->parser_ptr->IsInited()) return -1;
 			return 0;
 		}
-		int HeliumMinecraftServer::Tellraw(const string& text) {
+		int HeliumMinecraftServer::Tell(const string& text) {
+			if (!this->parser_ptr->IsInited()) return -1;
 			return 0;
 		}
 		int HeliumMinecraftServer::Execute(const string& text) {
+			if (!this->parser_ptr->IsInited()) return -1;
 			return 0;
 		}
 		int HeliumMinecraftServer::Save() {
+			if (!this->parser_ptr->IsInited()) return -1;
 			return 0;
+		}
+		int HeliumMinecraftServer::Reply(const string& text) {
+			if (!this->parser_ptr->IsInited()) return -1;
+			return 0;
+		}
+		bool HeliumMinecraftServer::CanDoCommandAction() {
+			return this->parser_ptr->IsInited();
 		}
 
 		int ProcessServerOutput(HeliumMinecraftServer* ptr, string servername, HANDLE stdread, HANDLE hproc) {

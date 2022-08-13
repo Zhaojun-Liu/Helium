@@ -25,5 +25,6 @@
 #include"Command.h"
 #include"Event.h"
 #include"Extension.h"
+#include"Server.h"
 #include"Misc.h"
 #include"HeliumLogger.h"
