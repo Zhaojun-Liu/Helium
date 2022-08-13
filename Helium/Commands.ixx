@@ -1750,7 +1750,6 @@ export{
 								pit = tit;
 								argus.push_back(currword);
 								cmdpath.push_back(static_cast<CommandArgumentInt*>(*tit));
-								log << HLL::LL_DBG << "Matched integer : " << currword << hendl;
 								break;
 							}
 						}
@@ -1761,7 +1760,6 @@ export{
 								pit = tit;
 								argus.push_back(currword);
 								cmdpath.push_back(static_cast<CommandArgumentFloat*>(*tit));
-								log << HLL::LL_DBG << "Matched float : " << currword << hendl;
 								break;
 							}
 						}
@@ -1799,7 +1797,6 @@ export{
 									return -1;
 								}
 								isargu = true;
-								log << HLL::LL_DBG << "Matched full quotable string : " << fullword << hendl;
 								argus.push_back(fullword);
 								pit = tit;
 								cmdpath.push_back(static_cast<CommandArgumentQuotableString*>(*tit));
@@ -1812,7 +1809,6 @@ export{
 						}
 						if (typeid((**tit)) == typeid(CommandArgumentString)) {
 							if (currword.find("\"") != string::npos) continue;
-							log << HLL::LL_DBG << "Matched string : " << currword << hendl;
 							pit = tit;
 							isargu = true;
 							argus.push_back(currword);
