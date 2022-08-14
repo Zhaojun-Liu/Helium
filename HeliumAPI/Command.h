@@ -34,7 +34,7 @@ namespace HeliumAPI {
 
 	int ExecuteCommand(string rawcmd);
 	void RegisterCommandCallback(HeliumCommandCallback funcptr, uuid cmduuid);
-	uuid AddCommand(list<any> cmdargu, uuid parentuuid, int type = 1, HeliumCommandCallback = nullptr);
+	uuid AddCommand(list<any> cmdargu, uuid parentuuid = nil_generator()(), int type = 1, HeliumCommandCallback = nullptr);
 	uuid DeleteCommand(uuid cmduuid);
 	uuid QueryCommand(string cmd);
 	uuid ReplaceCommand(list<any> cmdargu, uuid cmduuid, int type = 1, HeliumCommandCallback = nullptr);

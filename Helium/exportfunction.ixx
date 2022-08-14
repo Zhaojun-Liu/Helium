@@ -136,6 +136,14 @@ export {
 			ADD_EXP_FUNC("Save"                                    , Reply);
 			ADD_EXP_FUNC("CanDoCommandAction"                      , CanDoCommandAction);
 
+			ADD_EXP_FUNC("ExecuteCommand", _ExecuteCommand);
+			ADD_EXP_FUNC("RegisterCommandCallback", _RegisterCommandCallback);
+			ADD_EXP_FUNC("AddCommand", _AddCommand);
+			ADD_EXP_FUNC("DeleteCommand", _DeleteCommand);
+			ADD_EXP_FUNC("QueryCommand", _QueryCommand);
+			ADD_EXP_FUNC("ReplaceCommand", _ReplaceCommand);
+			ADD_EXP_FUNC("GetCommandTreeNodeMetadata", _GetCommandTreeNodeMetadata);
+
 			log << HLL::LL_INFO << "Helium API map was successfully built" << hendl;
 			return 0;
 		}
