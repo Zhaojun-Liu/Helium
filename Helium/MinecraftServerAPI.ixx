@@ -41,7 +41,7 @@ using namespace boost::uuids;
 
 export {
 	namespace Helium {
-		void AddServer(HeliumMinecraftServer server);
+		void AddServer(shared_ptr<HeliumMinecraftServer> server);
 		int StartServer(string name);
 		int StartServer(uuid server);
 		int StartServer();
@@ -78,7 +78,7 @@ export {
 		vector<shared_ptr<HeliumMinecraftServer>>::iterator ServerListEnd();
 
 		weak_ptr<HeliumMinecraftServer> GetServerPointerByName(const string& servername);
-		vector<string> GetServerList(const int& mask = -1);
+		vector<string> GetServerList(const int mask = -1);
 		int SendCommandToServer(const string& servername, const string& rawcmd);
 		int GetServerStatus(const string& servername);
 		int _StartServer(const string& servername);
@@ -100,9 +100,9 @@ export {
 
 		vector<shared_ptr<HeliumMinecraftServer>> heliumservers;
 
-		void AddServer(HeliumMinecraftServer server) {
-			if (server.IsValid())
-				heliumservers.push_back(make_shared<HeliumMinecraftServer>(server));
+		void AddServer(shared_ptr<HeliumMinecraftServer> server) {
+			if (server->IsValid())
+				heliumservers.push_back(server);
 		}
 		int StartServer(string name) {
 			for (auto it = heliumservers.begin(); it < heliumservers.end(); it++) {
@@ -334,18 +334,23 @@ export {
 			}
 			return weak_ptr<HeliumMinecraftServer>();
 		}
-		vector<string> GetServerList(const int& mask) {
+		vector<string> GetServerList(const int mask) {
 			vector<string> ret;
-			if (mask != -1) {
-				for (auto ptr : heliumservers) {
-					if (ptr->GetServerStat() == mask)
+			try {
+				if (mask != -1) {
+					for (auto& ptr : heliumservers) {
+						if (ptr->GetServerStat() == mask)
+							ret.push_back(ptr->GetServerName());
+					}
+				}
+				else {
+					for (auto& ptr : heliumservers) {
 						ret.push_back(ptr->GetServerName());
+					}
 				}
 			}
-			else {
-				for (auto ptr : heliumservers) {
-					ret.push_back(ptr->GetServerName());
-				}
+			catch (exception& e) {
+				log << HLL::LL_ERR << e.what() << hendl;
 			}
 			return ret;
 		}

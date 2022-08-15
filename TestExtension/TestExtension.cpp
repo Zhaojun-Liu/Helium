@@ -11,16 +11,14 @@ namespace TestExtension {
 		lname = any_cast<string>(argument.front());
 		CreateExtensionLogger(lname);
 		ExtensionLogWarn(lname, "Logging test");
-		list<any> param;
-		DispatchEvent(1, param);
-		param = GetExtensionMetadata("AnotherTestExtension");
-		for (auto s : param) {
-			ExtensionLogError(lname, any_cast<string>(s));
-		}
 		return 0;
 	}
 	extern "C" TESTEXTENSION_API int HeliumStart(list<any> argument) {
 		ExtensionLogCrit(lname, "HeliumStart()!");
+		auto vec = GetServerList();
+		for (auto& s : vec) {
+			StartServer(s);
+		}
 		return 0;
 	}
 	extern "C" TESTEXTENSION_API int HeliumStop(list<any> argument) {
@@ -38,28 +36,10 @@ namespace TestExtension {
 		return 0;
 	}
 	extern "C" TESTEXTENSION_API int ServerInitializationFinish(list<any> argument) {
-		try {
-			list<any>::iterator it;
-			it = argument.begin();
-			string server_name = any_cast<string>(*it);
-			cout << any_cast<string>(*it) << endl;
-			it++;
-			cout << StopServer(server_name) << endl;
-			cout << any_cast<tm>(*it).tm_hour << ":"
-				<< any_cast<tm>(*it).tm_min << ":"
-				<< any_cast<tm>(*it).tm_sec << endl;
-			it++;
-			cout << any_cast<string>(*it) << endl;
-			it++;
-			cout << any_cast<string>(*it) << endl;
-			it++;
-			cout << any_cast<double>(*it) << endl;
-			it++;
-		}
-		catch (...) {
-			;
-		}
-		return 0;
+		list<any>::iterator it;
+		it = argument.begin();
+		string server_name = any_cast<string>(*it);
+		StopServer(server_name);
 	}
 	extern "C" TESTEXTENSION_API int ServerStop(list<any> argument) {
 		ExtensionLogCrit(lname, "ServerStop()!");

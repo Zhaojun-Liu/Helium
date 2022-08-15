@@ -139,7 +139,6 @@ export{
 		uuid _AddCommand(list<any> cmdargu, uuid parentuuid = nil_generator()(), int type = 1, void* funcptr = nullptr);
 		uuid _DeleteCommand(uuid cmduuid);
 		uuid _QueryCommand(string cmd);
-		uuid _ReplaceCommand(list<any> cmdargu, uuid cmduuid, int type = 1, void* funcptr = nullptr);
 		uuid _GetCommandTreeNodeMetadata(uuid cmduuid);
 
 		typedef int (*HeliumCommandCallback)(string rawcmd, string sender, int permission, list<any> arguments);
@@ -394,6 +393,7 @@ namespace Helium {
 		double lowerbound;
 	};
 	class CommandArgumentBool : public _CommandArgument {
+	public:
 		CommandArgumentBool() {
 			this->argudesc = "DefaultArgumentDescription";
 			this->optional = false;
@@ -1922,7 +1922,7 @@ namespace Helium {
 		
 	}
 	uuid _AddCommand(list<any> cmdargu, uuid parentuuid, int type, void* funcptr) {
-		auto it = GetCmdItByUUID(parentuuid);
+		auto parentit = GetCmdItByUUID(parentuuid);
 		/*
 		class ConstantString;	                //1
 		class CommandArgumentInt;	            //2
@@ -1935,7 +1935,8 @@ namespace Helium {
 		class CommandBind;	                    //9
 		*/
 		if (type == 1) {	//ConstantString
-			string str
+			string desc
+				, str
 				, alias;
 			int perm;
 			bool callback = true
@@ -1943,9 +1944,43 @@ namespace Helium {
 				, exec = true
 				, hint = true
 				, autocomp = true;
+			auto it = cmdargu.begin();
 			if (cmdargu.size() < 4) {
 				return nil_generator()();
 			}
+			desc = any_cast<string>(*it);
+			it++;
+			str = any_cast<string>(*it);
+			it++;
+			alias = any_cast<string>(*it);
+			it++;
+			perm = any_cast<int>(*it);
+			if (it != cmdargu.end()) {
+				it++;
+				callback = any_cast<bool>(*it);
+			}
+			if (it != cmdargu.end()) {
+				it++;
+				list = any_cast<bool>(*it);
+			}
+			if (it != cmdargu.end()) {
+				it++;
+				exec = any_cast<bool>(*it);
+			}
+			if (it != cmdargu.end()) {
+				it++;
+				hint = any_cast<bool>(*it);
+			}
+			if (it != cmdargu.end()) {
+				it++;
+				autocomp = any_cast<bool>(*it);
+			}
+			auto cmd = new ConstantString(desc, str, alias, HeliumPermissionLevel(perm), callback, list, exec, hint, autocomp);
+			auto cmdit = AddCommand(cmd, parentit);
+			if (funcptr != nullptr) {
+				static_cast<ConstantString*>(*cmdit)->AddCallback(HeliumCommandCallback(funcptr));
+			}
+			return static_cast<ConstantString*>(*cmdit)->CommandUUID();
 		}
 		if (type == 2) {	//CommandArgumentInt
 			string desc;
@@ -1953,9 +1988,31 @@ namespace Helium {
 			, preproc = true;
 			long upperbound = 0
 			, lowerbound = 0;
+			auto it = cmdargu.begin();
 			if (cmdargu.size() < 1) {
 				return nil_generator()();
 			}
+			desc = any_cast<string>(*it);
+			it++;
+			if (it != cmdargu.end()) {
+				it++;
+				op = any_cast<bool>(*it);
+			}
+			if (it != cmdargu.end()) {
+				it++;
+				preproc = any_cast<bool>(*it);
+			}
+			if (it != cmdargu.end()) {
+				it++;
+				upperbound = any_cast<long>(*it);
+			}
+			if (it != cmdargu.end()) {
+				it++;
+				lowerbound = any_cast<long>(*it);
+			}
+			auto cmd = new CommandArgumentInt(desc, op, preproc, upperbound, lowerbound);
+			auto cmdit = AddCommand(cmd, parentit);
+			return static_cast<CommandArgumentInt*>(*cmdit)->CommandUUID();
 		}
 		if (type == 3) {	//CommandArgumentFloat
 			string desc;
@@ -1963,43 +2020,115 @@ namespace Helium {
 				, preproc = true;
 			double upperbound = 0
 			, lowerbound = 0;
+			auto it = cmdargu.begin();
 			if (cmdargu.size() < 1) {
 				return nil_generator()();
 			}
+			desc = any_cast<string>(*it);
+			it++;
+			if (it != cmdargu.end()) {
+				it++;
+				op = any_cast<bool>(*it);
+			}
+			if (it != cmdargu.end()) {
+				it++;
+				preproc = any_cast<bool>(*it);
+			}
+			if (it != cmdargu.end()) {
+				it++;
+				upperbound = any_cast<double>(*it);
+			}
+			if (it != cmdargu.end()) {
+				it++;
+				lowerbound = any_cast<double>(*it);
+			}
+			auto cmd = new CommandArgumentFloat(desc, op, preproc, upperbound, lowerbound);
+			auto cmdit = AddCommand(cmd, parentit);
+			return static_cast<CommandArgumentFloat*>(*cmdit)->CommandUUID();
 		}
-		if (type == 4) {
+		if (type == 4) {	//CommandArgumentBool
 			string desc;
 			bool op = false
 			, preproc = true;
+			auto it = cmdargu.begin();
 			if (cmdargu.size() < 1) {
 				return nil_generator()();
 			}
+			desc = any_cast<string>(*it);
+			it++;
+			if (it != cmdargu.end()) {
+				it++;
+				op = any_cast<bool>(*it);
+			}
+			if (it != cmdargu.end()) {
+				it++;
+				preproc = any_cast<bool>(*it);
+			}
+			auto cmd = new CommandArgumentBool(desc, op, preproc);
+			auto cmdit = AddCommand(cmd, parentit);
+			return static_cast<CommandArgumentBool*>(*cmdit)->CommandUUID();
 		}
 		if (type == 5) {	//CommandArgumentString
 			string desc;
 			unsigned long lengthlim = 0;
 			bool op = false
 			, preproc = true;
+			auto it = cmdargu.begin();
 			if (cmdargu.size() < 1) {
 				return nil_generator()();
 			}
+			desc = any_cast<string>(*it);
+			it++;
+			if (it != cmdargu.end()) {
+				it++;
+				lengthlim = any_cast<unsigned long>(*it);
+			}
+			if (it != cmdargu.end()) {
+				it++;
+				op = any_cast<bool>(*it);
+			}
+			if (it != cmdargu.end()) {
+				it++;
+				preproc = any_cast<bool>(*it);
+			}
+			auto cmd = new CommandArgumentString(desc, lengthlim, op, preproc);
+			auto cmdit = AddCommand(cmd, parentit);
+			return static_cast<CommandArgumentString*>(*cmdit)->CommandUUID();
 		}
 		if (type == 6) {	//CommandArgumentQuotableString
 			string desc;
 			unsigned long lengthlim = 0;
 			bool op = false
 			, preproc = true;
+			auto it = cmdargu.begin();
 			if (cmdargu.size() < 1) {
 				return nil_generator()();
 			}
+			desc = any_cast<string>(*it);
+			it++;
+			if (it != cmdargu.end()) {
+				it++;
+				lengthlim = any_cast<unsigned long>(*it);
+			}
+			if (it != cmdargu.end()) {
+				it++;
+				op = any_cast<bool>(*it);
+			}
+			if (it != cmdargu.end()) {
+				it++;
+				preproc = any_cast<bool>(*it);
+			}
+			auto cmd = new CommandArgumentQuotableString(desc, lengthlim, op, preproc);
+			auto cmdit = AddCommand(cmd, parentit);
+			return static_cast<CommandArgumentQuotableString*>(*cmdit)->CommandUUID();
 		}
 		return nil_generator()();
 	}
 	uuid _DeleteCommand(uuid cmduuid) {
-		return nil_generator()();
+		return (**DeleteCommand(cmduuid)).CommandUUID();
 	}
 	uuid _QueryCommand(string cmd) {
-		return nil_generator()();
+		return (**QueryCommand(cmd)).CommandUUID();
 	}
 	uuid _ReplaceCommand(list<any> cmdargu, uuid cmduuid, int type, void* funcptr) {
 		return nil_generator()();

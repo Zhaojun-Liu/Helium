@@ -141,7 +141,6 @@ export {
 			ADD_EXP_FUNC("AddCommand", _AddCommand);
 			ADD_EXP_FUNC("DeleteCommand", _DeleteCommand);
 			ADD_EXP_FUNC("QueryCommand", _QueryCommand);
-			ADD_EXP_FUNC("ReplaceCommand", _ReplaceCommand);
 			ADD_EXP_FUNC("GetCommandTreeNodeMetadata", _GetCommandTreeNodeMetadata);
 
 			log << HLL::LL_INFO << "Helium API map was successfully built" << hendl;

@@ -25,6 +25,8 @@
 #pragma once
 
 #include"pch.h"
+#include<boost/uuid/uuid.hpp>
+#include<boost/uuid/uuid_generators.hpp>
 
 using namespace std;
 using namespace boost::uuids;
@@ -33,10 +35,9 @@ namespace HeliumAPI {
 	typedef int (*HeliumCommandCallback)(string rawcmd, string sender, int permission, list<any> arguments);
 
 	int ExecuteCommand(string rawcmd);
-	void RegisterCommandCallback(HeliumCommandCallback funcptr, uuid cmduuid);
-	uuid AddCommand(list<any> cmdargu, uuid parentuuid = nil_generator()(), int type = 1, HeliumCommandCallback = nullptr);
-	uuid DeleteCommand(uuid cmduuid);
-	uuid QueryCommand(string cmd);
-	uuid ReplaceCommand(list<any> cmdargu, uuid cmduuid, int type = 1, HeliumCommandCallback = nullptr);
-	uuid GetCommandTreeNodeMetadata(uuid cmduuid);
+	void RegisterCommandCallback(HeliumCommandCallback funcptr, boost::uuids::uuid cmduuid);
+	boost::uuids::uuid AddCommand(list<any> cmdargu, boost::uuids::uuid parentuuid = nil_generator()(), int type = 1, HeliumCommandCallback funcptr = nullptr);
+	boost::uuids::uuid DeleteCommand(boost::uuids::uuid cmduuid);
+	boost::uuids::uuid QueryCommand(string cmd);
+	boost::uuids::uuid GetCommandTreeNodeMetadata(boost::uuids::uuid cmduuid);
 }

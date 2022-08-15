@@ -42,6 +42,7 @@
 #include<iostream>
 
 #include<boost/uuid/uuid.hpp>
+#include<boost/uuid/uuid_generators.hpp>
 #include<boost/dll.hpp>
 #include<boost/function.hpp>
 #include<boost/signals2.hpp>

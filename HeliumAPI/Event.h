@@ -39,16 +39,16 @@ using namespace boost;
 namespace HeliumAPI {
 	typedef boost::function<int(const list<any>)> StandardHeliumListener;
 
-	HELIUMAPI_API void SetEventName(const int& evevtid, const string& namestr);
-	HELIUMAPI_API void SetEventDescription(const int& eventid, const string& descstr);
-	HELIUMAPI_API void DispatchEvent(const int& eventid, list<any>& param);
-	HELIUMAPI_API void RegisterEventListener(const int& eventid, StandardHeliumListener funcptr);
-	HELIUMAPI_API string EventIDToDescription(const int& eventid);
-	HELIUMAPI_API string EventIDToName(const int& eventid);
-	HELIUMAPI_API void BlockEvent(const int& eventid);
-	HELIUMAPI_API void UnblockEvent(const int& eventid);
-	HELIUMAPI_API bool IsEventBlocked(const int& eventid);
-	HELIUMAPI_API void TraceEvent(const int& eventid);
-	HELIUMAPI_API void UntraceEvent(const int& eventid);
-	HELIUMAPI_API bool IsEventTraced(const int& eventid);
+	void SetEventName(const int& evevtid, const string& namestr);
+	void SetEventDescription(const int& eventid, const string& descstr);
+	void DispatchEvent(const int& eventid, list<any>& param);
+	void RegisterEventListener(const int& eventid, StandardHeliumListener funcptr);
+	string EventIDToDescription(const int& eventid);
+	string EventIDToName(const int& eventid);
+	void BlockEvent(const int& eventid);
+	void UnblockEvent(const int& eventid);
+	bool IsEventBlocked(const int& eventid);
+	void TraceEvent(const int& eventid);
+	void UntraceEvent(const int& eventid);
+	bool IsEventTraced(const int& eventid);
 }

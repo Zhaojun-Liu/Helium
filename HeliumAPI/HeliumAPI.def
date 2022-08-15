@@ -65,3 +65,9 @@ Boardcast
 Reply
 Save
 CanDoCommandAction
+ExecuteCommand
+RegisterCommandCallback
+AddCommand
+DeleteCommand
+QueryCommand
+GetCommandTreeNodeMetadata

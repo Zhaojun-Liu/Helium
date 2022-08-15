@@ -28,25 +28,35 @@
 using namespace std;
 
 namespace HeliumAPI {
-	int ExecuteCommand(string rawcmd) {
+	typedef int(*t1)(string);
+	typedef void(*t2)(void*, uuid);
+	typedef uuid(*t3)(list<any>, uuid, int, void*);
+	typedef uuid(*t4)(uuid);
+	typedef uuid(*t5)(string);
+	typedef uuid(*t6)(uuid);
 
+	int ExecuteCommand(string rawcmd) {
+		auto ptr = t1(HeliumAPIMap.at("ExecuteCommand"));
+		return ptr(rawcmd);
 	}
 	void RegisterCommandCallback(HeliumCommandCallback funcptr, uuid cmduuid) {
-
+		auto ptr = t2(HeliumAPIMap.at("RegisterCommandCallback"));
+		return ptr(funcptr, cmduuid);
 	}
-	uuid AddCommand(list<any> cmdargu, uuid parentuuid, int type = 1, HeliumCommandCallback = nullptr) {
-
+	uuid AddCommand(list<any> cmdargu, uuid parentuuid, int type, HeliumCommandCallback funcptr) {
+		auto ptr = t3(HeliumAPIMap.at("AddCommand"));
+		return ptr(cmdargu, parentuuid, type, funcptr);
 	}
 	uuid DeleteCommand(uuid cmduuid) {
-
+		auto ptr = t4(HeliumAPIMap.at("DeleteCommand"));
+		return ptr(cmduuid);
 	}
 	uuid QueryCommand(string cmd) {
-
-	}
-	uuid ReplaceCommand(list<any> cmdargu, uuid cmduuid, int type = 1, HeliumCommandCallback = nullptr) {
-
+		auto ptr = t5(HeliumAPIMap.at("QueryCommand"));
+		return ptr(cmd);
 	}
 	uuid GetCommandTreeNodeMetadata(uuid cmduuid) {
-
+		auto ptr = t6(HeliumAPIMap.at("GetCommandTreeNodeMetadata"));
+		return ptr(cmduuid);
 	}
 }

@@ -176,70 +176,70 @@ namespace Helium {
 		else Settings.AutoUpdate = false;
 
 		while (servernode) {
-			HeliumMinecraftServer tempins;
+			shared_ptr<HeliumMinecraftServer> tempins = make_shared<HeliumMinecraftServer>();
 			XMLElement* servernodechild;
 			XMLElement* rcon;
 
 			servernodechild = servernode->FirstChildElement("ServerName");
 			if (servernodechild)
 				if (servernodechild->GetText()) {
-					tempins.SetServerName(servernodechild->GetText());
+					tempins->SetServerName(servernodechild->GetText());
 				}
 
 			servernodechild = servernode->FirstChildElement("ServerDirectory");
 			if (servernodechild)
 				if (servernodechild->GetText()) {
-					tempins.SetServerDirectory(servernodechild->GetText());
+					tempins->SetServerDirectory(servernodechild->GetText());
 				}
 
 			servernodechild = servernode->FirstChildElement("StartCommand");
 			if (servernodechild)
 				if (servernodechild->GetText()) {
-					tempins.SetServerStartCommand(servernodechild->GetText());
+					tempins->SetServerStartCommand(servernodechild->GetText());
 				}
 
 			servernodechild = servernode->FirstChildElement("ServerType");
 			if (servernodechild)
 				if (servernodechild->GetText()) {
-					tempins.SetServerType((HeliumServerType)ServerTypeStrToID(servernodechild->GetText()));
+					tempins->SetServerType((HeliumServerType)ServerTypeStrToID(servernodechild->GetText()));
 				}
 
 			servernodechild = servernode->FirstChildElement("AutoStart");
 			if (servernodechild)
 				if (servernodechild->GetText()) {
 					if ((string)servernodechild->GetText() == "true")
-						tempins.EnableAutoStart();
+						tempins->EnableAutoStart();
 					else
-						tempins.DisableAutoStart();
+						tempins->DisableAutoStart();
 				}
 
 			servernodechild = servernode->FirstChildElement("OutputVisible");
 			if (servernodechild)
 				if (servernodechild->GetText()) {
 					if ((string)servernodechild->GetText() == "true")
-						tempins.EnableOutputVisibility();
+						tempins->EnableOutputVisibility();
 					else
-						tempins.DisableOutputVisibility();
+						tempins->DisableOutputVisibility();
 				}
 
 			rcon = servernode->FirstChildElement("rcon");
 			if (rcon) {
 				tempstr = GetNodeStringByName(rcon, "Enable");
-				if (tempstr == "true") tempins.EnableRCON();
-				else tempins.DisableRCON();
+				if (tempstr == "true") tempins->EnableRCON();
+				else tempins->DisableRCON();
 
-				if (tempins.IsRCONEnabled()) {
+				if (tempins->IsRCONEnabled()) {
 					tempstr = GetNodeStringByName(rcon, "Port");
 					sstr << tempstr;
 					sstr >> tempi;
 					sstr.clear();
-					tempins.SetRCONPort(tempi);
+					tempins->SetRCONPort(tempi);
 
 					tempstr = GetNodeStringByName(rcon, "Password");
-					tempins.SetRCONPassword(tempstr);
+					tempins->SetRCONPassword(tempstr);
 				}
 			}
-			tempins.GenerateParser();
+			tempins->GenerateParser();
 			AddServer(tempins);
 			servernode = servernode->NextSiblingElement("MinecraftServer");
 		}

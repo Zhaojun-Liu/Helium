@@ -35,51 +35,51 @@ namespace HeliumAPI {
 	typedef void(*BlockPtr)(const int&);
 	typedef bool(*IsPtr)(const int&);
 
-	HELIUMAPI_API void SetEventName(const int& eventid, const string& namestr) {
+	void SetEventName(const int& eventid, const string& namestr) {
 		SetPtr ptr = SetPtr(HeliumAPIMap.at("SetEventName"));
 		ptr(eventid, namestr);
 	}
-	HELIUMAPI_API void SetEventDescription(const int& eventid, const string& descstr) {
+	void SetEventDescription(const int& eventid, const string& descstr) {
 		SetPtr ptr = SetPtr(HeliumAPIMap.at("SetEventDesc"));
 		ptr(eventid, descstr);
 	}
-	HELIUMAPI_API void DispatchEvent(const int& eventid, list<any>& param) {
+	void DispatchEvent(const int& eventid, list<any>& param) {
 		DispatchPtr ptr = DispatchPtr(HeliumAPIMap.at("DispatchEvent"));
 		ptr(eventid, param);
 	}
-	HELIUMAPI_API void RegisterEventListener(const int& eventid, StandardHeliumListener funcptr) {
+	void RegisterEventListener(const int& eventid, StandardHeliumListener funcptr) {
 		RegisterPtr ptr = RegisterPtr(HeliumAPIMap.at("RegisterEventListner"));
 		ptr(eventid, funcptr);
 	}
-	HELIUMAPI_API string EventIDToDescription(const int& eventid) {
+	string EventIDToDescription(const int& eventid) {
 		GetPtr ptr = GetPtr(HeliumAPIMap.at("EventIDToDesc"));
 		return ptr(eventid);
 	}
-	HELIUMAPI_API string EventIDToName(const int& eventid) {
+	string EventIDToName(const int& eventid) {
 		GetPtr ptr = GetPtr(HeliumAPIMap.at("EventIDToName"));
 		return ptr(eventid);
 	}
-	HELIUMAPI_API void BlockEvent(const int& eventid) {
+	void BlockEvent(const int& eventid) {
 		BlockPtr ptr = BlockPtr(HeliumAPIMap.at("BlockEvent"));
 		ptr(eventid);
 	}
-	HELIUMAPI_API void UnblockEvent(const int& eventid) {
+	void UnblockEvent(const int& eventid) {
 		BlockPtr ptr = BlockPtr(HeliumAPIMap.at("UnblockEvent"));
 		ptr(eventid);
 	}
-	HELIUMAPI_API bool IsEventBlocked(const int& eventid) {
+	bool IsEventBlocked(const int& eventid) {
 		IsPtr ptr = IsPtr(HeliumAPIMap.at("IsEventBlocked"));
 		return ptr(eventid);
 	}
-	HELIUMAPI_API void TraceEvent(const int& eventid) {
+	void TraceEvent(const int& eventid) {
 		BlockPtr ptr = BlockPtr(HeliumAPIMap.at("TraceEvent"));
 		ptr(eventid);
 	}
-	HELIUMAPI_API void UntraceEvent(const int& eventid) {
+	void UntraceEvent(const int& eventid) {
 		BlockPtr ptr = BlockPtr(HeliumAPIMap.at("UntraceEvent"));
 		ptr(eventid);
 	}
-	HELIUMAPI_API bool IsEventTraced(const int& eventid) {
+	bool IsEventTraced(const int& eventid) {
 		IsPtr ptr = IsPtr(HeliumAPIMap.at("IsEventTraced"));
 		return ptr(eventid);
 	}

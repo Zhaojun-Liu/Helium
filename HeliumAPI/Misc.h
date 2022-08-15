@@ -30,6 +30,6 @@
 using namespace semver;
 
 namespace HeliumAPI {
-	HELIUMAPI_API version GetHeliumVersion();
-	HELIUMAPI_API version GetHeliumAPIVersion();
+	version GetHeliumVersion();
+	version GetHeliumAPIVersion();
 }
