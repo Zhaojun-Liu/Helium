@@ -69,9 +69,9 @@ namespace Helium {
 		regex rdone("Done \\([0-9.]*s\\)! For help, type \"help\"( or \"\\ ? \")?");
 		regex rtime("\\[[0-9][0-9]:[0-9][0-9]:[0-9][0-9]\\] ");
 		regex rthd_src("\\[[A-Za-z ]*/[A-Za-z ]*\\]: ");
-		regex rjoin("[A-Za-z0-9_]* joined the game");
-		regex rleave("[A-Za-z0-9_]* left the game");
-		regex rplayer_info("<[A-Za-z0-9_]*> ");
+		regex rjoin("^[A-Za-z0-9_]* joined the game");
+		regex rleave("^[A-Za-z0-9_]* left the game");
+		regex rplayer_info("^<[A-Za-z0-9_]*> ");
 		smatch m;
 		string time_str, thread_source_str, text = rawtext, thrd, srce;
 		tm timestamp;
@@ -148,6 +148,7 @@ namespace Helium {
 				helium_event_manager.DispatchEvent(HeliumEventList::PLAYER_INPUT, param);
 			}
 			if (regex_search(text, rdone)) {
+				this->is_inited = true;
 				regex rsplit_usetime("[0-9]*.[0-9]*s");
 				smatch temp_m;
 				regex_search(text, temp_m, rsplit_usetime);

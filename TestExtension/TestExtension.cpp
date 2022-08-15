@@ -15,10 +15,6 @@ namespace TestExtension {
 	}
 	extern "C" TESTEXTENSION_API int HeliumStart(list<any> argument) {
 		ExtensionLogCrit(lname, "HeliumStart()!");
-		auto vec = GetServerList();
-		for (auto& s : vec) {
-			StartServer(s);
-		}
 		return 0;
 	}
 	extern "C" TESTEXTENSION_API int HeliumStop(list<any> argument) {
@@ -39,7 +35,8 @@ namespace TestExtension {
 		list<any>::iterator it;
 		it = argument.begin();
 		string server_name = any_cast<string>(*it);
-		StopServer(server_name);
+		//StopServer(server_name);
+		SendCommandToServer(server_name, "help");
 	}
 	extern "C" TESTEXTENSION_API int ServerStop(list<any> argument) {
 		ExtensionLogCrit(lname, "ServerStop()!");

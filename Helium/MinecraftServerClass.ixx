@@ -75,7 +75,7 @@ export {
 		struct RedirectInformation
 		{
 			HANDLE hStdInRead = NULL;   //子进程用的stdin的读入端
-			HANDLE hStdInWrite = NULL;  //主程序用的stdin的读入端
+			HANDLE hStdInWrite = NULL;  //主程序用的stdin的写入端
 
 			HANDLE hStdOutRead = NULL;  //主程序用的stdout的读入端
 			HANDLE hStdOutWrite = NULL; //子进程用的stdout的写入端
@@ -505,8 +505,17 @@ export {
 		}
 
 		int HeliumMinecraftServer::SendToServer(const string& text) {
-			if (!this->parser_ptr->IsInited()) return -1;
-			return 0;
+			if (!this->parser_ptr->IsInited()) {
+				return -1;
+			}
+			DWORD dwWritten;
+			CHAR in_buffer[4097];
+			log << HLL::LL_WARN << in_buffer << hendl;
+			strcpy(in_buffer, text.c_str());
+			BOOL bSuccess = FALSE;
+			bSuccess = WriteFile(this->redir.hStdInWrite, in_buffer, text.size(), &dwWritten, NULL);
+			log << HLL::LL_WARN << bSuccess << hendl;
+			return bSuccess;
 		}
 		int HeliumMinecraftServer::Say(const string& text) {
 			if (!this->parser_ptr->IsInited()) return -1;
