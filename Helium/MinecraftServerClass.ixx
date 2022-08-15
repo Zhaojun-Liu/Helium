@@ -165,7 +165,7 @@ export {
 
 			int GenerateParser();
 
-			int SendToServer(const string& text);
+			int SendToServer(const string text);
 			int Say(const string& text);
 			int Boardcast(const string& text);
 			int Tell(const string& text);
@@ -504,17 +504,25 @@ export {
 			return 0;
 		}
 
-		int HeliumMinecraftServer::SendToServer(const string& text) {
+		int HeliumMinecraftServer::SendToServer(const string text) {
 			if (!this->parser_ptr->IsInited()) {
 				return -1;
 			}
 			DWORD dwWritten;
-			CHAR in_buffer[4097];
-			log << HLL::LL_WARN << in_buffer << hendl;
+			CHAR in_buffer[4101];
 			strcpy(in_buffer, text.c_str());
+			if (text.size() <= 4096) {
+				in_buffer[text.size()] = '\r';
+				in_buffer[text.size() + 1] = '\n';
+				in_buffer[text.size() + 2] = '\0';
+			}
+			else {
+				in_buffer[4096] = '\r';
+				in_buffer[4097] = '\n';
+				in_buffer[4098] = '\0';
+			}
 			BOOL bSuccess = FALSE;
 			bSuccess = WriteFile(this->redir.hStdInWrite, in_buffer, text.size(), &dwWritten, NULL);
-			log << HLL::LL_WARN << bSuccess << hendl;
 			return bSuccess;
 		}
 		int HeliumMinecraftServer::Say(const string& text) {

@@ -36,7 +36,7 @@ namespace TestExtension {
 		it = argument.begin();
 		string server_name = any_cast<string>(*it);
 		//StopServer(server_name);
-		SendCommandToServer(server_name, "help");
+		SendCommandToServer(server_name, "help\r\n");
 	}
 	extern "C" TESTEXTENSION_API int ServerStop(list<any> argument) {
 		ExtensionLogCrit(lname, "ServerStop()!");
