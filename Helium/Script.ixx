@@ -24,23 +24,14 @@
 
 module;
 
-#include"semver/semver.hpp"
-
-export module Helium.Version;
-
-using namespace std;
-using namespace semver;
+export module Helium.Script;
 
 export {
 	namespace Helium {
-		version heliumversion = { 0, 7, 7, prerelease::alpha };
 
-		version GetHeliumVersion();
 	}
 }
 
 namespace Helium {
-	version GetHeliumVersion() {
-		return heliumversion;
-	}
+
 }

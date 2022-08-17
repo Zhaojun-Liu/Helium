@@ -24,23 +24,19 @@
 
 module;
 
-#include"semver/semver.hpp"
+export module Helium.ExtensionManager;
 
-export module Helium.Version;
+import <boost/beast.hpp>;
 
 using namespace std;
-using namespace semver;
+using namespace boost::;
 
 export {
 	namespace Helium {
-		version heliumversion = { 0, 7, 7, prerelease::alpha };
 
-		version GetHeliumVersion();
 	}
 }
 
 namespace Helium {
-	version GetHeliumVersion() {
-		return heliumversion;
-	}
+
 }
