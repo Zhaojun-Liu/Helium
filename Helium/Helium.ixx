@@ -59,6 +59,7 @@ import <any>;
 import <list>;
 import <thread>;
 import <strstream>;
+import <iostream>;
 import <map>;
 import <thread>;
 
@@ -88,7 +89,6 @@ export{
 			log << "for details type \'#Helium show warranty\'." << hendl;
 			log << "This is free software, and you are welcome to redistribute it" << hendl;
 			log << "under certain conditions; type \'#Helium show conditions\' for details." << hendl;
-
 			return;
 		}
 		int HeliumEnvInit() {
@@ -167,6 +167,8 @@ export{
 			return 0;
 		}
 		int HeliumMain(int argc, char* argv[]) {
+			cout << test() << endl;
+
 			int ret;
 			log << HLL::LL_INFO << "Current Working Directory : " << argv[0] << hendl;
 			HeliumEnvInit();

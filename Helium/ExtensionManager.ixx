@@ -24,19 +24,35 @@
 
 module;
 
+#define CPPHTTPLIB_OPENSSL_SUPPORT
+#include "cpp-httplib/httplib.h"
+
 export module Helium.ExtensionManager;
 
-import <boost/beast.hpp>;
+import <iostream>;
+import <cstdlib>;
+import <string>;
 
 using namespace std;
-using namespace boost::;
 
 export {
 	namespace Helium {
-
+		int test() {
+			httplib::Client cli("https://raw.githubusercontent.com");
+			if (auto res = cli.Get("/Helium-DevTeam/Helium-Extensions-Main/main/main/TestExtension/0.0.1/TestExtension.json")) {
+				if (res->status == 200) {
+					std::cout << res->body << std::endl;
+				}
+				cout << res->status << endl;
+			}
+			else {
+				auto err = res.error();
+				std::cout << "HTTP error: " << httplib::to_string(err) << std::endl;
+			}
+			return 0;
+		}
 	}
 }
 
 namespace Helium {
-
 }
