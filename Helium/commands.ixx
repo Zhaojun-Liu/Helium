@@ -1751,19 +1751,6 @@ namespace Helium {
 		tree<_BasicHeliumCommand*>::fixed_depth_iterator tit;
 
 		try {
-
-			/*if (rawcmd == "#exit") {
-				list<any> param;
-				any temp_any;
-				temp_any = GetHeliumVersion();
-				param.push_back(temp_any);
-				helium_event_manager.DispatchEvent(HeliumEventList::HELIUM_STOP, param);
-				StopAllServer();
-				UnloadAllExtension();
-				log << HLL::LL_INFO << "Exiting Helium." << hendl;
-				::exit(0);
-			}*/
-
 			while (iss >> tempstr) {
 				words.push_back(tempstr);
 			}

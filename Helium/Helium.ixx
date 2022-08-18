@@ -92,7 +92,7 @@ export{
 			return;
 		}
 		int HeliumEnvInit() {
-			HeliumEndline hendl;
+			set_terminate(&HeliumTerminateHandler);
 
 #ifdef NOT_STABLE
 			log << HLL::LL_INFO << "This is a unstable version of helium, log level set to debug." << hendl;
