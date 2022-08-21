@@ -32,6 +32,7 @@ import <string>;
 import Helium.Logger;
 import Helium.Events;
 import Helium.Extension;
+import Helium.ExtensionManager;
 import Helium.Version;
 import Helium.MinecraftServer;
 
@@ -224,7 +225,12 @@ namespace Helium {
 		return 0;
 	}
 	int helium_extension_install(const string& rawcmd, const string& sender, const int& permission, const list<any>& arguments) {
-		log << HLL::LL_INFO << "This command hasn't been implemented yet :(helium_extension_unlock" << hendl;
+		if (arguments.size() == 1) {
+			return InstallExtension(any_cast<string>(arguments.begin()));
+		}
+		else {
+			return InstallExtension(any_cast<string>(arguments.begin()), any_cast<string>(arguments.end()));
+		}
 		return 0;
 	}
 	int helium_extension_update(const string& rawcmd, const string& sender, const int& permission, const list<any>& arguments) {

@@ -1017,10 +1017,8 @@ namespace Helium {
 			}
 			if (uninsit != HeliumCommandTree.end()) {
 				auto extname = new CommandArgumentString("extension_name");
-				auto extversion = new CommandArgumentString("extension_version", 0, true);
 
-				auto enit = AddCommand(extname, uninsit);
-				AddCommand(extversion, enit);
+				AddCommand(extname, uninsit);
 			}
 		}
 

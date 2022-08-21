@@ -167,8 +167,6 @@ export{
 			return 0;
 		}
 		int HeliumMain(int argc, char* argv[]) {
-			cout << test() << endl;
-
 			int ret;
 			log << HLL::LL_INFO << "Current Working Directory : " << argv[0] << hendl;
 			HeliumEnvInit();
@@ -183,6 +181,7 @@ export{
 				log << HLL::LL_CRIT << "Exception description : " << e.what() << hendl;
 				log << HLL::LL_CRIT << "THIS IS A CRASH, report it to us by : helium_devteam@outlook.com" << hendl;
 				ret = -1;
+				PrintStacktrace();
 				system("pause");
 				return ret;
 			}
@@ -194,6 +193,7 @@ export{
 				log << HLL::LL_ERR << "Minecraft server startup failed with a exception." << hendl;
 				log << HLL::LL_ERR << "Exception description : " << e.what() << hendl;
 				log << HLL::LL_ERR << "Please check your configuration and the server files' completeness." << hendl;
+				PrintStacktrace();
 			}
 
 			InitShell("Helium>");

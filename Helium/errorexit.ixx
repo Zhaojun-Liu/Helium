@@ -42,6 +42,7 @@ export{
 		void HeliumErrorExit(bool ispause, bool uselogger, string str, ...);
 		void HeliumError_exit(bool ispause, bool uselogger, string str, ...);
 		void HeliumTerminateHandler();
+		void PrintStacktrace();
 	}
 }
 
@@ -106,5 +107,10 @@ namespace Helium {
 			}
 		}
 		abort();
+	}
+	void PrintStacktrace() {
+		cout << "----------------------Stacktrace----------------------" << endl;
+		cout << stacktrace() << endl;
+		cout << "----------------------Stacktrace----------------------" << endl;
 	}
 }

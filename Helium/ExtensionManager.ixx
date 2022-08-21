@@ -29,30 +29,56 @@ module;
 
 export module Helium.ExtensionManager;
 
+import Helium.Logger;
+
 import <iostream>;
+import <boost/json/src.hpp>;
 import <cstdlib>;
 import <string>;
 
 using namespace std;
+using namespace httplib;
 
 export {
 	namespace Helium {
-		int test() {
-			httplib::Client cli("https://raw.githubusercontent.com");
-			if (auto res = cli.Get("/Helium-DevTeam/Helium-Extensions-Main/main/main/TestExtension/0.0.1/TestExtension.json")) {
-				if (res->status == 200) {
-					std::cout << res->body << std::endl;
-				}
-				cout << res->status << endl;
-			}
-			else {
-				auto err = res.error();
-				std::cout << "HTTP error: " << httplib::to_string(err) << std::endl;
-			}
-			return 0;
-		}
+		string GetExtensionJSON(const string& name, const string& version = "noversion");
+		int InstallExtension(const string& name, const string& version = "noversion");
+		int UpdateExtension(const string& name);
+		int UninstallExtension(const string& name);
 	}
 }
 
 namespace Helium {
+	string GetExtensionJSON(const string& name, const string& version) {
+		string url = "https://raw.githubusercontent.com/Helium-DevTeam/Helium-Extensions-Main/main/main";
+		string raw_json;
+		string get = "";
+		get.append(name).append("/").append(version).append("/").append(name).append(".json");
+		log << HLL::LL_INFO << "Extension metadata url : " << url << get << hendl;
+		Client cli(url);
+		if (auto res = cli.Get(get)) {
+			if (res->status == 200) {
+				raw_json = res->body;
+				return raw_json;
+			}
+		}
+		else {
+			auto err = res.error();
+			log << HLL::LL_ERR << "HTTP Error " << to_string(err) << hendl;
+			throw err;
+			return "";
+		}
+		return raw_json;
+	}
+	int InstallExtension(const string& name, const string& version) {
+		auto raw_json = GetExtensionJSON(name, version);
+		cout << raw_json << endl;
+		return 0;
+	}
+	int UpdateExtension(const string& name) {
+		return 0;
+	}
+	int UninstallExtension(const string& name) {
+		return 0;
+	}
 }
