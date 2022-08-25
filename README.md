@@ -1,23 +1,28 @@
 # Helium
-[zh_CN/中文](https://github.com/Helium-DevTeam/Helium/blob/master/README_cn.md)
+![Helium-banner](https://raw.githubusercontent.com/Helium-DevTeam/Helium/master/Helium.png)
 
+**[en_US/英语]**|[zh_CN/中文](https://github.com/Helium-DevTeam/Helium/blob/master/README_cn.md)
 
+## Introduction
 
-[Helium Document](https://helium-devteam.github.io/Helium-User-Document/#/)
+This project is inspired by [Fallen-Breath/MCDReforged](https://github.com/Fallen-Breath/MCDReforged). We would like to express our sincere thanks to all contributors to the project.
 
+Helium is a extension system for Minecraft servers and it doesn't need any modify or modding to work on 
+diverse Minecraft servers. Besides, Helium also provides built-in flexible script system and a extension manager(Just like the apt). Helium uses the dlls as extensions, which means you can use any language that can write dlls and cooperate with C++, such as C, C# or Java, to write Helium extensions.
 
+Helium is based on C++, which means Helium is lightweight and incredibly fast. But as a trade-off, based the C++ also means poor binary portability and relatively poor maintainability. If portability is important to you, you may like to use [Fallen-Breath/MCDReforged](https://github.com/Fallen-Breath/MCDReforged) instead of using Helium.
 
-Helium is a customizable extension system for Minecraft server which is written in C++.
+For now Helium only supports Windows(x64), but we are planning to make a Linux version.
 
-This project is inspired by the [Fallen-Breath/MCDReforged](https://github.com/Fallen-Breath/MCDReforged).
+If you find any bugs or want to contact us, [Our mail](mailto:helium_devteam@outlook.com).
 
-We target to provide a liter, faster, and more customizable choice.
+Helium is licensed by GPL-3.0-or-later license, check [here](https://www.fsf.org/) for more details.
 
-As a trade-off, we sacrifice its portability and the simplicity of writing extensions.
+## Document
 
-(we r sry that we haven't finish the first alpha version yet, if u r interested in our project, we recommend u to use mcdr as a temporary alternative)
+[Here](https://helium-devteam.github.io/Helium-User-Document/#/) is our document.
 
-This project is licensed by the GPL-3.0-or-later license
+## Acknowledgement
 
 Very very special thank to contributors of the following projects:
 
@@ -27,6 +32,6 @@ Very very special thank to contributors of the following projects:
 
 [leethomason/tinyxml2](https://github.com/leethomason/tinyxml2/)
 
-[jcwangxp/Crossline](https://github.com/jcwangxp/Crossline/)
+[AmokHuginnsson/replxx](https://github.com/AmokHuginnsson/replxx)
 
 [Neargye/semver](https://github.com/Neargye/semver/)
